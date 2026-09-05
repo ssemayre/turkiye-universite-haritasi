@@ -1,0 +1,2048 @@
+[
+  {
+    "id": 1,
+    "name": "ADANA ALPARSLAN TÜRKEŞ BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+    "city": "ADANA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.0433395,
+    "longitude": 35.3870303,
+    "displayName": "Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi, No:1, 577. Sokak, Gültepe, Gültepe Mahallesi, Sarıçam, Adana, Akdeniz Bölgesi, 01250, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 2,
+    "name": "ADIYAMAN ÜNİVERSİTESİ",
+    "city": "ADIYAMAN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.7477822,
+    "longitude": 38.2250543,
+    "displayName": "Adıyaman Üniversitesi, Atatürk Bulvarı, Altınşehir Mah., Adıyaman Merkez, Adıyaman, Güneydoğu Anadolu Bölgesi, 02000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 3,
+    "name": "AFYON KOCATEPE ÜNİVERSİTESİ",
+    "city": "AFYONKARAHİSAR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.8131699,
+    "longitude": 30.5413084,
+    "displayName": "Afyon Meslek Yüksekokulu, Kocatepe Üniversitesi, Erenler, Afyonkarahisar Merkez, Afyonkarahisar, Ege Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 4,
+    "name": "AFYONKARAHİSAR SAĞLIK BİLİMLERİ ÜNİVERSİTESİ",
+    "city": "AFYONKARAHİSAR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.7841056,
+    "longitude": 30.4663067,
+    "displayName": "Afyonkarahisar Sağlık Bilimleri Üniversitesi, 3, Turgut Özal Cd., Afyonkarahisar Merkez, Afyonkarahisar, Ege Bölgesi, 03030, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 5,
+    "name": "AĞRI İBRAHİM ÇEÇEN ÜNİVERSİTESİ",
+    "city": "AĞRI",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.7228666,
+    "longitude": 42.9934377,
+    "displayName": "Ağrı İbrahim Çeçen Üniversitesi, Ağrı Çevre Yolu, Fırat, Fırat Mahallesi, Ağrı Merkez, Ağrı, Doğu Anadolu Bölgesi, 04200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 6,
+    "name": "AKDENİZ ÜNİVERSİTESİ",
+    "city": "ANTALYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.8938473,
+    "longitude": 30.6508866,
+    "displayName": "Akdeniz Üniversitesi, Dumlupınar Bulvarı, Pınarbaşı Mahallesi, Konyaaltı, Antalya, Akdeniz Bölgesi, 07070, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 7,
+    "name": "AKSARAY ÜNİVERSİTESİ",
+    "city": "AKSARAY",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.3313453,
+    "longitude": 33.992396,
+    "displayName": "Aksaray Üniversitesi, Ankara - Adana Yolu, Aratol İstiklal, Aksaray Merkez, Aksaray, İç Anadolu Bölgesi, 68000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 8,
+    "name": "ALANYA ALAADDİN KEYKUBAT ÜNİVERSİTESİ",
+    "city": "ANTALYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.5265392,
+    "longitude": 32.084418,
+    "displayName": "Alanya Alaaddin Keykubat Üniversitesi, Atatürk caddesi, Kestel, Alanya, Antalya, Akdeniz Bölgesi, 07450, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 9,
+    "name": "AMASYA ÜNİVERSİTESİ",
+    "city": "AMASYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.6545211,
+    "longitude": 35.8057837,
+    "displayName": "Amasya Üniversitesi, Gaye Sokak, Şeyhcui, Şeyhcui Mahallesi, Amasya Merkez, Amasya, Karadeniz Bölgesi, 05100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 10,
+    "name": "ANADOLU ÜNİVERSİTESİ",
+    "city": "ESKİŞEHİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.7918989,
+    "longitude": 30.5005231,
+    "displayName": "Anadolu Üniversitesi, Kanallı Sokak, Yeşiltepe Mahallesi, Tepebaşı, Eskişehir, İç Anadolu Bölgesi, 26200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 11,
+    "name": "ANKARA HACI BAYRAM VELİ ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.9425385,
+    "longitude": 32.8187847,
+    "displayName": "Hacı Bayram Veli Üniversitesi, Silahtar Caddesi, Emniyet Mahallesi, Yenimahalle, Ankara, İç Anadolu Bölgesi, 06560, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 12,
+    "name": "ANKARA MÜZİK VE GÜZEL SANATLAR ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.8554153,
+    "longitude": 32.8461536,
+    "displayName": "Ankara Müzik ve Güzel Sanatlar Üniversitesi, 648. Cadde, Dikmenköy, Sakarya Mahallesi, Ankara, Çankaya, Ankara, İç Anadolu Bölgesi, 06550, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 13,
+    "name": "ANKARA SOSYAL BİLİMLER ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.9433892,
+    "longitude": 32.8557747,
+    "displayName": "Ankara Sosyal Bilimler Üniversitesi, Telgraf Sokak, Ulus, Hacı Bayram Mahallesi, Altındağ, Ankara, İç Anadolu Bölgesi, 06050, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 14,
+    "name": "ANKARA ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.8464857,
+    "longitude": 32.7814932,
+    "displayName": "Türkiye Adalet Akademisi, Ankara Üniversitesi Geliştirme Vakfı Özel Okulları Araba Yolu, Ahlatlıbel Mahallesi, Ankara, Çankaya, Ankara, İç Anadolu Bölgesi, 06805, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 15,
+    "name": "ANKARA YILDIRIM BEYAZIT ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.1311453,
+    "longitude": 32.9512024,
+    "displayName": "Ankara Yıldırım Beyazıt Üniversitesi Esenboğa Yerleşkesi, Balpınar 57. Cadde, Dumlupınar Mahallesi, Çubuk, Ankara, İç Anadolu Bölgesi, 06970, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 16,
+    "name": "ARDAHAN ÜNİVERSİTESİ",
+    "city": "ARDAHAN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.1324296,
+    "longitude": 42.7809261,
+    "displayName": "Ardahan Üniversitesi Yenisey Kampüsü, Ardahan Çevre Yolu, Ortageçit, Ardahan Merkez, Ardahan, Doğu Anadolu Bölgesi, 75000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 17,
+    "name": "ARTVİN ÇORUH ÜNİVERSİTESİ",
+    "city": "ARTVİN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.1851034,
+    "longitude": 41.8323781,
+    "displayName": "Artvin Çoruh Üniversitesi, Çayağzı, Çayağzı Mahallesi, Artvin Merkez, Artvin, Karadeniz Bölgesi, 08000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 18,
+    "name": "ATATÜRK ÜNİVERSİTESİ",
+    "city": "ERZURUM",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.9024928,
+    "longitude": 41.2427694,
+    "displayName": "Atatürk Üniversitesi, D100, Erzurum, Muratpaşa Mahallesi, Erzurum, Yakutiye, Erzurum, Doğu Anadolu Bölgesi, 25700, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 19,
+    "name": "AYDIN ADNAN MENDERES ÜNİVERSİTESİ",
+    "city": "AYDIN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.8582677,
+    "longitude": 27.8530947,
+    "displayName": "Aydın Adnan Menderes Üniversitesi, 110. Sokak, Zafer, Aydın, Efeler, Aydın, Ege Bölgesi, 09100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 20,
+    "name": "BALIKESİR ÜNİVERSİTESİ",
+    "city": "BALIKESİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.5418043,
+    "longitude": 28.0074147,
+    "displayName": "Balıkesir Üniversitesi, Bigadiç - Balıkesir Yolu, Çağış, Bigadiç, Balıkesir, Marmara Bölgesi, 10145, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 21,
+    "name": "BANDIRMA ONYEDİ EYLÜL ÜNİVERSİTESİ",
+    "city": "BALIKESİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.3351708,
+    "longitude": 27.9366561,
+    "displayName": "Bandırma Onyedi Eylül Üniversitesi, Şehit Mehmet Günenç Anadolu Lisesi Okul Yolu, Liseler Vadisi, Yeni Mahallesi, Bandırma, Balıkesir, Marmara Bölgesi, 10200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 22,
+    "name": "BARTIN ÜNİVERSİTESİ",
+    "city": "BARTIN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.600053,
+    "longitude": 32.3458559,
+    "displayName": "Bartın Üniversitesi, Fakülte Caddesi, Ağdacı, Kutlubey Demirci, Bartın Merkez, Bartın, Karadeniz Bölgesi, 74200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 23,
+    "name": "BATMAN ÜNİVERSİTESİ",
+    "city": "BATMAN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.7823643,
+    "longitude": 41.0688285,
+    "displayName": "Batman Üniversitesi Batı Raman Yerleşkesi, Üniversite Yolu, Batman Merkez, Batman, Güneydoğu Anadolu Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 24,
+    "name": "BAYBURT ÜNİVERSİTESİ",
+    "city": "BAYBURT",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.2505534,
+    "longitude": 40.1858072,
+    "displayName": "T.C. Bayburt Üniversitesi Bâbertî Külliyesi, Köse - Bayburt Yolu, Tuzcuzade, Tuzcuzade Mahallesi, Bayburt Merkez, Bayburt, Karadeniz Bölgesi, 69000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 25,
+    "name": "BİLECİK ŞEYH EDEBALİ ÜNİVERSİTESİ",
+    "city": "BİLECİK",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.1900369,
+    "longitude": 29.9668186,
+    "displayName": "Bilecik Şeyh Edebali Üniversitesi, D160, Kurlar, Hürriyet 2. OSB, Gülümbe, Bilecik Merkez, Bilecik, Marmara Bölgesi, 11230, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 26,
+    "name": "BİNGÖL ÜNİVERSİTESİ",
+    "city": "BİNGÖL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.9008748,
+    "longitude": 40.4854983,
+    "displayName": "Bingöl Üniversitesi, D300, Karşıyaka Mahallesi, Çayboyu, Bingöl Merkez, Bingöl, Doğu Anadolu Bölgesi, 12000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 27,
+    "name": "BİTLİS EREN ÜNİVERSİTESİ",
+    "city": "BİTLİS",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.4814015,
+    "longitude": 42.1582309,
+    "displayName": "Eren Üniversitesi Rahva Yerleşkesi, Ahmet Eren Bulvarı, Beş Minare Mahallesi, Koruk Köyü, Bitlis Merkez, Bitlis, Doğu Anadolu Bölgesi, 13000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 28,
+    "name": "BOLU ABANT İZZET BAYSAL ÜNİVERSİTESİ",
+    "city": "BOLU",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.7119441,
+    "longitude": 31.5095406,
+    "displayName": "Bolu Abant İzzet Baysal Üniversitesi Lojmanları, Çayır Sokak, Karaköy Mahallesi, Gölköy, Bolu Merkez, Bolu, Karadeniz Bölgesi, 14030, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 29,
+    "name": "BURDUR MEHMET AKİF ERSOY ÜNİVERSİTESİ",
+    "city": "BURDUR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.6846295,
+    "longitude": 30.3371963,
+    "displayName": "Mehmet Akif Ersoy Üniversitesi İstiklal Yerleşkesi, Antalya - Burdur Yolu, Kurna, Burdur Merkez, Burdur, Akdeniz Bölgesi, 15030, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 30,
+    "name": "BURSA ULUDAĞ ÜNİVERSİTESİ",
+    "city": "BURSA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.238967,
+    "longitude": 28.8697527,
+    "displayName": "Bursa Uludağ Üniversitesi, Meşeli Sokak, Yolçatı, Nilüfer, Bursa, Marmara Bölgesi, 16065, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 31,
+    "name": "ÇANAKKALE ONSEKİZ MART ÜNİVERSİTESİ",
+    "city": "ÇANAKKALE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.1120066,
+    "longitude": 26.4214648,
+    "displayName": "Çanakkale Onsekiz Mart Üniversitesi, Özefe Sokak, Barbaros Mahallesi, Çanakkale Merkez, Çanakkale, Marmara Bölgesi, 17020, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 32,
+    "name": "ÇANKIRI KARATEKİN ÜNİVERSİTESİ",
+    "city": "ÇANKIRI",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.6225259,
+    "longitude": 33.6192821,
+    "displayName": "Çankırı Karatekin Üniversitesi, Sosyal Konutlar, Kırkevler, Çankırı Merkez, Çankırı, İç Anadolu Bölgesi, 18200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 33,
+    "name": "ÇUKUROVA ÜNİVERSİTESİ",
+    "city": "ADANA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.0500064,
+    "longitude": 35.3573623,
+    "displayName": "Çukurova Üniversitesi, Mithat Özsan bulvarı, Balcalı Mahallesi, Sarıçam, Adana, Akdeniz Bölgesi, 01330, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 34,
+    "name": "DİCLE ÜNİVERSİTESİ",
+    "city": "DİYARBAKIR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.9044835,
+    "longitude": 40.2749929,
+    "displayName": "Dicle Üniversitesi, Fakülte yolu, Fetih Mah., Diyarbakır, Sur, Diyarbakır, Güneydoğu Anadolu Bölgesi, 21280, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 35,
+    "name": "DOKUZ EYLÜL ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.4305296,
+    "longitude": 27.136965,
+    "displayName": "Dokuz Eylül Üniversitesi, Vasıf Çınar Bulvarı, Kültür Mahallesi, İzmir, Konak, İzmir, Ege Bölgesi, 35220, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 36,
+    "name": "DÜZCE ÜNİVERSİTESİ",
+    "city": "DÜZCE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.9015487,
+    "longitude": 31.1860646,
+    "displayName": "Düzce Üniversitesi, Düzce Üniversitesi Yurtları, Orhangazi, Yörük, Düzce Merkez, Düzce, Karadeniz Bölgesi, 81110, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 37,
+    "name": "EGE ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.4556928,
+    "longitude": 27.2281857,
+    "displayName": "Ege Üniversitesi, Hasanlar Mahallesi, Menemen, İzmir, Ege Bölgesi, 35040, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 38,
+    "name": "ERCİYES ÜNİVERSİTESİ",
+    "city": "KAYSERİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.7073914,
+    "longitude": 35.5337566,
+    "displayName": "Erciyes Üniversitesi, Oğulcuklu Caddesi, Yenidoğan Mahallesi, Talas, Kayseri, İç Anadolu Bölgesi, 38280, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 39,
+    "name": "ERZİNCAN BİNALİ YILDIRIM ÜNİVERSİTESİ",
+    "city": "ERZİNCAN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.805603,
+    "longitude": 39.3772406,
+    "displayName": "Erzincan Binali Yıldırım Üniversitesi Yalnızbağ Yerleşkesi, Erzincan - Sivas Yolu, Yalnızbağ, Hacıali Palangası, Erzincan Merkez, Erzincan, Doğu Anadolu Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 40,
+    "name": "ESKİŞEHİR OSMANGAZİ ÜNİVERSİTESİ",
+    "city": "ESKİŞEHİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.7485483,
+    "longitude": 30.4761351,
+    "displayName": "Eskişehir Osmangazi Üniversitesi Meşelik Yerleşkesi, Şevkat Sokak, Orhangazi Mahallesi, Karacaşehir, Odunpazarı, Eskişehir, İç Anadolu Bölgesi, 26480, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 41,
+    "name": "ESKİŞEHİR TEKNİK ÜNİVERSİTESİ",
+    "city": "ESKİŞEHİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.8168591,
+    "longitude": 30.5317448,
+    "displayName": "Eskişehir Teknik Üniversitesi 2 Eylül Kampüsü, Eskişehir- Sarıcakaya yolu, Gazipaşa Mahallesi, Tepebaşı, Eskişehir, İç Anadolu Bölgesi, 26555, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 42,
+    "name": "FIRAT ÜNİVERSİTESİ",
+    "city": "ELAZIĞ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.683783,
+    "longitude": 39.1875235,
+    "displayName": "Fırat Üniversitesi, Gazi Caddesi, Üniversite Mahallesi, Elâzığ Merkez, Elâzığ, Doğu Anadolu Bölgesi, 23119, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 43,
+    "name": "GALATASARAY ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0459923,
+    "longitude": 29.020464,
+    "displayName": "Galatasaray Üniversitesi, 36, Çırağan Caddesi, Çırağan, Yıldız Mahallesi, Beşiktaş, İstanbul, Marmara Bölgesi, 34349, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 44,
+    "name": "GAZİ ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.9383074,
+    "longitude": 32.8235014,
+    "displayName": "Gazi Üniversitesi, Bandırma Caddesi, Emniyet Mahallesi, Yenimahalle, Ankara, İç Anadolu Bölgesi, 06560, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 45,
+    "name": "GAZİANTEP İSLAM BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+    "city": "GAZİANTEP",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.9784394,
+    "longitude": 37.3005375,
+    "displayName": "İslam Bilim ve Teknoloji Üniversitesi, 192090 Nolu Cadde, Beştepe, Beştepe Mahallesi, Şahinbey, Gaziantep, Güneydoğu Anadolu Bölgesi, 27470, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 46,
+    "name": "GAZİANTEP ÜNİVERSİTESİ",
+    "city": "GAZİANTEP",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.0341768,
+    "longitude": 37.3188478,
+    "displayName": "Gaziantep Üniversitesi, 216. Cadde, Yeditepe Mahallesi, Gaziantep, Şahinbey, Gaziantep, Güneydoğu Anadolu Bölgesi, 27470, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 47,
+    "name": "GEBZE TEKNİK ÜNİVERSİTESİ",
+    "city": "KOCAELİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.8114612,
+    "longitude": 29.3602715,
+    "displayName": "Gebze Teknik Üniversitesi, Şekerpınar-Çayırova Bağlantısı, Yeni Mahalle, Çayırova, Kocaeli, Marmara Bölgesi, 41400, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 48,
+    "name": "GİRESUN ÜNİVERSİTESİ",
+    "city": "GİRESUN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.8980471,
+    "longitude": 38.4379775,
+    "displayName": "Giresun Üniversitesi Eğitim ve Araştırma Hastanesi, Mehmet İzmen Caddesi, Aksu, Giresun Merkez, Giresun, Karadeniz Bölgesi, 28100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 49,
+    "name": "GÜMÜŞHANE ÜNİVERSİTESİ",
+    "city": "GÜMÜŞHANE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.4381838,
+    "longitude": 39.5175457,
+    "displayName": "Gümüşhane Üniversitesi, 330 Basamaklı Merdiven, Bağlarbaşı, Bağlarbaşı Mahallesi, Gümüşhane Merkez, Gümüşhane, Karadeniz Bölgesi, 29000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 50,
+    "name": "HACETTEPE ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.8674482,
+    "longitude": 32.7353845,
+    "displayName": "Hacettepe Üniversitesi Beytepe Kampüsü, 1661. Cadde, Bilkent Yurtlar, Üniversiteler Mahallesi, Çankaya, Ankara, İç Anadolu Bölgesi, 06800, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 51,
+    "name": "HAKKARİ ÜNİVERSİTESİ",
+    "city": "HAKKARİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.5720917,
+    "longitude": 43.7537691,
+    "displayName": "Hakkari Üniversitesi Zeynel Bey Yerleşkesi, Hakkari Van Bulvarı, Halife Derviş, Halife Derviş Mahallesi, Hakkari Merkez, Hakkâri, Doğu Anadolu Bölgesi, 30000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 52,
+    "name": "HARRAN ÜNİVERSİTESİ",
+    "city": "ŞANLIURFA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.1555175,
+    "longitude": 38.7967781,
+    "displayName": "Harran Üniversitesi Caddesi, Kamberiye Mahallesi, Şanlıurfa, Haliliye, Şanlıurfa, Güneydoğu Anadolu Bölgesi, 63210, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 53,
+    "name": "HATAY MUSTAFA KEMAL ÜNİVERSİTESİ",
+    "city": "HATAY",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.9093126,
+    "longitude": 36.2283971,
+    "displayName": "Hatay Mustafa Kemal Üniversitesi Dörtyol Meslek Yüksekokulu, Dörtyol Erzin Yolu, Kuzuculu Mahallesi, Dörtyol, Hatay, Akdeniz Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 54,
+    "name": "HİTİT ÜNİVERSİTESİ",
+    "city": "ÇORUM",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.5718837,
+    "longitude": 34.983975,
+    "displayName": "Çorum Hitit Üniversitesi, Çorum-Samsun yolu, Üçtutlar Mahallesi, Çorum Merkez, Çorum, Karadeniz Bölgesi, 19030, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 55,
+    "name": "IĞDIR ÜNİVERSİTESİ",
+    "city": "IĞDIR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.8120396,
+    "longitude": 44.0741718,
+    "displayName": "Iğdır Üniversitesi İç Yolu, Suveren, Iğdır Merkez, Iğdır, Doğu Anadolu Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 56,
+    "name": "ISPARTA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
+    "city": "ISPARTA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.7791374,
+    "longitude": 30.5467289,
+    "displayName": "Isparta Uygulamalı Bilimler Üniversitesi, Süleyman Demirel Bulvarı, Modernevler Mahallesi, Isparta Belediyesi, Isparta Merkez, Isparta, Akdeniz Bölgesi, 32100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 57,
+    "name": "İNÖNÜ ÜNİVERSİTESİ",
+    "city": "MALATYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.3277902,
+    "longitude": 38.4361843,
+    "displayName": "İnönü Üniversitesi, Malatya-Elazığ yolu, Üniversite Mahallesi, Bağtepe Mahallesi, Battalgazi, Malatya, Doğu Anadolu Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 58,
+    "name": "İSKENDERUN TEKNİK ÜNİVERSİTESİ",
+    "city": "HATAY",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.57791,
+    "longitude": 36.1513847,
+    "displayName": "İskenderun Teknik Üniversitesi, İbrahim Karaoğlanoğlu Caddesi, İsmet İnönü, İskenderun, Hatay, Akdeniz Bölgesi, 31200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 59,
+    "name": "İSTANBUL TEKNİK ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.1045571,
+    "longitude": 29.0263441,
+    "displayName": "İstanbul Teknik Üniversitesi, Sümer Sokağı, Maslak Mahallesi, Sarıyer, İstanbul, Marmara Bölgesi, 34467, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 60,
+    "name": "İSTANBUL ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0132424,
+    "longitude": 28.9637609,
+    "displayName": "İstanbul Üniversitesi, Besim Ömerpaşa Caddesi, Süleymaniye Mahallesi, İstanbul, Fatih, İstanbul, Marmara Bölgesi, 34116, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 61,
+    "name": "İSTANBUL ÜNİVERSİTESİ-CERRAHPAŞA",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.099976,
+    "longitude": 28.875354,
+    "displayName": "İstanbul Üniversitesi - Cerrahpaşa Sosyal Bilimler Fakültesi, 2380. Sokak, Esentepe Mahallesi, Sultangazi, İstanbul, Marmara Bölgesi, 34265, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 62,
+    "name": "İZMİR BAKIRÇAY ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.5811253,
+    "longitude": 26.9634248,
+    "displayName": "İzmir Bakırçay Üniversitesi, Kaynaklar Caddesi, Seyrek, Gazi Mustafa Kemal Mahallesi, Menemen, İzmir, Ege Bölgesi, 35660, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 63,
+    "name": "İZMİR DEMOKRASİ ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.3934871,
+    "longitude": 27.0736037,
+    "displayName": "İzmir Demokrasi Üniversitesi, 14, Gürsel Aksel Bulvarı, Üçkuyular Mahallesi, Karabağlar, İzmir, Ege Bölgesi, 35140, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 64,
+    "name": "İZMİR KATİP ÇELEBİ ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.5123509,
+    "longitude": 27.0313048,
+    "displayName": "İzmir Kâtip Çelebi Üniversitesi, 33/2, Havaalanı Şosesi Caddesi, Balatçık Mahallesi, Çiğli, İzmir, Ege Bölgesi, 35620, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 65,
+    "name": "KAFKAS ÜNİVERSİTESİ",
+    "city": "KARS",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.5809467,
+    "longitude": 43.0565672,
+    "displayName": "Kafkas Üniversitesi, Kars - Erzurum Yolu, Şehitler Mahallesi, Cumhuriyet, Kars Merkez, Kars, Doğu Anadolu Bölgesi, 36100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 66,
+    "name": "KAHRAMANMARAŞ İSTİKLAL ÜNİVERSİTESİ",
+    "city": "KAHRAMANMARAŞ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.5190969,
+    "longitude": 36.9932642,
+    "displayName": "Kahramanmaraş İstiklal Üniversitesi Karacasu Kampüsü, Kahramanmaraş - Gaziantep yolu, Güzelyurt, Karacasu Ferhuş, Güzelyurt, Dulkadiroğlu, Kahramanmaraş, Akdeniz Bölgesi, 46080, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 67,
+    "name": "KAHRAMANMARAŞ SÜTÇÜ İMAM ÜNİVERSİTESİ",
+    "city": "KAHRAMANMARAŞ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.5885518,
+    "longitude": 36.8189117,
+    "displayName": "Kahramanmaraş Sütçü İmam Üniversitesi Avşar Kampüsü, Batı Çevre Yolu Bulvarı, Onikişubat, Kahramanmaraş, Akdeniz Bölgesi, 46000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 68,
+    "name": "KARABÜK ÜNİVERSİTESİ",
+    "city": "KARABÜK",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.2072548,
+    "longitude": 32.6583796,
+    "displayName": "Karabük Üniversitesi, Kılavuzlar Mahallesi, Karabük Merkez, Karabük, Karadeniz Bölgesi, 78020, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 69,
+    "name": "KARADENİZ TEKNİK ÜNİVERSİTESİ",
+    "city": "TRABZON",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.9936415,
+    "longitude": 39.7740298,
+    "displayName": "Karadeniz Teknik Üniversitesi, Farabi Caddesi, Üniversite Mahallesi, Trabzon, Ortahisar, Trabzon, Karadeniz Bölgesi, 61080, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 70,
+    "name": "KARAMANOĞLU MEHMETBEY ÜNİVERSİTESİ",
+    "city": "KARAMAN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.1725771,
+    "longitude": 33.2584112,
+    "displayName": "Karamanoğlu Mehmetbey Üniversitesi Yunus Emre Yerleşkesi, 1984. Sokak, Tabduk Emre Mahallesi, Karaman Merkez, Karaman, İç Anadolu Bölgesi, 70100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 71,
+    "name": "KASTAMONU ÜNİVERSİTESİ",
+    "city": "KASTAMONU",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.4333836,
+    "longitude": 33.7650975,
+    "displayName": "Kastamonu Üniversitesi, Bilgin Sokak, Kuzeykent Mahallesi, Kastamonu Merkez, Kastamonu, Karadeniz Bölgesi, 37150, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 72,
+    "name": "KAYSERİ ÜNİVERSİTESİ",
+    "city": "KAYSERİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.7132,
+    "longitude": 35.5531974,
+    "displayName": "Kayseri Üniversitesi, 15 Temmuz Caddesi, Mevlana Mahallesi, Talas, Kayseri, İç Anadolu Bölgesi, 38280, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 73,
+    "name": "KIRIKKALE ÜNİVERSİTESİ",
+    "city": "KIRIKKALE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.8767436,
+    "longitude": 33.450366,
+    "displayName": "Kırıkkale Üniversitesi Kampüsü, Kırıkkale Çevre Yolu, Doğanlık, Hacıbalı, Yahşihan, Kırıkkale, İç Anadolu Bölgesi, 71450, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 74,
+    "name": "KIRKLARELİ ÜNİVERSİTESİ",
+    "city": "KIRKLARELİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.7924246,
+    "longitude": 27.1644688,
+    "displayName": "Kırklareli Üniversitesi, Üniversite Bulvarı, Bademlik Mahallesi, Kırklareli Merkez, Kırklareli, Marmara Bölgesi, 39010, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 75,
+    "name": "KIRŞEHİR AHİ EVRAN ÜNİVERSİTESİ",
+    "city": "KIRŞEHİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.1420384,
+    "longitude": 34.1197687,
+    "displayName": "Kırşehir Ahi Evran Üniversitesi Bağbaşı Yerleşkesi, Şehit Eray Tekten Caddesi, Bağbaşı, Kırşehir Merkez, Kırşehir, İç Anadolu Bölgesi, 40000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 76,
+    "name": "KİLİS 7 ARALIK ÜNİVERSİTESİ",
+    "city": "KİLİS",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.7317427,
+    "longitude": 37.1027777,
+    "displayName": "7 Aralık Üniversitesi, 79-77, Mehmet Sanlı Mahallesi, Kilis Merkez, Kilis, Güneydoğu Anadolu Bölgesi, 79000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 77,
+    "name": "KOCAELİ ÜNİVERSİTESİ",
+    "city": "KOCAELİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.8187372,
+    "longitude": 29.922908,
+    "displayName": "Kocaeli Üniversitesi Umuttepe Yerleşkesi, Kabaoğlu Caddesi, Kabaoğlu, Kabaoğlu Mahallesi, İzmit, Kocaeli, Marmara Bölgesi, 41001, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 78,
+    "name": "KONYA TEKNİK ÜNİVERSİTESİ",
+    "city": "KONYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.0063993,
+    "longitude": 32.5152564,
+    "displayName": "Konya Teknik Üniversitesi, Yeni İstanbul Caddesi, Akademi Mahallesi, Konya, Selçuklu, Konya, İç Anadolu Bölgesi, 42150, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 79,
+    "name": "KÜTAHYA DUMLUPINAR ÜNİVERSİTESİ",
+    "city": "KÜTAHYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.392411,
+    "longitude": 30.0398533,
+    "displayName": "Dumlupınar Üniversitesi Germiyan Yerleşkesi, Kütahya - Balıkesir Yolu, Yunusemre Mahallesi, Kütahya Merkez, Kütahya, Ege Bölgesi, 43020, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 80,
+    "name": "KÜTAHYA SAĞLIK BİLİMLERİ ÜNİVERSİTESİ",
+    "city": "KÜTAHYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.3929604,
+    "longitude": 30.0373713,
+    "displayName": "Kütahya Sağlık Bilimleri Üniversitesi, Kütahya - Balıkesir Yolu, Dumlupınar Mahallesi, Kütahya Merkez, Kütahya, Ege Bölgesi, 43020, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 81,
+    "name": "MALATYA TURGUT ÖZAL ÜNİVERSİTESİ",
+    "city": "MALATYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.4654282,
+    "longitude": 38.3570267,
+    "displayName": "Malatya Turgut Özal Üniversitesi, Aydoğan Caddesi, Alacakapı Mahallesi, Toygar Mahallesi, Battalgazi, Malatya, Doğu Anadolu Bölgesi, 44210, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 82,
+    "name": "MANİSA CELÂL BAYAR ÜNİVERSİTESİ",
+    "city": "MANİSA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.6789982,
+    "longitude": 27.308789,
+    "displayName": "Manisa Celal Bayar Üniversitesi Muradiye Kampüsü, Kampüs Bulvarı, Yağcılar, Yunusemre, Manisa, Ege Bölgesi, 45140, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 83,
+    "name": "MARDİN ARTUKLU ÜNİVERSİTESİ",
+    "city": "MARDİN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.347347,
+    "longitude": 40.6428629,
+    "displayName": "Mardin Artuklu Üniversitesi Yeni Kampüsü, Diyarbakır-Mardin yolu, Çağlar, Artuklu, Mardin, Güneydoğu Anadolu Bölgesi, 47800, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 84,
+    "name": "MARMARA ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.9872142,
+    "longitude": 29.052956,
+    "displayName": "Marmara Üniversitesi, Hızırbey Caddesi, Pırlanta Göztepe, Fikirtepe Mahallesi, Kadıköy, İstanbul, Marmara Bölgesi, 34720, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 85,
+    "name": "MERSİN ÜNİVERSİTESİ",
+    "city": "MERSİN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.7860908,
+    "longitude": 34.5310788,
+    "displayName": "Mersin Üniversitesi Çiftlikköy Merkez Kampüsü, 32127 Sk., Çiftlikköy Mahallesi, Yenişehir, Mersin, Akdeniz Bölgesi, 33170, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 86,
+    "name": "MİMAR SİNAN GÜZEL SANATLAR ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0300542,
+    "longitude": 28.9891362,
+    "displayName": "Mimar Sinan Güzel Sanatlar Üniversitesi, Tekke Yokuşu Sokağı, Fındıklı, Pürtelaş Hasan Efendi, Pürtelaş Hasan Efendi Mahallesi, Beyoğlu, İstanbul, Marmara Bölgesi, 34427, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 87,
+    "name": "MUĞLA SITKI KOÇMAN ÜNİVERSİTESİ",
+    "city": "MUĞLA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.1670905,
+    "longitude": 28.3744845,
+    "displayName": "Muğla Sıtkı Koçman Üniversitesi, 263. Sokak, Kötekli, Menteşe, Muğla, Ege Bölgesi, 48000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 88,
+    "name": "MUNZUR ÜNİVERSİTESİ",
+    "city": "TUNCELİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.0448528,
+    "longitude": 39.5122864,
+    "displayName": "Tunceli - Munzur Üniversitesi, D885, Aktuluk, Tunceli, Tunceli Merkez, Tunceli, Doğu Anadolu Bölgesi, 62000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 89,
+    "name": "MUŞ ALPARSLAN ÜNİVERSİTESİ",
+    "city": "MUŞ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.7716925,
+    "longitude": 41.4243937,
+    "displayName": "Muş Alparslan Üniversitesi, 49-75, Muş Merkez, Muş, Doğu Anadolu Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 90,
+    "name": "NECMETTİN ERBAKAN ÜNİVERSİTESİ",
+    "city": "KONYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.8762248,
+    "longitude": 32.4313675,
+    "displayName": "Necmettin Erbakan Üniversitesi Meram Sağlık Yerleşkesi, Beyşehir Çevre Yolu, Köyceğiz Mahallesi, Meram, Konya, İç Anadolu Bölgesi, 42090, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 91,
+    "name": "NEVŞEHİR HACI BEKTAŞ VELİ ÜNİVERSİTESİ",
+    "city": "NEVŞEHİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.6782039,
+    "longitude": 34.7369901,
+    "displayName": "Nevşehir Hacıbektaş Veli Üniversitesi, Kayseri-Nevşehir yolu, 2000 Evler, Nevşehir İl Merkezi, Nevşehir Merkez, Nevşehir, İç Anadolu Bölgesi, 50130, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 92,
+    "name": "NİĞDE ÖMER HALİSDEMİR ÜNİVERSİTESİ",
+    "city": "NİĞDE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.9379616,
+    "longitude": 34.6242361,
+    "displayName": "Niğde Ömer Halisdemir Üniversitesi, Alparslan Türkeş Bulvarı, Fertek Mahallesi, Niğde Merkez, Niğde, İç Anadolu Bölgesi, 51200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 93,
+    "name": "ONDOKUZ MAYIS ÜNİVERSİTESİ",
+    "city": "SAMSUN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.3682047,
+    "longitude": 36.1980326,
+    "displayName": "Ondokuz Mayıs Üniversitesi, İncesu Caddesi, İncesu, Çakırlar, Atakum, Samsun, Karadeniz Bölgesi, 55270, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 94,
+    "name": "ORDU ÜNİVERSİTESİ",
+    "city": "ORDU",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.974059,
+    "longitude": 37.9706787,
+    "displayName": "Ordu Üniversitesi Cumhuriyet Yerleşkesi, 1358 Sokak, Cumhuriyet Mahallesi, Ordu, Altınordu, Ordu, Karadeniz Bölgesi, 52200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 95,
+    "name": "OSMANİYE KORKUT ATA ÜNİVERSİTESİ",
+    "city": "OSMANİYE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.0427134,
+    "longitude": 36.2240785,
+    "displayName": "Osmaniye Meslek Yüksekokulu, Osmaniye Korkut Ata Üniversitesi (OKÜ) İç Yolu, Fakıuşağı, Osmaniye Merkez, Osmaniye, Akdeniz Bölgesi, 80000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 96,
+    "name": "PAMUKKALE ÜNİVERSİTESİ",
+    "city": "DENİZLİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.7392,
+    "longitude": 29.1014118,
+    "displayName": "Pamukkale Üniversitesi Kınıklı Yerleşkesi, Süleyman Demirel Bulvarı, Kınıklı Mahallesi, Denizli, Pamukkale, Denizli, Ege Bölgesi, 20160, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 97,
+    "name": "RECEP TAYYİP ERDOĞAN ÜNİVERSİTESİ",
+    "city": "RİZE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0374977,
+    "longitude": 40.4931063,
+    "displayName": "Recep Tayyip Erdoğan Üniversitesi Zihni Derin Yerleşkesi, Atatürk Caddesi, Fener Mahallesi, Rize Merkez, Rize, Karadeniz Bölgesi, 53020, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 98,
+    "name": "SAĞLIK BİLİMLERİ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0039615,
+    "longitude": 29.0197387,
+    "displayName": "Sağlık Bilimleri Üniversitesi Hamidiye Yerleşkesi, Tıbbiye Caddesi, Selimiye Mahallesi, Üsküdar, İstanbul, Marmara Bölgesi, 34668, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 99,
+    "name": "SAKARYA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
+    "city": "SAKARYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0262178,
+    "longitude": 30.3022205,
+    "displayName": "Sakarya Uygulamalı Bilimler Üniversitesi, Şehit Ercan Karadağ Caddesi, Merkez, Merkez Mahallesi, Kaynarca, Sakarya, Marmara Bölgesi, 54650, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 100,
+    "name": "SAKARYA ÜNİVERSİTESİ",
+    "city": "SAKARYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.7421339,
+    "longitude": 30.331007,
+    "displayName": "Sakarya Üniversitesi, Saklı Bahçe yolu, Esentepe Mahallesi, Serdivan, Sakarya, Marmara Bölgesi, 54050, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 101,
+    "name": "SAMSUN ÜNİVERSİTESİ",
+    "city": "SAMSUN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.2315013,
+    "longitude": 36.3697303,
+    "displayName": "Samsun Üniversitesi, Üsküp Caddesi, Toptepe, Canik, Samsun, Karadeniz Bölgesi, 55080, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 102,
+    "name": "SELÇUK ÜNİVERSİTESİ",
+    "city": "KONYA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.0242069,
+    "longitude": 32.5057052,
+    "displayName": "Selçuk Üniversitesi, Aliya İzzet Begoviç Caddesi, Aşağıpınarbaşı Mahallesi, Selçuklu, Konya, İç Anadolu Bölgesi, 42150, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 103,
+    "name": "SİİRT ÜNİVERSİTESİ",
+    "city": "SİİRT",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.9360674,
+    "longitude": 41.9406919,
+    "displayName": "Siirt  Üniversitesi, Güres Caddesş, Yeni Mahallesi, Kooperatif Mahallesi, Siirt Merkez, Siirt, Güneydoğu Anadolu Bölgesi, 56100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 104,
+    "name": "SİNOP ÜNİVERSİTESİ",
+    "city": "SİNOP",
+    "type": "Devlet Üniversitesi",
+    "latitude": 42.0096692,
+    "longitude": 35.0724083,
+    "displayName": "Sinop Üniversitesi, D010-13, Osmaniye, Sinop Merkez, Sinop, Karadeniz Bölgesi, 57002, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 105,
+    "name": "SİVAS BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+    "city": "SİVAS",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.725646,
+    "longitude": 36.9885157,
+    "displayName": "Sivas Bilim ve Teknoloji Üniversitesi, Sultanşehir Bulvarı, Okullar Bölgesi, Gültepe Mahallesi, Sivas Belediyesi, Sivas Merkez, Sivas, İç Anadolu Bölgesi, 58010, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 106,
+    "name": "SİVAS CUMHURİYET ÜNİVERSİTESİ",
+    "city": "SİVAS",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.7064855,
+    "longitude": 37.0265587,
+    "displayName": "Sivas Cumhuriyet Üniversitesi, 75-100. Sokak, Eğriköprü Mahallesi, Sivas Belediyesi, Sivas Merkez, Sivas, İç Anadolu Bölgesi, 58050, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 107,
+    "name": "SÜLEYMAN DEMİREL ÜNİVERSİTESİ",
+    "city": "ISPARTA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.8379545,
+    "longitude": 30.5350457,
+    "displayName": "Süleyman Demirel Üniversitesi Doğu Yerleşkesi, Süleyman Demirel Bulvarı, Çünür Mahallesi, Isparta Belediyesi, Isparta Merkez, Isparta, Akdeniz Bölgesi, 32200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 108,
+    "name": "ŞIRNAK ÜNİVERSİTESİ",
+    "city": "ŞIRNAK",
+    "type": "Devlet Üniversitesi",
+    "latitude": 37.5025707,
+    "longitude": 42.4265426,
+    "displayName": "Şırnak Üniversitesi, Araç Muayene - Otogar - Üniversite Yan Yolu, Şırnak, Şırnak Merkez, Şırnak, Güneydoğu Anadolu Bölgesi, 73000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 109,
+    "name": "TARSUS ÜNİVERSİTESİ",
+    "city": "MERSİN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 36.9530898,
+    "longitude": 34.8489571,
+    "displayName": "Tarsus Üniversitesi, Adana-Silifke Otoyolu, Atatürk, Taşkuyu, Tarsus, Mersin, Akdeniz Bölgesi, 33400, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 110,
+    "name": "TEKİRDAĞ NAMIK KEMAL ÜNİVERSİTESİ",
+    "city": "TEKİRDAĞ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.9952395,
+    "longitude": 27.5895882,
+    "displayName": "Tekirdağ Namık Kemal Üniversitesi, Kampüs Caddesi, Namık Kemal Mahallesi, Tekirdağ, Süleymanpaşa, Tekirdağ, Marmara Bölgesi, 59030, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 111,
+    "name": "TOKAT GAZİOSMANPAŞA ÜNİVERSİTESİ",
+    "city": "TOKAT",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.3281039,
+    "longitude": 36.4806021,
+    "displayName": "Gaziosmanpaşa Üniversitesi, Taşlıçiftlik Merkez Kümeevleri, Taşlıçiftlik Köyü, Tokat Merkez, Tokat, Karadeniz Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 112,
+    "name": "TRABZON ÜNİVERSİTESİ",
+    "city": "TRABZON",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0125185,
+    "longitude": 39.6090217,
+    "displayName": "Trabzon Üniversitesi, Adnan Kahveci Bulvarı, Söğütlü Mahallesi, Osmanbaba, Akçaabat, Trabzon, Karadeniz Bölgesi, 61310, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 113,
+    "name": "TRAKYA ÜNİVERSİTESİ",
+    "city": "EDİRNE",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.6792713,
+    "longitude": 26.5602629,
+    "displayName": "Trakya Üniversitesi, Kadir Paşa Mektep Sokak, Meydan Mahallesi, Edirne Merkez, Edirne, Marmara Bölgesi, 22100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 114,
+    "name": "UŞAK ÜNİVERSİTESİ",
+    "city": "UŞAK",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.6709008,
+    "longitude": 29.3275922,
+    "displayName": "Uşak Üniversitesi Spor Salonu, Uşak Üniversitesi 1 Eylül Yerleşkesi, Hacıkadem, Mende, Uşak Merkez, Uşak, Ege Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 115,
+    "name": "VAN YÜZÜNCÜ YIL ÜNİVERSİTESİ",
+    "city": "VAN",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.4485009,
+    "longitude": 43.3249998,
+    "displayName": "Van Uygulama Oteli, İpek Yolu, Eminpaşa Mahallesi, Edremit, Van, Doğu Anadolu Bölgesi, 65300, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 116,
+    "name": "YALOVA ÜNİVERSİTESİ",
+    "city": "YALOVA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.6525449,
+    "longitude": 29.2173066,
+    "displayName": "Yalova Üniversitesi Merkez Yerleşkesi, Yalova-Armutlu Yolu, Bahçelievler Mahallesi, Yalova Belediye sınırı, Yalova Merkez, Yalova, Marmara Bölgesi, 77200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 117,
+    "name": "YOZGAT BOZOK ÜNİVERSİTESİ",
+    "city": "YOZGAT",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.7750582,
+    "longitude": 34.7970764,
+    "displayName": "Yozgat Bozok Üniversitesi Erdoğan Akdağ Yerleşkesi, Cemil Çiçek Bulvarı, Çapanoğlu, Yozgat, Yozgat Merkez, Yozgat, İç Anadolu Bölgesi, 66000, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 118,
+    "name": "ZONGULDAK BÜLENT ECEVİT ÜNİVERSİTESİ",
+    "city": "ZONGULDAK",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.4528917,
+    "longitude": 31.7613887,
+    "displayName": "Zonguldak Bülent Ecevit Üniversitesi Yolu, İncivez, İncivez Mahallesi, Zonguldak Merkez, Zonguldak, Karadeniz Bölgesi, 67100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 119,
+    "name": "ACIBADEM MEHMET ALİ AYDINLAR ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9784913,
+    "longitude": 29.1103154,
+    "geocodingStatus": "manual-verified"
+  },
+  {
+    "id": 120,
+    "name": "ALANYA ÜNİVERSİTESİ",
+    "city": "ANTALYA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 36.5265392,
+    "longitude": 32.084418,
+    "displayName": "Alanya Alaaddin Keykubat Üniversitesi, Atatürk caddesi, Kestel, Alanya, Antalya, Akdeniz Bölgesi, 07450, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 121,
+    "name": "ALTINBAŞ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0573335,
+    "longitude": 28.8206482,
+    "displayName": "Altınbaş Üniversitesi, 26, Dilmenler Caddesi, Mahmutbey Mahallesi, Bağcılar, İstanbul, Marmara Bölgesi, 34217, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 122,
+    "name": "ANKARA BİLİM ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.9522288,
+    "longitude": 32.7719858,
+    "displayName": "Ankara Bilim Üniversitesi, 16A/1, Anadolu Bulvarı, Çamlıca Mahallesi, Yenimahalle, Ankara, İç Anadolu Bölgesi, 06200, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 123,
+    "name": "ANKARA MEDİPOL ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.9326584,
+    "longitude": 32.8462478,
+    "displayName": "Medipol Üniversitesi, Celal Bayar Bulvarı, Eti Mahallesi, Ankara, Çankaya, Ankara, İç Anadolu Bölgesi, 06570, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 124,
+    "name": "ANTALYA BELEK ÜNİVERSİTESİ",
+    "city": "ANTALYA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 36.8846348,
+    "longitude": 31.0002012,
+    "displayName": "Antalya Belek Üniversitesi, Kadriye Yolu, Kadriye Mahallesi, Serik, Antalya, Akdeniz Bölgesi, 07525, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 125,
+    "name": "ANTALYA BİLİM ÜNİVERSİTESİ",
+    "city": "ANTALYA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 37.0525596,
+    "longitude": 30.6251473,
+    "displayName": "Antalya Bilim Üniversitesi, Antalya - Burdur Yolu, Çıplaklı, Döşemealtı, Antalya, Akdeniz Bölgesi, 07190, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 126,
+    "name": "ATAŞEHİR ADIGÜZEL MESLEK YÜKSEKOKULU",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.995449,
+    "longitude": 29.1423634,
+    "displayName": "Ataşehir Adıgüzel Meslek Yüksekokulu, Turgut Özal Bulvarı, Yenişehir Mahallesi, Ataşehir, İstanbul, Marmara Bölgesi, 34779, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 127,
+    "name": "ATILIM ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.8150462,
+    "longitude": 32.7265921,
+    "displayName": "Atılım Üniversitesi, Kızılcaşar Mahallesi, Gölbaşı, Ankara, İç Anadolu Bölgesi, 06830, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 128,
+    "name": "AVRASYA ÜNİVERSİTESİ",
+    "city": "TRABZON",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.984652,
+    "longitude": 39.8271075,
+    "displayName": "Avrasya Üniversitesi Ömer Yıldız Yerleşkesi, Yalıncak Rize Caddesi, Yalıncak Mahallesi, Trabzon, Ortahisar, Trabzon, Karadeniz Bölgesi, 61220, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 129,
+    "name": "BAHÇEŞEHİR ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.042195,
+    "longitude": 29.007683,
+    "displayName": "Bahçeşehir Üniversitesi, Beşiktaş Caddesi, Sinanpaşa Mahallesi, Akaretler, Beşiktaş, İstanbul, Marmara Bölgesi, 34022, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 130,
+    "name": "BAŞKENT ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.8875015,
+    "longitude": 32.6548105,
+    "displayName": "Başkent Üniversitesi, No:42/1, Baglica Koyu Mezarligi, Fatih Sultan Mahallesi, Etimesgut, Ankara, İç Anadolu Bölgesi, 06790, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 131,
+    "name": "BEYKOZ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.091946,
+    "longitude": 29.0942741,
+    "displayName": "Beykoz Üniversitesi, Muhtar Sokağı, Kavacık Mahallesi, Beykoz, İstanbul, Marmara Bölgesi, 34810, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 132,
+    "name": "BEZM-İ ÂLEM VAKIF ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0183333,
+    "longitude": 28.9361111,
+    "geocodingStatus": "manual-verified"
+  },
+  {
+    "id": 133,
+    "name": "BİRUNİ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0043205,
+    "longitude": 28.9208213,
+    "displayName": "Biruni Üniversitesi, 10. Yıl Caddesi, Kazlıçeşme Mahallesi, Zeytinburnu, İstanbul, Marmara Bölgesi, 34020, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 134,
+    "name": "ÇAĞ ÜNİVERSİTESİ",
+    "city": "MERSİN",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 36.976984,
+    "longitude": 35.0762305,
+    "displayName": "Çağ Üniversitesi, Arıklı, Tarsus, Mersin, Akdeniz Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 135,
+    "name": "ÇANKAYA ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.8201935,
+    "longitude": 32.5626928,
+    "displayName": "Çankaya Üniversitesi, No:4, Mimar Sinan Caddesi, Yurtçu, Yukarıyurtçu Mahallesi, Etimesgut, Ankara, İç Anadolu Bölgesi, 06790, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 136,
+    "name": "DEMİROĞLU BİLİM ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0691667,
+    "longitude": 29.0122222,
+    "geocodingStatus": "manual-verified"
+  },
+  {
+    "id": 137,
+    "name": "DOĞUŞ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.001641,
+    "longitude": 29.1762274,
+    "displayName": "Doğuş Üniversitesi, Natoyolu Caddesi, Dudullu OSB Mahallesi, Ümraniye, İstanbul, Marmara Bölgesi, 34775, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 138,
+    "name": "FATİH SULTAN MEHMET VAKIF ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.015408,
+    "longitude": 29.071274,
+    "displayName": "Fatih Sultan Mehmet Vakıf Üniversitesi, Çilehane Yolu Caddesi, Libadiye, Küçük Çamlıca Mahallesi, Üsküdar, İstanbul, Marmara Bölgesi, 34696, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 139,
+    "name": "FENERBAHÇE ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9946664,
+    "longitude": 29.1205664,
+    "displayName": "Fenerbahçe Üniversitesi, Ataşehir Bulvarı, Doğu Ataşehir, Atatürk Mahallesi, Ataşehir, İstanbul, Marmara Bölgesi, 34758, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 140,
+    "name": "HALİÇ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0885421,
+    "longitude": 28.9523297,
+    "displayName": "Haliç Üniversitesi, Fatih Sultan Mehmet Bulvarı, 5. Levent Mahallesi, Eyüpsultan, İstanbul, Marmara Bölgesi, 34060, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 141,
+    "name": "HASAN KALYONCU ÜNİVERSİTESİ",
+    "city": "GAZİANTEP",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 37.0058476,
+    "longitude": 37.4377769,
+    "displayName": "Hasan Kalyoncu Üniversitesi, Havalimanı Yolu Caddesi, Yalnızbağ Mahallesi, Şahinbey, Gaziantep, Güneydoğu Anadolu Bölgesi, 27900, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 142,
+    "name": "IŞIK ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.1696833,
+    "longitude": 29.5638991,
+    "displayName": "Işık Üniversitesi, 1, Işık Univ., Meşrutiyet Mahallesi, Şile, İstanbul, Marmara Bölgesi, 34983, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 143,
+    "name": "İSTANBUL 29 MAYIS ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0325606,
+    "longitude": 29.0986924,
+    "displayName": "29 Mayıs Üniversitesi, Üniversite Caddesi, Elmalıkent Mahallesi, Ümraniye, İstanbul, Marmara Bölgesi, 34764, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 144,
+    "name": "İSTANBUL AREL ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0551435,
+    "longitude": 28.5004754,
+    "displayName": "İstanbul Arel Üniversitesi Tepekent Kemal Gözükara Yerleşkesi, 26, Erguvan Sokağı, Tepecik, Türkoba Mahallesi, Büyükçekmece, İstanbul, Marmara Bölgesi, 34537, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 145,
+    "name": "İSTANBUL ATLAS ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.097917,
+    "longitude": 28.978285,
+    "displayName": "İstanbul Atlas Üniversitesi, Anadolu Caddesi, Hamidiye Mahallesi, Kâğıthane, İstanbul, Marmara Bölgesi, 34408, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 146,
+    "name": "İSTANBUL AYDIN ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9904421,
+    "longitude": 28.7968447,
+    "displayName": "İstanbul Aydın Üniversitesi, 38, 1. İnönü Caddesi, Beşyol Mahallesi, Küçükçekmece, İstanbul, Marmara Bölgesi, 34295, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 147,
+    "name": "İSTANBUL BEYKENT ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0198999,
+    "longitude": 28.6243876,
+    "displayName": "İstanbul Beykent Üniversitesi Beykent Açık Otopark, Cevval Sokak, Cumhuriyet Mahallesi, Büyükçekmece, İstanbul, Marmara Bölgesi, 34500, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 148,
+    "name": "İSTANBUL BİLGİ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0683023,
+    "longitude": 28.946165,
+    "displayName": "İstanbul Bilgi Üniversitesi Rektörlüğü, İstanbul Bilgi Üniversitesi İç Yolları, Emniyettepe Mahallesi, Eyüpsultan, İstanbul, Marmara Bölgesi, 34060, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 149,
+    "name": "İSTANBUL ESENYURT ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0203836,
+    "longitude": 28.6873361,
+    "displayName": "İstanbul Esenyurt Üniversitesi, Adile Naşit Bulvarı, Zafer Mahallesi, Esenyurt, İstanbul, Marmara Bölgesi, 34513, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 150,
+    "name": "İSTANBUL GALATA ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.027356,
+    "longitude": 28.971808,
+    "displayName": "İstanbul Galata Üniversitesi D blok, 1, Şişhane Sokağı, Kuledibi, Bereketzade Mahallesi, Beyoğlu, İstanbul, Marmara Bölgesi, 34421, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 151,
+    "name": "İSTANBUL GEDİK ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9019041,
+    "longitude": 29.2194487,
+    "displayName": "İstanbul Gedik Üniversitesi Kartal Kampüsü, İlkbahar Sokağı, Kurfalı, Cumhuriyet Mahallesi, Kartal, İstanbul, Marmara Bölgesi, 34876, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 152,
+    "name": "İSTANBUL GELİŞİM ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9938018,
+    "longitude": 28.7000342,
+    "displayName": "İstanbul Gelişim Üniversitesi, Seren Sokağı, Cihangir Mahallesi, Avcılar, İstanbul, Marmara Bölgesi, 34310, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 153,
+    "name": "İSTANBUL KENT ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0332393,
+    "longitude": 28.9844947,
+    "displayName": "İstanbul Kent Üniversitesi, 71, Sıraselviler Caddesi, Katip Mustafa Çelebi Mahallesi, Beyoğlu, İstanbul, Marmara Bölgesi, 34433, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 154,
+    "name": "İSTANBUL KÜLTÜR ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9912277,
+    "longitude": 28.8320899,
+    "displayName": "Istanbul Kültür Üniversitesi, D-100 Güney Yanyolu, Ataköy 7-8-9-10. Kısım Mahallesi, Bakırköy, İstanbul, Marmara Bölgesi, 34158, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 155,
+    "name": "İSTANBUL MEDİPOL ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0911385,
+    "longitude": 29.0916743,
+    "displayName": "İstanbul Medipol Üniversitesi Genetik Tanı Merkezi, 19, Ekinciler Caddesi, Otağtepe, Kavacık Mahallesi, Beykoz, İstanbul, Marmara Bölgesi, 34810, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 156,
+    "name": "İSTANBUL NİŞANTAŞI ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.117224,
+    "longitude": 29.009313,
+    "displayName": "Nişantaşı Üniversitesi, Orta Meydan, Ağaoğlu Maslak 1453, Maslak Mahallesi, Sarıyer, İstanbul, Marmara Bölgesi, 34485, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 157,
+    "name": "İSTANBUL OKAN ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9518575,
+    "longitude": 29.390414,
+    "displayName": "Okan Üniversitesi, Ballıca Yolu Caddesi, Tepeören Mahallesi, Tuzla, İstanbul, Marmara Bölgesi, 34959, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 158,
+    "name": "İSTANBUL RUMELİ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0786557,
+    "longitude": 28.2698742,
+    "displayName": "İstanbul Rumeli Üniversitesi Silivri Mehmet Balcı Yerleşkesi, 38, D-100, Yeni Mahalle, Silivri, İstanbul, Marmara Bölgesi, 34570, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 159,
+    "name": "İSTANBUL ŞİŞLİ MESLEK YÜKSEKOKULU",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0679274,
+    "longitude": 29.0089856,
+    "displayName": "İstanbul Şişli Meslek Yüksekokulu, Tevfik Erdönmez Paşa Sokağı, Emekli Subay Evleri, Zincirlikuyu, Esentepe Mahallesi, Şişli, İstanbul, Marmara Bölgesi, 34394, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 160,
+    "name": "İSTANBUL TİCARET ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9525743,
+    "longitude": 29.1196499,
+    "displayName": "İstanbul Ticaret Üniversitesi, Kaptan Rıfat Sokak, Aydınevler Mahallesi, Maltepe, İstanbul, Marmara Bölgesi, 34854, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 161,
+    "name": "İSTANBUL TOPKAPI ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0149199,
+    "longitude": 28.9050122,
+    "displayName": "İstinye Üniversitesi Topkapı Kampüsü, 3, Edirne Çırpıcı Yolu Sokağı, Cevizlibağ, Maltepe Mahallesi, Zeytinburnu, İstanbul, Marmara Bölgesi, 34010, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 162,
+    "name": "İSTANBUL YENİ YÜZYIL ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0159187,
+    "longitude": 28.9066445,
+    "displayName": "İstanbul Yeni Yüzyıl Üniversitesi, 26, Yılanlı Ayazma Sokağı, Cevizlibağ, Maltepe Mahallesi, Zeytinburnu, İstanbul, Marmara Bölgesi, 34010, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 163,
+    "name": "İSTİNYE ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0149199,
+    "longitude": 28.9050122,
+    "displayName": "İstinye Üniversitesi Topkapı Kampüsü, 3, Edirne Çırpıcı Yolu Sokağı, Cevizlibağ, Maltepe Mahallesi, Zeytinburnu, İstanbul, Marmara Bölgesi, 34010, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 164,
+    "name": "İZMİR EKONOMİ ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 38.3884614,
+    "longitude": 27.0445978,
+    "displayName": "İzmir Ekonomi Üniversitesi, 156, Sakarya Caddesi, Fevzi Çakmak Mahallesi, Balçova, İzmir, Ege Bölgesi, 35330, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 165,
+    "name": "İZMİR KONAK MESLEK YÜKSEKOKULU",
+    "city": "İZMİR",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 38.4232272,
+    "longitude": 27.1514536,
+    "displayName": "İzmir Konak Meslek Yüksekokulu, No: 8, 1251/2. Sokak, Kapılar, Oğuzlar Mahallesi, İzmir, Konak, İzmir, Ege Bölgesi, 35320, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 166,
+    "name": "İZMİR TINAZTEPE ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 38.463774,
+    "longitude": 27.1944378,
+    "displayName": "Tınaztepe Galen Hastanesi, 23, 250. Sokak, Manavkuyu Mahallesi, Bayraklı, İzmir, Ege Bölgesi, 35535, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 167,
+    "name": "KAPADOKYA ÜNİVERSİTESİ",
+    "city": "NEVŞEHİR",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 38.6287979,
+    "longitude": 34.9145603,
+    "displayName": "Kapadokya Üniversitesi Fabrika Yerleşkesi, Yesari Efendi Caddesi, Cumhuriyet Mah., Ürgüp İlçe Merkezi, Ürgüp, Nevşehir, İç Anadolu Bölgesi, 50400, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 168,
+    "name": "KOCAELİ SAĞLIK VE TEKNOLOJİ ÜNİVERSİTESİ",
+    "city": "KOCAELİ",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.6996081,
+    "longitude": 29.8838746,
+    "displayName": "Kocaeli Sağlık ve Teknoloji Üniversitesi, Kültür Sokak, Yeniköy, Yeniköy Merkez Mahallesi, Başiskele, Kocaeli, Marmara Bölgesi, 41275, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 169,
+    "name": "KONYA GIDA VE TARIM ÜNİVERSİTESİ",
+    "city": "KONYA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 37.8746284,
+    "longitude": 32.4739562,
+    "displayName": "Konya Gıda ve Tarım Üniversitesi, 9, Beyşehir Caddesi, Şeker Mahallesi, Konya, Selçuklu, Konya, İç Anadolu Bölgesi, 42080, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 170,
+    "name": "KTO KARATAY ÜNİVERSİTESİ",
+    "city": "KONYA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 37.8648232,
+    "longitude": 32.5369246,
+    "displayName": "KTO Karatay Üniversitesi, 130, Aladdin Kap Caddesi, Akabe Mahallesi, Karatay, Konya, İç Anadolu Bölgesi, 42020, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 171,
+    "name": "LOKMAN HEKİM ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.9111072,
+    "longitude": 32.7875853,
+    "displayName": "Lokman Hekim Üniversitesi, 9 Eylül Caddesi, Söğütözü Mahallesi, Ankara, Çankaya, Ankara, İç Anadolu Bölgesi, 06530, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 172,
+    "name": "MALTEPE ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9601471,
+    "longitude": 29.1947971,
+    "displayName": "Maltepe Üniversitesi, Kemer Sokağı, Büyükbakkalköy Mahallesi, Maltepe, İstanbul, Marmara Bölgesi, 34858, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 173,
+    "name": "MUDANYA ÜNİVERSİTESİ",
+    "city": "BURSA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.3004336,
+    "longitude": 28.9476328,
+    "displayName": "Mudanya Üniversitesi, Begonya Sokak, Nilüferköy Mahallesi, Osmangazi, Bursa, Marmara Bölgesi, 16943, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 174,
+    "name": "NUH NACİ YAZGAN ÜNİVERSİTESİ",
+    "city": "KAYSERİ",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 38.785703,
+    "longitude": 35.4078919,
+    "displayName": "Nuh Naci Yazgan Üniversitesi, D300, Erkilet Ertuğrul Gazi Mahallesi, Erkilet, Kocasinan, Kayseri, İç Anadolu Bölgesi, 38050, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 175,
+    "name": "OSTİM TEKNİK ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.9691229,
+    "longitude": 32.7436514,
+    "displayName": "Ostim Teknik Üniversitesi, Sanayi Caddesi, Ostim Organize Sanayi Bölgesi, Ostim OSB Mahallesi, Yenimahalle, Ankara, İç Anadolu Bölgesi, 06374, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 176,
+    "name": "PİRİ REİS ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.816386,
+    "longitude": 29.290196,
+    "displayName": "Piri Reis Üniversitesi, Manastır Yolu, Postane, Postane Mahallesi, Tuzla, İstanbul, Marmara Bölgesi, 34940, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 177,
+    "name": "SANKO ÜNİVERSİTESİ",
+    "city": "GAZİANTEP",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 37.0724294,
+    "longitude": 37.3678337,
+    "displayName": "Sanko Üniversitesi, Ali Fuat Cebesoy Bulvarı, Değirmiçem Mahallesi, Şehitkamil, Gaziantep, Güneydoğu Anadolu Bölgesi, 27090, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 178,
+    "name": "TOROS ÜNİVERSİTESİ",
+    "city": "MERSİN",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 36.8015053,
+    "longitude": 34.6339529,
+    "displayName": "Toros Üniversitesi Uray Kampüsü, Uray Caddesi, Yeni Mahallesi, Mersin, Akdeniz, Mersin, Akdeniz Bölgesi, 33050, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 179,
+    "name": "TÜRK HAVA KURUMU ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.9459329,
+    "longitude": 32.6897428,
+    "displayName": "Türk Hava Kurumu Üniversitesi, No:11, Okul Caddesi, Erler Mahallesi, Etimesgut, Ankara, İç Anadolu Bölgesi, 06790, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 180,
+    "name": "UFUK ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.910406,
+    "longitude": 32.815012,
+    "displayName": "Ufuk Üniversitesi, Mevlana Bulvarı, Balgat Mahallesi, Ankara, Çankaya, Ankara, İç Anadolu Bölgesi, 06520, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 181,
+    "name": "ÜSKÜDAR ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0246233,
+    "longitude": 29.0190178,
+    "displayName": "Üsküdar Üniversitesi Çarşı Yerleşkesi, İsmail Dümbüllü Sokağı, Mimar Sinan Mahallesi, Üsküdar, İstanbul, Marmara Bölgesi, 34664, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 182,
+    "name": "YAŞAR ÜNİVERSİTESİ",
+    "city": "İZMİR",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 38.4544435,
+    "longitude": 27.2024459,
+    "displayName": "Yaşar Üniversitesi, Üniversite Caddesi, Özkanlar, Kazımdirik Mahallesi, Bornova, İzmir, Ege Bölgesi, 35100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 183,
+    "name": "YÜKSEK İHTİSAS ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.979322,
+    "longitude": 32.6544968,
+    "displayName": "Yüksek İhtisas Üniversitesi, Şehit Osman Avcı, Şehit Osman Avcı Mahallesi, Etimesgut, Ankara, İç Anadolu Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 184,
+    "name": "ABDULLAH GÜL ÜNİVERSİTESİ",
+    "city": "KAYSERİ",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.6817463,
+    "longitude": 35.6117907,
+    "displayName": "Abdullah Gül Üniversitesi, D300, Tavlusun Mahallesi, Kayseri, Melikgazi, Kayseri, İç Anadolu Bölgesi, 38165, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 185,
+    "name": "BOĞAZİÇİ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0844751,
+    "longitude": 29.0535915,
+    "displayName": "Boğaziçi Üniversitesi, Rumelihisarı Mahallesi, Sarıyer, İstanbul, Marmara Bölgesi, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 186,
+    "name": "BURSA TEKNİK ÜNİVERSİTESİ",
+    "city": "BURSA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.1887444,
+    "longitude": 29.1309241,
+    "displayName": "Bursa Teknik Üniversitesi, Mimar Sinan, Mimar Sinan Mahallesi, Yıldırım, Bursa, Marmara Bölgesi, 16310, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 187,
+    "name": "ERZURUM TEKNİK ÜNİVERSİTESİ",
+    "city": "ERZURUM",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.9233115,
+    "longitude": 41.2248762,
+    "displayName": "Erzurum Teknik Üniversitesi, Erzurum Havaalanı Yolu Caddesi, Ömer Nasuhi Bilmen Mahallesi, Çiftlik Mahallesi, Yakutiye, Erzurum, Doğu Anadolu Bölgesi, 25100, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 188,
+    "name": "İSTANBUL MEDENİYET ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 40.9958664,
+    "longitude": 29.0700762,
+    "displayName": "İstanbul Medeniyet Üniversitesi, Ünalan Caddesi, Ünalan Mahallesi, Üsküdar, İstanbul, Marmara Bölgesi, 34700, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 189,
+    "name": "İZMİR YÜKSEK TEKNOLOJİ ENSTİTÜSÜ",
+    "city": "İZMİR",
+    "type": "Devlet Üniversitesi",
+    "latitude": 38.3226588,
+    "longitude": 26.6377295,
+    "displayName": "İzmir Yüksek Teknoloji Enstitüsü, Karaburun Yolu, İYTE Yerleşkesi, Gülbahçe Mahallesi, Urla, İzmir, Ege Bölgesi, 35433, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 190,
+    "name": "ORTA DOĞU TEKNİK ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.8755074,
+    "longitude": 32.7855305,
+    "displayName": "Orta Doğu Teknik Üniversitesi, Alle, Üniversiteler, Üniversiteler Mahallesi, Çankaya, Ankara, İç Anadolu Bölgesi, 06800, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 191,
+    "name": "TÜRK-ALMAN ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.1438419,
+    "longitude": 29.1008949,
+    "displayName": "Türk-Alman Üniversitesi, 106, Şahinkaya Caddesi, Merkez Mahallesi, Beykoz, İstanbul, Marmara Bölgesi, 34820, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 192,
+    "name": "TÜRK-JAPON BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Devlet Üniversitesi",
+    "latitude": 39.892,
+    "longitude": 32.825,
+    "geocodingStatus": "manual-verified"
+  },
+  {
+    "id": 193,
+    "name": "YILDIZ TEKNİK ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Devlet Üniversitesi",
+    "latitude": 41.0522441,
+    "longitude": 29.0105277,
+    "displayName": "Yıldız Teknik Üniversitesi, Barbaros Bulvarı, Dikilitaş Mahallesi, Serencebey, Beşiktaş, İstanbul, Marmara Bölgesi, 34349, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 194,
+    "name": "İBN HALDUN ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.1376779,
+    "longitude": 28.7991369,
+    "displayName": "İbn Haldun Üniversitesi, 3, Ordu Caddesi, Başak Mahallesi, Başakşehir, İstanbul, Marmara Bölgesi, 34480, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 195,
+    "name": "İHSAN DOĞRAMACI BİLKENT ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.870469,
+    "longitude": 32.7539193,
+    "displayName": "Bilkent Üniversitesi, 1606. Cadde, Bilkent Cyberpark, Bilkent Yurtlar, Üniversiteler Mahallesi, Çankaya, Ankara, İç Anadolu Bölgesi, 06800, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 196,
+    "name": "İSTANBUL SABAHATTİN ZAİM ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0309731,
+    "longitude": 28.7843656,
+    "displayName": "Sabahattin Zaim Üniversitesi, Mehmet Akif Ersoy Bulvarı, Halkalı Merkez Mahallesi, Küçükçekmece, İstanbul, Marmara Bölgesi, 34303, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 197,
+    "name": "İSTANBUL SAĞLIK VE TEKNOLOJİ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0561912,
+    "longitude": 28.9509751,
+    "displayName": "İstanbul Sağlık ve Teknoloji Üniversitesi, İmrahor Caddesi, Örnektepe, Örnektepe Mahallesi, Beyoğlu, İstanbul, Marmara Bölgesi, 34445, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 198,
+    "name": "KADİR HAS ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0520329,
+    "longitude": 28.3805047,
+    "displayName": "Kadir Has Üniversitesi, D-100, Selimpaşa Mahallesi, Silivri, İstanbul, Marmara Bölgesi, 34534, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 199,
+    "name": "KOÇ ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.2060623,
+    "longitude": 29.0738014,
+    "displayName": "Koç Üniversitesi, Koç Meydanı, Rumelifeneri Mahallesi, Sarıyer, İstanbul, Marmara Bölgesi, 34450, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 200,
+    "name": "MEF ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.1080918,
+    "longitude": 29.0086661,
+    "displayName": "MEF Üniversitesi, Fire escape, Huzur Mahallesi, Sarıyer, İstanbul, Marmara Bölgesi, 34485, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 201,
+    "name": "ÖZYEĞİN ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 41.0320475,
+    "longitude": 29.259788,
+    "displayName": "Özyeğin Üniversitesi, Acil Durum Toplanma Noktası (T1), Nişantepe Mahallesi, Çekmeköy, İstanbul, Marmara Bölgesi, 34794, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 202,
+    "name": "SABANCI ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.8927159,
+    "longitude": 29.3786332,
+    "displayName": "Sabancı Üniversitesi, 30 Ağustos Caddesi, Orta Mahallesi, Tuzla, İstanbul, Marmara Bölgesi, 34956, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 203,
+    "name": "TED ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.9243422,
+    "longitude": 32.8612221,
+    "displayName": "TED Üniversitesi Kolej Kampüsü, 47, Ziya Gökalp Caddesi, Kültür Mahallesi, Ankara, Çankaya, Ankara, İç Anadolu Bölgesi, 06420, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 204,
+    "name": "TOBB EKONOMİ VE TEKNOLOJİ ÜNİVERSİTESİ",
+    "city": "ANKARA",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 39.9200738,
+    "longitude": 32.7985899,
+    "displayName": "TOBB Ekonomi ve Teknoloji Üniversitesi, No:43, Söğütözü Caddesi, Söğütözü Mahallesi, Ankara, Çankaya, Ankara, İç Anadolu Bölgesi, 06560, Türkiye",
+    "geocodingStatus": "found"
+  },
+  {
+    "id": 205,
+    "name": "YEDİTEPE ÜNİVERSİTESİ",
+    "city": "İSTANBUL",
+    "type": "Vakıf Üniversitesi",
+    "latitude": 40.9713369,
+    "longitude": 29.1506043,
+    "displayName": "Yeditepe Üniversitesi, Atatürk Caddesi, İnönü Mahallesi, Ataşehir, İstanbul, Marmara Bölgesi, 34755, Türkiye",
+    "geocodingStatus": "found"
+  }
+]

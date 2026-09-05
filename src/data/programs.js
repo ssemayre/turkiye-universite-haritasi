@@ -1,0 +1,111 @@
+const programs = [
+  {
+    id: 1,
+    universityId: 1,
+    universityName: "Kocaeli Üniversitesi",
+    faculty: "Mühendislik Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "Kocaeli",
+  },
+
+  {
+    id: 2,
+    universityId: 1,
+    universityName: "Kocaeli Üniversitesi",
+    faculty: "Mühendislik Fakültesi",
+    department: "Makine Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "Kocaeli",
+  },
+
+  {
+    id: 3,
+    universityId: 2,
+    universityName: "İstanbul Üniversitesi",
+    faculty: "Mühendislik Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "İstanbul",
+  },
+
+  {
+    id: 4,
+    universityId: 3,
+    universityName: "Boğaziçi Üniversitesi",
+    faculty: "Mühendislik Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "İstanbul",
+  },
+
+  {
+    id: 5,
+    universityId: 4,
+    universityName: "Orta Doğu Teknik Üniversitesi",
+    faculty: "Mühendislik Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "Ankara",
+  },
+
+  {
+    id: 6,
+    universityId: 5,
+    universityName: "Hacettepe Üniversitesi",
+    faculty: "Mühendislik Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "Ankara",
+  },
+
+  {
+    id: 7,
+    universityId: 7,
+    universityName: "İstanbul Teknik Üniversitesi",
+    faculty: "Bilgisayar ve Bilişim Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "İstanbul",
+  },
+
+  {
+    id: 8,
+    universityId: 9,
+    universityName: "Sakarya Üniversitesi",
+    faculty: "Bilgisayar ve Bilişim Bilimleri Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "Sakarya",
+  },
+
+  {
+    id: 9,
+    universityId: 10,
+    universityName: "Bursa Uludağ Üniversitesi",
+    faculty: "Mühendislik Fakültesi",
+    department: "Bilgisayar Mühendisliği",
+    educationType: "Lisans",
+    scoreType: "SAY",
+    duration: 4,
+    city: "Bursa",
+  },
+];
+
+export default programs;
