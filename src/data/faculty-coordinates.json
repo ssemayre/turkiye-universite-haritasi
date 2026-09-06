@@ -1,0 +1,32 @@
+{
+  "kocaeli universitesi::muhendislik fakultesi": {
+    "latitude": 40.820679,
+    "longitude": 29.923729,
+    "precision": "building",
+    "source": "https://www.haritamap.com/yer/kocaeli-universitesi-muhendislik-fakultesi-dekanlik-izmit"
+  },
+  "sakarya universitesi::muhendislik fakultesi": {
+    "latitude": 40.742455,
+    "longitude": 30.334484,
+    "precision": "building",
+    "source": "https://www.haritamap.com/yer/sakarya-universitesi-muhendislik-fakultesi-serdivan"
+  },
+  "istanbul teknik universitesi::elektrik-elektronik fakultesi": {
+    "latitude": 41.104688,
+    "longitude": 29.024396,
+    "precision": "building",
+    "source": "https://www.e-sehir.com/egitim/istanbul-teknik-universitesi-elektrikelektronik-fakultesi-adresi-yeri-nerede.html"
+  },
+  "ankara universitesi::muhendislik fakultesi": {
+    "latitude": 39.779399,
+    "longitude": 32.823266,
+    "precision": "building",
+    "source": "https://www.e-sehir.com/egitim/ankara-universitesi-muhendislik-fakultesi-adresi-yeri-nerede.html"
+  },
+  "ege universitesi::muhendislik fakultesi": {
+    "latitude": 38.453541,
+    "longitude": 27.23242,
+    "precision": "building",
+    "source": "https://www.e-sehir.com/egitim/ege-universitesi-muhendislik-fakultesi-adresi-yeri-nerede.html"
+  }
+}

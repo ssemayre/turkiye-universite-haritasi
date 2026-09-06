@@ -26,6 +26,7 @@ import {
 import "./App.css";
 
 import universities from "./data/universities.json";
+import campusData from "./data/campuses.json";
 
 // ==================================================
 // LEAFLET
@@ -56,6 +57,14 @@ const selectedUniversityIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
   className: "selected-university-marker",
+});
+
+const campusIcon = L.divIcon({
+  className: "campus-map-marker",
+  html: '<span class="campus-map-marker-dot">C</span>',
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
+  popupAnchor: [0, -20],
 });
 
 // ==================================================
@@ -94,6 +103,18 @@ function numberValue(value) {
     : null;
 }
 
+function coordinateValue(value) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const parsed = Number(
+    String(value).trim().replace(",", ".")
+  );
+
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function formatNumber(value) {
   const parsed = numberValue(value);
 
@@ -112,34 +133,46 @@ function formatNumber(value) {
 
 function MapController({
   selectedUniversity,
+  focusTarget,
 }) {
   const map = useMap();
+  const lastTargetRef = useRef(null);
 
   useEffect(() => {
-    if (
-      selectedUniversity &&
-      Number.isFinite(
-        selectedUniversity.latitude
-      ) &&
-      Number.isFinite(
-        selectedUniversity.longitude
-      )
-    ) {
-      map.flyTo(
-        [
-          selectedUniversity.latitude,
-          selectedUniversity.longitude,
-        ],
-        12,
-        {
-          duration: 1.2,
-        }
-      );
+    const target = focusTarget || selectedUniversity;
+
+    const latitude = Number(target?.latitude);
+    const longitude = Number(target?.longitude);
+    const zoom = Number(target?.zoom) || (focusTarget ? 15 : 12);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
     }
-  }, [
-    selectedUniversity,
-    map,
-  ]);
+
+    const nextTargetKey = `${latitude}|${longitude}|${zoom}`;
+
+    if (lastTargetRef.current === nextTargetKey) {
+      return;
+    }
+
+    lastTargetRef.current = nextTargetKey;
+
+    // Fakülte/program geçişlerinde animasyonun haritayı kararsız
+    // bırakmasını önlemek için doğrudan güvenli bir görünüm ayarlıyoruz.
+    map.stop();
+    map.setView([latitude, longitude], zoom, { animate: false });
+
+    // Panel/overlay değişimlerinden sonra Leaflet boyutunu yeniden hesaplasın.
+    requestAnimationFrame(() => {
+      map.invalidateSize({ pan: false, debounceMoveend: true });
+      window.setTimeout(() => {
+        map.invalidateSize({ pan: false, debounceMoveend: true });
+      }, 80);
+      window.setTimeout(() => {
+        map.invalidateSize({ pan: false, debounceMoveend: true });
+      }, 350);
+    });
+  }, [focusTarget, selectedUniversity, map]);
 
   return null;
 }
@@ -190,6 +223,24 @@ function App() {
   const [selectedProgram, setSelectedProgram] =
     useState(null);
 
+  const [campusViewOpen, setCampusViewOpen] =
+    useState(false);
+
+  const [selectedCampus, setSelectedCampus] =
+    useState(null);
+
+  const [campusFocusOnly, setCampusFocusOnly] =
+    useState(false);
+
+  const [selectedCampusFaculty, setSelectedCampusFaculty] =
+    useState(null);
+
+  const [selectedCampusDepartment, setSelectedCampusDepartment] =
+    useState(null);
+
+  const [mapFocus, setMapFocus] =
+    useState(null);
+
   const [universityPrograms, setUniversityPrograms] =
     useState([]);
 
@@ -216,6 +267,35 @@ function App() {
 
   const [maxRank, setMaxRank] =
     useState("");
+
+  const mergedCampusData = useMemo(() => {
+    const merged = {};
+
+    Object.entries(campusData || {}).forEach(([key, record]) => {
+      const normalizedKey = normalize(key);
+      if (!normalizedKey) return;
+
+      const campuses = Array.isArray(record?.campuses)
+        ? record.campuses.map((campus) => ({
+            ...campus,
+            latitude: coordinateValue(campus?.latitude),
+            longitude: coordinateValue(campus?.longitude),
+            facultyNames: Array.isArray(campus?.facultyNames) ? campus.facultyNames : [],
+            unitNames: Array.isArray(campus?.unitNames) ? campus.unitNames : [],
+            unitAliases: Array.isArray(campus?.unitAliases) ? campus.unitAliases : [],
+            programNames: Array.isArray(campus?.programNames) ? campus.programNames : [],
+          }))
+        : [];
+
+      merged[normalizedKey] = {
+        ...record,
+        campuses,
+      };
+    });
+
+    return merged;
+  }, []);
+
 
   const [filtersOpen, setFiltersOpen] =
     useState(false);
@@ -517,10 +597,9 @@ function App() {
     const map = new Map();
 
     for (const university of universities) {
-      map.set(
-        university.id,
-        university
-      );
+      map.set(university.id, university);
+      map.set(String(university.id), university);
+      map.set(normalize(university.name), university);
     }
 
     return map;
@@ -696,11 +775,7 @@ function App() {
 
       return searchPrograms.filter(
         (program) => {
-          const university =
-            universityMap.get(
-              program.universityId
-            );
-
+          const university = universityMap.get(String(program.universityId)) || universityMap.get(normalize(program.universityName));
           if (!university) {
             return false;
           }
@@ -862,7 +937,8 @@ function App() {
         }
       );
 
-    if (!universityExists) {
+    // Üniversite bulunsa da bulunmasa da YKS program (ve kampüs) verilerini arkaplanda çekmeye başla
+    if (search.length >= 2) {
       loadSearchPrograms();
     }
   }, [
@@ -1018,6 +1094,331 @@ function App() {
       maxRank,
     ]);
   // ==================================================
+  // UNIVERSITY CAMPUSES / YERLEŞKELER
+  // ==================================================
+
+  const getUnitNames = useCallback((program) => {
+    return [
+      program.faculty,
+      program.fymkAdi,
+      program.facultyName,
+      program.unitName,
+      program.birimAdi,
+      program.birim,
+      program.yuksekokulAdi,
+      program.meslekYuksekokulu,
+    ]
+      .map((value) => (value ?? "").toString().trim())
+      .filter(Boolean);
+  }, []);
+
+  const getPrimaryUnitName = useCallback((program) => {
+    return getUnitNames(program)[0] || "";
+  }, [getUnitNames]);
+
+  const universityCampuses = useMemo(() => {
+    if (!selectedUniversity) return [];
+
+    const selectedId = String(selectedUniversity.id ?? '').trim();
+    const selectedName = normalize(selectedUniversity.name);
+    const stripParenthetical = (value) =>
+      normalize(value).replace(/\s*\([^)]*\)\s*$/g, '').trim();
+
+    // Önce üniversite ID'siyle buluyoruz. Böylece
+    // "DOKUZ EYLÜL ÜNİVERSİTESİ" ile
+    // "DOKUZ EYLÜL ÜNİVERSİTESİ (İZMİR)" gibi isim farkları
+    // kampüs verisinin kaybolmasına neden olmaz.
+    let record = Object.values(mergedCampusData).find((item) =>
+      item && String(item.universityId ?? '').trim() === selectedId
+    );
+
+    // ID bulunamazsa tam ad, ardından parantez içi şehir kaldırılmış ad ile dene.
+    if (!record) record = mergedCampusData[selectedName];
+    if (!record) {
+      const selectedBase = stripParenthetical(selectedUniversity.name);
+      record = Object.values(mergedCampusData).find((item) =>
+        stripParenthetical(item?.universityName) === selectedBase
+      );
+    }
+
+    // Öncelik: üniversite için hazırlanmış gerçek kampüs verisi.
+    if (record && Array.isArray(record.campuses) && record.campuses.length) {
+      return record.campuses.map((campus) => ({
+        ...campus,
+        universityId: selectedUniversity.id,
+        universityName: selectedUniversity.name,
+        // Kampüs koordinatı yoksa üniversite koordinatına kopyalama yapma.
+        // Aksi halde farklı kampüsler aynı noktaya üst üste biner ve
+        // olmayan koordinatlar gerçekmiş gibi görünür.
+        latitude: Number.isFinite(Number(campus.latitude))
+          ? Number(campus.latitude)
+          : null,
+        longitude: Number.isFinite(Number(campus.longitude))
+          ? Number(campus.longitude)
+          : null,
+        autoGenerated: campus.autoGenerated === true,
+      }));
+    }
+
+    // Kampüs verisi henüz yoksa üniversiteyi yine de boş bırakma.
+    // Program verilerinden fakülte/birimleri otomatik çıkarıp tek bir
+    // "ana yerleşke" altında gösteriyoruz. Böylece bütün üniversitelerde
+    // Kampüs → Fakülte → Bölüm → Program akışı kullanılabilir.
+    const facultyMap = new Map();
+
+    for (const program of universityPrograms) {
+      const name = (
+        program.fymkAdi ||
+        program.faculty ||
+        program.facultyName ||
+        program.unitName ||
+        program.birimAdi ||
+        ""
+      ).toString().trim();
+
+      if (!name) continue;
+
+      const id = normalize(name);
+      if (!facultyMap.has(id)) facultyMap.set(id, name);
+    }
+
+    const latitude = Number(selectedUniversity.latitude);
+    const longitude = Number(selectedUniversity.longitude);
+
+    return [{
+      id: `auto-${selectedUniversity.id}`,
+      name: `${selectedUniversity.name} Ana Yerleşkesi`,
+      universityId: selectedUniversity.id,
+      universityName: selectedUniversity.name,
+      city: selectedUniversity.city,
+      district: "",
+      address: "Program verilerinden otomatik oluşturuldu.",
+      isMain: true,
+      autoGenerated: true,
+      latitude: Number.isFinite(latitude) ? latitude : null,
+      longitude: Number.isFinite(longitude) ? longitude : null,
+      facultyNames: [...facultyMap.values()].sort((a, b) =>
+        a.localeCompare(b, "tr")
+      ),
+      unitNames: [],
+      unitAliases: [],
+      programNames: [],
+    }];
+  }, [selectedUniversity, universityPrograms, mergedCampusData]);
+
+  const getCampusGroupNames = useCallback((campus) => {
+    return [
+      ...(Array.isArray(campus?.facultyNames) ? campus.facultyNames : []),
+      ...(Array.isArray(campus?.unitNames) ? campus.unitNames : []),
+      ...(Array.isArray(campus?.unitAliases) ? campus.unitAliases : []),
+    ]
+      .map((name) => (name ?? "").toString().trim())
+      .filter(Boolean)
+      .filter((name, index, arr) =>
+        arr.findIndex((item) => normalize(item) === normalize(name)) === index
+      );
+  }, []);
+
+  const getCampusProgramNames = useCallback((campus) => {
+    return (Array.isArray(campus?.programNames) ? campus.programNames : [])
+      .map((name) => (name ?? "").toString().trim())
+      .filter(Boolean);
+  }, []);
+
+  const selectedCampusFacultyGroups = useMemo(() => {
+    if (!selectedCampus || !universityPrograms.length) return [];
+
+    const names = getCampusGroupNames(selectedCampus);
+
+    return names.map((name) => {
+      const target = normalize(name);
+      const programs = universityPrograms.filter((program) => {
+        const unitNames = getUnitNames(program).map(normalize).filter(Boolean);
+        const programName = normalize(program?.name || program?.programName || program?.bolumAdi || "");
+
+        const explicitProgramMatch = getCampusProgramNames(selectedCampus).some((name) =>
+          normalize(name) === programName
+        );
+
+        if (explicitProgramMatch) return true;
+
+        return unitNames.some((unitName) => unitName === target);
+      });
+
+      const departments = [...new Set(
+        programs
+          .map((program) => (
+            program.department ||
+            program.departmentName ||
+            program.bolum ||
+            program.bolumAdi ||
+            ""
+          ).toString().trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "tr"));
+
+      return {
+        id: target,
+        name,
+        programCount: programs.length,
+        departments,
+        programs,
+      };
+    }).filter((item) => item.programCount > 0 || item.departments.length > 0);
+  }, [selectedCampus, universityPrograms, getCampusGroupNames, getUnitNames]);
+
+  const selectedCampusFacultyPrograms = useMemo(() => {
+    if (!selectedCampusFaculty) return [];
+
+    // Fakülte grubu oluşturulurken açıkça eşleşen programları zaten taşıyoruz.
+    // Önce bu hazır listeyi kullanarak program kaybını önlüyoruz.
+    if (Array.isArray(selectedCampusFaculty.programs)) {
+      return selectedCampusFaculty.programs;
+    }
+
+    const target = normalize(selectedCampusFaculty.id);
+    return universityPrograms.filter((program) =>
+      getUnitNames(program).some((unitName) => {
+        const normalized = normalize(unitName);
+        return normalized === target || normalized.includes(target) || target.includes(normalized);
+      })
+    );
+  }, [selectedCampusFaculty, universityPrograms, getUnitNames]);
+
+  const getProgramName = useCallback((program) => {
+    return (
+      program.name ||
+      program.programName ||
+      program.programAdi ||
+      program.bolumAdi ||
+      program.program ||
+      program.birimAdi ||
+      ""
+    ).toString().trim();
+  }, []);
+
+  const getDepartmentName = useCallback((program) => {
+    const explicitDepartment = (
+      program.department ||
+      program.departmentName ||
+      program.bolum ||
+      program.bolumAdi
+    )?.toString().trim();
+
+    if (explicitDepartment) {
+      return explicitDepartment;
+    }
+
+    // YÖK program verilerinde her zaman ayrı bir "Bölüm" alanı bulunmuyor.
+    // Bu durumda program adındaki parantez içi tercih/öğretim/indirim
+    // varyasyonlarını çıkarıp temel bölüm adını kullanıyoruz.
+    const programName = getProgramName(program);
+    const departmentName = programName
+      .replace(/\s*\([^)]*\)/g, "")
+      .replace(/\s*[-–—]\s*[^-–—]*$/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return departmentName || program.birimAdi?.toString().trim() || "Bölüm bilgisi bulunmuyor";
+  }, [getProgramName]);
+
+  const selectedCampusFacultyDepartments = useMemo(() => {
+    if (!selectedCampusFaculty) return [];
+
+    const groups = new Map();
+
+    selectedCampusFacultyPrograms.forEach((program) => {
+      const name = getDepartmentName(program);
+      const id = normalize(name) || "bilinmeyen-bolum";
+
+      if (!groups.has(id)) {
+        groups.set(id, {
+          id,
+          name,
+          programs: [],
+        });
+      }
+
+      groups.get(id).programs.push(program);
+    });
+
+    return [...groups.values()].sort((a, b) =>
+      a.name.localeCompare(b.name, "tr")
+    );
+  }, [selectedCampusFaculty, selectedCampusFacultyPrograms, getDepartmentName]);
+
+  const selectedCampusDepartmentPrograms = useMemo(() => {
+    if (!selectedCampusDepartment) return [];
+    return selectedCampusFacultyPrograms.filter(
+      (program) => normalize(getDepartmentName(program)) === selectedCampusDepartment.id
+    );
+  }, [selectedCampusDepartment, selectedCampusFacultyPrograms, getDepartmentName]);
+
+  const findCampusForProgram = useCallback((program, university) => {
+    const key = normalize(university?.name);
+    const record = mergedCampusData[key];
+    const campuses = Array.isArray(record?.campuses) ? record.campuses : [];
+    if (!campuses.length) return null;
+
+    const programUnits = getUnitNames(program).map(normalize).filter(Boolean);
+    const programName = normalize(program?.name || program?.programName || program?.bolumAdi || "");
+
+    // 1) En güvenli eşleşme: program adı açıkça kampüse atanmışsa onu kullan.
+    if (programName) {
+      const explicitProgramMatch = campuses.find((campus) =>
+        getCampusProgramNames(campus).some((name) => normalize(name) === programName)
+      );
+
+      if (explicitProgramMatch) {
+        return {
+          ...explicitProgramMatch,
+          universityId: university.id,
+          universityName: university.name,
+        };
+      }
+    }
+
+    // 2) Sonra birim adı eşleşmesi: önce tam eşleşme, sonra kontrollü eşleşme.
+    if (programUnits.length) {
+      const exactUnitMatch = campuses.find((campus) =>
+        getCampusGroupNames(campus).some((campusUnitName) =>
+          programUnits.includes(normalize(campusUnitName))
+        )
+      );
+
+      if (exactUnitMatch) {
+        return {
+          ...exactUnitMatch,
+          universityId: university.id,
+          universityName: university.name,
+        };
+      }
+
+      const controlledUnitMatch = campuses.find((campus) =>
+        getCampusGroupNames(campus).some((campusUnitName) => {
+          const normalizedCampusUnit = normalize(campusUnitName);
+          return programUnits.some((programUnit) => {
+            const shorter = Math.min(normalizedCampusUnit.length, programUnit.length);
+            const longer = Math.max(normalizedCampusUnit.length, programUnit.length);
+            return shorter >= 12 && longer - shorter <= 10 &&
+              (normalizedCampusUnit.startsWith(programUnit) || programUnit.startsWith(normalizedCampusUnit));
+          });
+        })
+      );
+
+      if (controlledUnitMatch) {
+        return {
+          ...controlledUnitMatch,
+          universityId: university.id,
+          universityName: university.name,
+        };
+      }
+    }
+
+    return campuses.find((campus) => campus.isMain) || campuses[0] || null;
+  }, [getUnitNames, getCampusGroupNames, getCampusProgramNames, mergedCampusData]);
+
+  // ==================================================
   // SEARCH RESULTS
   // ==================================================
 
@@ -1044,18 +1445,37 @@ function App() {
 
       for (const university of baseFilteredUniversities) {
         const hit = match(joined(university.name, university.city));
-        if (!hit.matched) continue;
-        const name = normalize(university.name);
-        let score = hit.score;
-        if (name === query) score += 35;
-        else if (name.startsWith(query)) score += 22;
-        candidates.push({ type: "university", university, score });
+        if (hit.matched) {
+          const name = normalize(university.name);
+          let score = hit.score;
+          if (name === query) score += 35;
+          else if (name.startsWith(query)) score += 22;
+          candidates.push({ type: "university", university, score });
+        }
+
+        // KAMPÜS (YERLEŞKE) ARAMASI
+        const uniData = mergedCampusData[normalize(university.name)];
+        if (uniData && uniData.campuses) {
+          for (const campus of uniData.campuses) {
+            const cHit = match(joined(campus.name, campus.district, university.name, university.city));
+            if (cHit.matched) {
+              const cName = normalize(campus.name);
+              let score = cHit.score + 10;
+              if (cName === query) score += 60;
+              else if (cName.startsWith(query)) score += 30;
+              candidates.push({ type: "campus", university, campus, score });
+            }
+          }
+        }
       }
 
       if (searchProgramsLoaded) {
         for (const program of generalFilteredPrograms) {
-          const university = universityMap.get(program.universityId);
-          if (!university) continue;
+          // Önce ID ile, bulamazsa program.universityName ile üniversiteyi bul
+          const university = universityMap.get(String(program.universityId)) || universityMap.get(normalize(program.universityName));
+          if (!university) {
+            continue;
+          }
           const hit = match(joined(program.name, program.faculty, program.universityName, university.city));
           if (!hit.matched) continue;
           const programName = normalize(program.name);
@@ -1149,30 +1569,22 @@ function App() {
   const openUniversity =
     useCallback(
       async (university) => {
-            setFiltersOpen(false);
+        setFiltersOpen(false);
         setPreferenceOpen(false);
         setAboutOpen(false);
         setBrowseOpen(false);
 
-        setSelectedUniversity(
-          university
-        );
+        setSelectedUniversity(university);
+        setSelectedProgram(null);
+        setCampusFocusOnly(false);
+        setCampusViewOpen(false);
+        setSelectedCampus(null);
+        setSelectedCampusFaculty(null);
+        setMapFocus(null);
+        setUniversityProgramSearch("");
+        setUniversityPrograms([]);
 
-        setSelectedProgram(
-          null
-        );
-
-        setUniversityProgramSearch(
-          ""
-        );
-
-        setUniversityPrograms(
-          []
-        );
-
-        await loadUniversityPrograms(
-          university.id
-        );
+        await loadUniversityPrograms(university.id);
       },
       [loadUniversityPrograms]
     );
@@ -1183,41 +1595,131 @@ function App() {
 
   const openProgram =
     useCallback(
-      async (
-        program,
-        university
-      ) => {
-        const data =
-          await loadUniversityPrograms(
-            university.id
-          );
+      async (program, university) => {
+        const data = await loadUniversityPrograms(university.id);
 
         const fullProgram =
           data.find(
-            (item) =>
-              String(
-                item.code
-              ) ===
-              String(
-                program.code
-              )
-          );
+            (item) => String(item.code) === String(program.code)
+          ) || program;
 
-        setSelectedUniversity(
-          university
+        const campus = findCampusForProgram(fullProgram, university);
+
+        setSelectedUniversity(university);
+        setCampusViewOpen(false);
+        setCampusFocusOnly(false);
+        setSelectedCampus(campus);
+        setSelectedCampusFaculty(null);
+
+        setMapFocus(
+          campus
+            ? {
+                latitude: campus.latitude,
+                longitude: campus.longitude,
+                zoom: 15,
+              }
+            : {
+                latitude: university.latitude,
+                longitude: university.longitude,
+                zoom: 13,
+              }
         );
 
-        setSelectedProgram(
-          fullProgram ||
-          program
-        );
-
-        setUniversityProgramSearch(
-          ""
-        );
+        setSelectedProgram(fullProgram);
+        setUniversityProgramSearch("");
       },
-      [loadUniversityPrograms]
+      [loadUniversityPrograms, findCampusForProgram]
     );
+
+  // ==================================================
+  // CAMPUS VIEW ACTIONS
+  // ==================================================
+
+  const openCampusView = () => {
+    setSelectedProgram(null);
+    setSelectedCampus(null);
+    setSelectedCampusFaculty(null);
+    setSelectedCampusDepartment(null);
+    setCampusViewOpen(true);
+    setUniversityProgramSearch("");
+    setMapFocus({
+      latitude: selectedUniversity?.latitude,
+      longitude: selectedUniversity?.longitude,
+      zoom: 12,
+    });
+  };
+
+  const openCampus = (campus) => {
+    setCampusFocusOnly(false);
+    setSelectedCampus(campus);
+    setSelectedCampusFaculty(null);
+    setSelectedCampusDepartment(null);
+    setCampusViewOpen(true);
+    setSelectedProgram(null);
+    setUniversityProgramSearch("");
+
+    if (Number.isFinite(Number(campus.latitude)) && Number.isFinite(Number(campus.longitude))) {
+      setMapFocus({
+        latitude: Number(campus.latitude),
+        longitude: Number(campus.longitude),
+        zoom: 15,
+      });
+    } else {
+      setMapFocus({
+        latitude: selectedUniversity?.latitude,
+        longitude: selectedUniversity?.longitude,
+        zoom: 13,
+      });
+    }
+  };
+
+  const openCampusFaculty = (faculty) => {
+    setSelectedCampusFaculty(faculty);
+    setSelectedCampusDepartment(null);
+    setSelectedProgram(null);
+    setUniversityProgramSearch("");
+  };
+
+  const openCampusDepartment = (department) => {
+    setSelectedCampusDepartment(department);
+    setSelectedProgram(null);
+    setUniversityProgramSearch("");
+  };
+
+  const focusSelectedProgramCampus = () => {
+    const latitude = Number(selectedCampus?.latitude);
+    const longitude = Number(selectedCampus?.longitude);
+
+    if (
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude) ||
+      latitude < -90 || latitude > 90 ||
+      longitude < -180 || longitude > 180
+    ) {
+      return;
+    }
+
+    setCampusFocusOnly(true);
+    setCampusViewOpen(false);
+    setMapFocus({
+      latitude,
+      longitude,
+      zoom: 16,
+    });
+  };
+
+  const closeUniversityPanel = () => {
+    setSelectedUniversity(null);
+    setSelectedProgram(null);
+    setCampusFocusOnly(false);
+    setSelectedCampus(null);
+    setUniversityPrograms([]);
+    setCampusViewOpen(false);
+    setSelectedCampus(null);
+    setSelectedCampusFaculty(null);
+    setMapFocus(null);
+    setUniversityProgramSearch("");
+  };
 
   // ==================================================
   // NORMALIZE PREFERENCE DATA
@@ -1707,6 +2209,31 @@ const activeFilterCount = [
                         );
                       }
 
+                      if (result.type === "campus") {
+                        return (
+                          <button
+                            key={`campus-${result.campus.id}-${index}`}
+                            className="search-result"
+                            onClick={() => {
+                              blurSearch();
+                              openUniversity(result.university);
+                              setTimeout(() => {
+                                setSelectedCampus(result.campus);
+                                setCampusViewOpen(true);
+                              }, 100);
+                              setSearchInput("");
+                              setSearch("");
+                            }}
+                          >
+                            <span className="result-type" style={{ color: "#00bfa5", background: "rgba(0, 191, 165, 0.1)" }}>
+                              YERLEŞKE
+                            </span>
+                            <strong>{result.campus.name}</strong>
+                            <span>{result.university.name} • {result.campus.district || result.university.city}</span>
+                          </button>
+                        );
+                      }
+
                       return (
                         <div
                           key={
@@ -1880,67 +2407,9 @@ const activeFilterCount = [
           MODERN DASHBOARD SHELL
       ======================================== */}
 
-      <aside className="explore-sidebar">
-        <div className="sidebar-search-label">KEŞFET</div>
-        <h2>Üniversiteni bul</h2>
-        <p className="sidebar-intro">Şehrini ve üniversite türünü seç, haritadaki seçenekleri hızlıca keşfet.</p>
-
-        <button
-          className="sidebar-select"
-          onClick={() => setFiltersOpen(true)}
-        >
-          <span className="sidebar-icon indigo">⌖</span>
-          <span>
-            <strong>Şehir</strong>
-            <small>{cityFilter === "Tümü" ? "Tüm şehirler" : cityFilter}</small>
-          </span>
-          <b>⌄</b>
-        </button>
-
-        <button
-          className="sidebar-select"
-          onClick={() => setFiltersOpen(true)}
-        >
-          <span className="sidebar-icon cyan">▣</span>
-          <span>
-            <strong>Üniversite türü</strong>
-            <small>{typeFilter === "Tümü" ? "Tüm üniversiteler" : typeFilter}</small>
-          </span>
-          <b>⌄</b>
-        </button>
-
-        <button
-          className="sidebar-select"
-          onClick={() => setFiltersOpen(true)}
-        >
-          <span className="sidebar-icon orange">▤</span>
-          <span>
-            <strong>Program türü</strong>
-            <small>{educationFilter === "Tümü" ? "Lisans + Önlisans" : educationFilter}</small>
-          </span>
-          <b>⌄</b>
-        </button>
-
-        <div className="sidebar-section-title">Hızlı Erişim</div>
-
-        <button className="sidebar-feature orange" onClick={openBrowse}>
-          <span>🔥</span>
-          <span><strong>Üniversiteleri keşfet</strong><small>Haritadan veya listeden seç</small></span>
-          <b>→</b>
-        </button>
-
-        <button className="sidebar-feature cyan" onClick={() => setFiltersOpen(true)}>
-          <span>▥</span>
-          <span><strong>2026 taban verileri</strong><small>Güncel program bilgileri</small></span>
-          <b>→</b>
-        </button>
-
-        <div className="sidebar-quote">
-          <strong>Doğru tercih,<br />daha aydınlık bir gelecek.</strong>
-          <p>Türkiye’deki üniversiteleri keşfet, karşılaştır ve hayallerine bir adım daha yaklaş.</p>
-        </div>
-      </aside>
-
+      {/* ========================================
+          ESKİ SOL PANEL KALDIRILDI (Daha Geniş Harita İçin)
+      ======================================== */}
       {/* ========================================
           UYGUN PROGRAMLAR
       ======================================== */}
@@ -2157,22 +2626,45 @@ const activeFilterCount = [
 
       <main className="map-area">
 
-        <div className="map-dashboard-top">
-          <div className="map-stat-card indigo">
-            <span className="map-stat-icon">⌂</span>
-            <div><strong>{mapUniversities.length || 205}</strong><small>Üniversite</small></div>
+        <div className="modern-filters-bar" style={{ display: 'flex', gap: '10px', padding: '15px 20px', alignItems: 'center', background: '#fff', borderBottom: '1px solid #e0e0e0', overflowX: 'auto', zIndex: 10 }}>
+          <div style={{ display: 'flex', gap: '8px', marginRight: 'auto', alignItems: 'center' }}>
+            <span style={{ fontSize: '14px', fontWeight: '600', color: '#555', marginRight: '5px' }}>Hızlı Keşfet:</span>
+            
+            <button 
+              onClick={() => setTypeFilter(typeFilter === 'Devlet Üniversitesi' ? 'Tümü' : 'Devlet Üniversitesi')}
+              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Devlet Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Devlet Üniversitesi' ? '#00bfa5' : '#fff', color: typeFilter === 'Devlet Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              Devlet
+            </button>
+            
+            <button 
+              onClick={() => setTypeFilter(typeFilter === 'Vakıf Üniversitesi' ? 'Tümü' : 'Vakıf Üniversitesi')}
+              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Vakıf Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Vakıf Üniversitesi' ? '#3949ab' : '#fff', color: typeFilter === 'Vakıf Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              Vakıf
+            </button>
+            
+            <button 
+              onClick={() => setEducationFilter(educationFilter === 'Lisans' ? 'Tümü' : 'Lisans')}
+              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Lisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Lisans' ? '#ff9800' : '#fff', color: educationFilter === 'Lisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              Lisans
+            </button>
+
+            <button 
+              onClick={() => setEducationFilter(educationFilter === 'Önlisans' ? 'Tümü' : 'Önlisans')}
+              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Önlisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Önlisans' ? '#ff9800' : '#fff', color: educationFilter === 'Önlisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              Önlisans
+            </button>
           </div>
-          <div className="map-stat-card cyan">
-            <span className="map-stat-icon">▤</span>
-            <div><strong>21.493+</strong><small>Program</small></div>
-          </div>
-          <div className="map-stat-card orange">
-            <span className="map-stat-icon">◎</span>
-            <div><strong>81</strong><small>İl</small></div>
-          </div>
-          <div className="map-stat-card soft">
-            <span className="map-stat-icon">✓</span>
-            <div><strong>2026</strong><small>Güncel veriler</small></div>
+
+          <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <div style={{ fontSize: '12px', color: '#888', textAlign: 'right' }}>
+              <strong>{mapUniversities.length}</strong> Üniversite <br/> 
+              <strong>81</strong> İl
+            </div>
+            <button 
+              onClick={() => setFiltersOpen(true)}
+              style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#f0f2f5', color: '#333', cursor: 'pointer', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>⚙</span> Tüm Filtreler
+            </button>
           </div>
         </div>
 
@@ -2191,141 +2683,98 @@ const activeFilterCount = [
           />
 
           <MapController
-            selectedUniversity={
-              selectedUniversity
-            }
+            selectedUniversity={selectedUniversity}
+            focusTarget={mapFocus}
           />
 
-          <MarkerClusterGroup
-            chunkedLoading={true}
-            maxClusterRadius={70}
-            spiderfyOnMaxZoom={true}
-            showCoverageOnHover={false}
-            zoomToBoundsOnClick={true}
-            disableClusteringAtZoom={12}
-          >
-
-            {filteredUniversities.map(
-              (university) => (
-
+          {campusFocusOnly &&
+          selectedCampus &&
+          Number.isFinite(Number(selectedCampus.latitude)) &&
+          Number.isFinite(Number(selectedCampus.longitude)) ? (
+            <Marker
+              key={`program-campus-${selectedCampus.id}`}
+              position={[Number(selectedCampus.latitude), Number(selectedCampus.longitude)]}
+              icon={campusIcon}
+              eventHandlers={{ click: () => openCampus(selectedCampus) }}
+            >
+              <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
+                <span className="campus-tooltip">{selectedCampus.name}</span>
+              </Tooltip>
+              <Popup>
+                <div className="campus-popup">
+                  <div className="detail-label">{selectedCampus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
+                  <h3>{selectedCampus.name}</h3>
+                  <p>{selectedCampus.district ? `${selectedCampus.district}, ${selectedCampus.city}` : selectedCampus.city}</p>
+                  <button className="open-university-button" onClick={() => openCampus(selectedCampus)}>
+                    Yerleşkeyi incele
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          ) : !campusViewOpen ? (
+            <MarkerClusterGroup
+              chunkedLoading={true}
+              maxClusterRadius={70}
+              spiderfyOnMaxZoom={true}
+              showCoverageOnHover={false}
+              zoomToBoundsOnClick={true}
+              disableClusteringAtZoom={12}
+            >
+              {filteredUniversities.map((university) => (
                 <Marker
-                  key={
-                    university.id
-                  }
-
-                  position={[
-                    university.latitude,
-                    university.longitude,
-                  ]}
-
-                  icon={
-                    selectedUniversity?.id === university.id
-                      ? selectedUniversityIcon
-                      : universityIcon
-                  }
+                  key={university.id}
+                  position={[university.latitude, university.longitude]}
+                  icon={selectedUniversity?.id === university.id ? selectedUniversityIcon : universityIcon}
                 >
-
-                  {/* HOVER İSİM */}
-
-                  <Tooltip
-                    direction="top"
-                    offset={[
-                      0,
-                      -35,
-                    ]}
-                    opacity={0.95}
-                    sticky
-                  >
-
-                    <span className="university-tooltip">
-                      {
-                        university.name
-                      }
-                    </span>
-
+                  <Tooltip direction="top" offset={[0, -35]} opacity={0.95} sticky>
+                    <span className="university-tooltip">{university.name}</span>
                   </Tooltip>
 
-                  {/* POPUP */}
-
                   <Popup>
-
                     <div className="popup">
-
-                      <h2>
-                        {
-                          university.name
-                        }
-                      </h2>
-
-                      <p>
-                        <strong>
-                          Şehir:
-                        </strong>{" "}
-                        {
-                          university.city
-                        }
-                      </p>
-
-                      <p>
-                        <strong>
-                          Tür:
-                        </strong>{" "}
-                        {
-                          university.type
-                        }
-                      </p>
-
-                      <button
-                        className="open-university-button"
-                        onClick={() =>
-                          openUniversity(
-                            university
-                          )
-                        }
-                      >
+                      <h2>{university.name}</h2>
+                      <p><strong>Şehir:</strong> {university.city}</p>
+                      <p><strong>Tür:</strong> {university.type}</p>
+                      <button className="open-university-button" onClick={() => openUniversity(university)}>
                         Üniversiteyi incele
                       </button>
-
                     </div>
-
                   </Popup>
-
                 </Marker>
+              ))}
+            </MarkerClusterGroup>
+          ) : (
+            selectedUniversity &&
+            universityCampuses
+              .filter((campus) =>
+                Number.isFinite(Number(campus.latitude)) &&
+                Number.isFinite(Number(campus.longitude))
               )
-            )}
-
-          </MarkerClusterGroup>
+              .map((campus) => (
+              <Marker
+                key={`campus-${campus.id}`}
+                position={[Number(campus.latitude), Number(campus.longitude)]}
+                icon={campusIcon}
+                eventHandlers={{ click: () => openCampus(campus) }}
+              >
+                <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
+                  <span className="campus-tooltip">{campus.name}</span>
+                </Tooltip>
+                <Popup>
+                  <div className="campus-popup">
+                    <div className="detail-label">{campus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
+                    <h3>{campus.name}</h3>
+                    <p>{campus.district ? `${campus.district}, ${campus.city}` : campus.city}</p>
+                    <button className="open-university-button" onClick={() => openCampus(campus)}>
+                      Yerleşkeyi incele
+                    </button>
+                  </div>
+                </Popup>
+              </Marker>
+            ))
+          )}
 
         </MapContainer>
-
-        <div className="dashboard-bottom">
-          <button className="dashboard-card image-card popular" type="button" onClick={openBrowse}>
-            <span className="dashboard-card-overlay">
-              <small>KEŞFET</small>
-              <strong>Üniversiteleri<br />Keşfet</strong>
-              <em>Şehir ve kampüsleri keşfet →</em>
-            </span>
-          </button>
-          <button className="dashboard-card image-card strategy" type="button" onClick={() => setFiltersOpen(true)}>
-            <span className="dashboard-card-overlay">
-              <small>VERİ</small>
-              <strong>2026 Taban<br />Verileri</strong>
-              <em>Güncel programları keşfet →</em>
-            </span>
-          </button>
-          <button className="dashboard-card image-card list" type="button" onClick={() => toggleFloatingPanel("preferences")}>
-            <span className="dashboard-card-overlay">
-              <small>KİŞİSEL</small>
-              <strong>Tercih<br />Listem</strong>
-              <em>Kendine özel liste oluştur →</em>
-            </span>
-          </button>
-          <div className="dashboard-quote-card">
-            <span>“</span>
-            <strong>Doğru tercih,<br />daha güçlü bir gelecek.</strong>
-            <small>Türkiye Üniversite Haritası</small>
-          </div>
-        </div>
 
         {browseOpen && (
           <aside className="browse-panel">
@@ -2424,288 +2873,294 @@ const activeFilterCount = [
 
             <button
               className="close-button"
-
-              onClick={() => {
-                setSelectedUniversity(
-                  null
-                );
-
-                setUniversityPrograms(
-                  []
-                );
-              }}
+              onClick={closeUniversityPanel}
             >
               ✕
             </button>
 
             <div className="university-panel-header">
-
-              <div className="detail-label">
-                ÜNİVERSİTE
-              </div>
-
-              <h2>
-                {
-                  selectedUniversity.name
-                }
-              </h2>
-
-              <p>
-                {
-                  selectedUniversity.city
-                }{" "}
-                •{" "}
-                {
-                  selectedUniversity.type
-                }
-              </p>
-
+              <div className="detail-label">ÜNİVERSİTE</div>
+              <h2>{selectedUniversity.name}</h2>
+              <p>{selectedUniversity.city} • {selectedUniversity.type}</p>
             </div>
 
             {loadingUniversityPrograms ? (
-
               <div className="program-loading-box">
-
                 <div className="loading-spinner" />
-
-                <p>
-                  Programlar yükleniyor...
-                </p>
-
+                <p>Programlar yükleniyor...</p>
               </div>
-
             ) : (
-
               <>
-
                 <div className="university-stats">
-
                   <div className="university-stat">
-
-                    <strong>
-                      {
-                        visibleUniversityPrograms.length
-                      }
-                    </strong>
-
-                    <span>
-                      Program
-                    </span>
-
+                    <strong>{universityPrograms.length}</strong>
+                    <span>Program</span>
                   </div>
-
                   <div className="university-stat">
-
-                    <strong>
-                      {
-                        selectedUniversity
-                          .type
-                          ?.includes(
-                            "Vakıf"
-                          )
-                          ? "Vakıf"
-                          : "Devlet"
-                      }
-                    </strong>
-
-                    <span>
-                      Kurum
-                    </span>
-
+                    <strong>{selectedUniversity.type?.includes("Vakıf") ? "Vakıf" : "Devlet"}</strong>
+                    <span>Kurum</span>
                   </div>
-
+                  <div className="university-stat">
+                    <strong>{universityCampuses.length || "-"}</strong>
+                    <span>Yerleşke</span>
+                  </div>
                 </div>
 
-                <div className="university-program-header">
-
-                  <h3>
-                    Programlar
-                  </h3>
-
-                  <span>
-                    {
-                      visibleUniversityPrograms.length
-                    }
-                  </span>
-
-                </div>
-
-                <div className="university-action-bar">
-                  <button
-                    type="button"
-                    className="university-action-button preference"
-                    onClick={() => {
-                      setSelectedProgram(null);
-                      setPreferenceOpen(true);
-                      setFiltersOpen(false);
-                    }}
-                  >
-                    ⭐ Tercih Listem <b>{preferences.length}</b>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="university-action-button compare"
-                    disabled={comparisonPrograms.length < 2}
-                    onClick={() => setComparisonOpen(true)}
-                    title={comparisonPrograms.length < 2 ? "Karşılaştırmak için en az 2 program seçin" : "Seçili programları karşılaştır"}
-                  >
-                    ⇄ Karşılaştır <b>{comparisonPrograms.length}</b>
-                  </button>
-                </div>
-
-                <input
-                  className="university-program-search"
-                  type="text"
-                  placeholder="🔎 Bu üniversitede program ara..."
-                  value={
-                    universityProgramSearch
-                  }
-                  onChange={(event) =>
-                    setUniversityProgramSearch(
-                      event.target.value
-                    )
-                  }
-                />
-
-                <div className="university-program-list">
-
-                  {visibleUniversityPrograms.length >
-                  0 ? (
-
-                    visibleUniversityPrograms.map(
-                      (program) => {
-
-                        const normalized =
-                          normalizeProgram(
-                            program
-                          );
-
-                        return (
-                          <div
-                            key={
-                              program.code
-                            }
-                            className="university-program-item"
-                          >
-
-                            <button
-                              className="university-program-main"
-                              onClick={() =>
-                                openProgram(
-                                  program,
-                                  selectedUniversity
-                                )
-                              }
-                            >
-
-                              <strong>
-                                {
-                                  normalized.displayName
-                                }
-                              </strong>
-
-                              <span>
-                                {
-                                  normalized.displayScore
-                                }{" "}
-                                •{" "}
-                                {
-                                  normalized.displayDuration
-                                }{" "}
-                                yıl
-                              </span>
-
-                              <small>
-                                TBS:{" "}
-                                {
-                                  formatNumber(
-                                    normalized.displayRank
-                                  )
-                                }{" "}
-                                • Kontenjan:{" "}
-                                {
-                                  normalized.displayQuota
-                                }
-                              </small>
-
-                            </button>
-
-                            <div className="program-card-actions">
-                              <button
-                                type="button"
-                                className={
-                                  isInPreferences(
-                                    normalized
-                                  )
-                                    ? "program-add-button added"
-                                    : "program-add-button"
-                                }
-                                onClick={() =>
-                                  addToPreferences(
-                                    normalized
-                                  )
-                                }
-                                title={
-                                  isInPreferences(normalized)
-                                    ? "Tercih listesinde"
-                                    : "Tercih listesine ekle"
-                                }
-                              >
-                                {
-                                  isInPreferences(
-                                    normalized
-                                  )
-                                    ? "✓"
-                                    : "⭐"
-                                }
-                              </button>
-
-                              <button
-                                type="button"
-                                className={
-                                  isInComparison(normalized)
-                                    ? "program-compare-button selected"
-                                    : "program-compare-button"
-                                }
-                                onClick={() =>
-                                  toggleComparison(
-                                    normalized
-                                  )
-                                }
-                                title={
-                                  isInComparison(normalized)
-                                    ? "Karşılaştırmadan çıkar"
-                                    : "Karşılaştırmaya ekle"
-                                }
-                              >
-                                {
-                                  isInComparison(normalized)
-                                    ? "✓"
-                                    : "⇄"
-                                }
-                              </button>
-                            </div>
-
-                          </div>
-                        );
-                      }
-                    )
-
+                <div className="university-view-switch">
+                  {campusViewOpen ? (
+                    <button
+                      type="button"
+                      className="university-view-button active"
+                      onClick={() => {
+                        setCampusViewOpen(false);
+                        setSelectedCampus(null);
+                        setSelectedCampusFaculty(null);
+                        setMapFocus({
+                          latitude: selectedUniversity.latitude,
+                          longitude: selectedUniversity.longitude,
+                          zoom: 12,
+                        });
+                      }}
+                    >
+                      ← Programlara dön
+                    </button>
                   ) : (
+                    <button
+                      type="button"
+                      className="university-view-button"
+                      onClick={openCampusView}
+                    >
+                      📍 Kampüsleri / Yerleşkeleri Göster
+                    </button>
+                  )}
+                </div>
 
-                    <div className="empty-programs">
-                      Program bulunamadı.
+                {!campusViewOpen ? (
+                  <>
+                    <div className="university-program-header">
+                      <h3>Programlar</h3>
+                      <span>{visibleUniversityPrograms.length}</span>
                     </div>
 
-                  )}
+                    <div className="university-action-bar">
+                      <button
+                        type="button"
+                        className="university-action-button preference"
+                        onClick={() => {
+                          setSelectedProgram(null);
+                          setPreferenceOpen(true);
+                          setFiltersOpen(false);
+                        }}
+                      >
+                        ⭐ Tercih Listem <b>{preferences.length}</b>
+                      </button>
 
-                </div>
+                      <button
+                        type="button"
+                        className="university-action-button compare"
+                        disabled={comparisonPrograms.length < 2}
+                        onClick={() => setComparisonOpen(true)}
+                        title={comparisonPrograms.length < 2 ? "Karşılaştırmak için en az 2 program seçin" : "Seçili programları karşılaştır"}
+                      >
+                        ⇄ Karşılaştır <b>{comparisonPrograms.length}</b>
+                      </button>
+                    </div>
 
+                    <input
+                      className="university-program-search"
+                      type="text"
+                      placeholder="🔎 Bu üniversitede program ara..."
+                      value={universityProgramSearch}
+                      onChange={(event) => setUniversityProgramSearch(event.target.value)}
+                    />
+
+                    <div className="university-program-list">
+                      {visibleUniversityPrograms.length > 0 ? (
+                        visibleUniversityPrograms.map((program) => {
+                          const normalized = normalizeProgram(program);
+
+                          return (
+                            <div key={program.code} className="university-program-item">
+                              <button
+                                className="university-program-main"
+                                onClick={() => openProgram(program, selectedUniversity)}
+                              >
+                                <strong>{normalized.displayName}</strong>
+                                <span>{normalized.displayScore} • {normalized.displayDuration} yıl</span>
+                                <small>
+                                  TBS: {formatNumber(normalized.displayRank)} • Kontenjan: {normalized.displayQuota}
+                                </small>
+                              </button>
+
+                              <div className="program-card-actions">
+                                <button
+                                  type="button"
+                                  className={isInPreferences(normalized) ? "program-add-button added" : "program-add-button"}
+                                  onClick={() => addToPreferences(normalized)}
+                                  title={isInPreferences(normalized) ? "Tercih listesinde" : "Tercih listesine ekle"}
+                                >
+                                  {isInPreferences(normalized) ? "✓" : "⭐"}
+                                </button>
+
+                                <button
+                                  type="button"
+                                  className={isInComparison(normalized) ? "program-compare-button selected" : "program-compare-button"}
+                                  onClick={() => toggleComparison(normalized)}
+                                  title={isInComparison(normalized) ? "Karşılaştırmadan çıkar" : "Karşılaştırmaya ekle"}
+                                >
+                                  {isInComparison(normalized) ? "✓" : "⇄"}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="empty-programs">Program bulunamadı.</div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="campus-view-heading">
+                      <div>
+                        <div className="detail-label">KAMPÜSLER / YERLEŞKELER</div>
+                        <h3>{selectedCampus?.name || "Üniversite Kampüsleri"}</h3>
+                        <p>
+                          {selectedCampus
+                            ? "Bu yerleşkedeki fakülteleri ve programları incele."
+                            : "Bir yerleşke seç, haritada konumuna git ve o yerleşkedeki fakülteleri gör."}
+                        </p>
+                      </div>
+                      <span>{universityCampuses.length}</span>
+                    </div>
+
+                    <div className="university-campus-list">
+                      {!selectedCampus ? (
+                        universityCampuses.length > 0 ? (
+                          universityCampuses.map((campus) => (
+                            <button
+                              type="button"
+                              key={campus.id}
+                              className="university-campus-card"
+                              onClick={() => openCampus(campus)}
+                            >
+                              <span className="campus-card-icon">📍</span>
+                              <span>
+                                <strong>{campus.name}</strong>
+                                <small>
+                                  {campus.isMain ? "Ana yerleşke" : "Yerleşke"} · {campus.district || campus.city}
+                                </small>
+                              </span>
+                              <b>›</b>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="empty-programs">Bu üniversite için henüz kampüs/yerleşke verisi eklenmedi.</div>
+                        )
+                      ) : !selectedCampusFaculty ? (
+                        <>
+                          <div className="selected-campus-summary">
+                            <strong>{selectedCampus.name}</strong>
+                            <span>{selectedCampus.isMain ? "Ana yerleşke" : "Yerleşke"}</span>
+                            <small>{selectedCampus.address || `${selectedCampus.district || ""} ${selectedCampus.city || ""}`.trim()}</small>
+                            <button type="button" onClick={() => setSelectedCampus(null)}>
+                              ← Tüm yerleşkeler
+                            </button>
+                          </div>
+
+                          <div className="campus-section-title">
+                            <strong>Bu yerleşkedeki fakülte / birimler</strong>
+                            <span>{selectedCampusFacultyGroups.length}</span>
+                          </div>
+
+                          {selectedCampusFacultyGroups.length > 0 ? (
+                            selectedCampusFacultyGroups.map((faculty) => (
+                              <button
+                                type="button"
+                                key={faculty.id}
+                                className="university-campus-faculty-card"
+                                onClick={() => openCampusFaculty(faculty)}
+                              >
+                                <span className="faculty-card-icon">🏫</span>
+                                <span>
+                                  <strong>{faculty.name}</strong>
+                                  <small>{faculty.programCount} program · Bölüm / programları gör →</small>
+                                </span>
+                                <b>›</b>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="empty-programs">Bu yerleşke için fakülte eşlemesi henüz tamamlanmadı.</div>
+                          )}
+                        </>
+                      ) : !selectedCampusDepartment ? (
+                        <>
+                          <div className="selected-campus-summary">
+                            <strong>{selectedCampusFaculty.name}</strong>
+                            <span>{selectedCampus.name}</span>
+                            <small>{selectedCampusFacultyDepartments.length} bölüm · {selectedCampusFacultyPrograms.length} program</small>
+                            <button type="button" onClick={() => setSelectedCampusFaculty(null)}>
+                              ← Fakültelere dön
+                            </button>
+                          </div>
+
+                          <div className="campus-section-title">
+                            <strong>Bu fakültedeki bölümler</strong>
+                            <span>{selectedCampusFacultyDepartments.length}</span>
+                          </div>
+
+                          {selectedCampusFacultyDepartments.length > 0 ? (
+                            selectedCampusFacultyDepartments.map((department) => (
+                              <button
+                                type="button"
+                                key={department.id}
+                                className="university-campus-faculty-card campus-department-card"
+                                onClick={() => openCampusDepartment(department)}
+                              >
+                                <span className="faculty-card-icon">📚</span>
+                                <span>
+                                  <strong>{department.name}</strong>
+                                  <small>{department.programs.length} program · Programları gör →</small>
+                                </span>
+                                <b>›</b>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="empty-programs">Bu fakülte için bölüm verisi bulunamadı.</div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <div className="selected-campus-summary">
+                            <strong>{selectedCampusDepartment.name}</strong>
+                            <span>{selectedCampusFaculty.name} · {selectedCampus.name}</span>
+                            <small>{selectedCampusDepartmentPrograms.length} program</small>
+                            <button type="button" onClick={() => setSelectedCampusDepartment(null)}>
+                              ← Bölümlere dön
+                            </button>
+                          </div>
+
+                          {selectedCampusDepartmentPrograms.map((program) => (
+                            <button
+                              type="button"
+                              key={program.code}
+                              className="faculty-program-row"
+                              onClick={() => openProgram(program, selectedUniversity)}
+                            >
+                              <span>
+                                <strong>{normalizeProgram(program).displayName}</strong>
+                                <small>{normalizeProgram(program).displayScore} · TBS {formatNumber(normalizeProgram(program).displayRank)}</small>
+                              </span>
+                              <b>→</b>
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
               </>
-
             )}
-
           </aside>
         )}
 
@@ -2952,20 +3407,43 @@ const activeFilterCount = [
                 </strong>
               </div>
 
-              <div className="detail-row">
-                <span>
-                  Fakülte / Birim
-                </span>
+              {selectedCampus ? (
+                <button
+                  type="button"
+                  className="detail-row detail-location-row"
+                  onClick={focusSelectedProgramCampus}
+                  title={`${selectedCampus.name} konumunu haritada göster`}
+                >
+                  <span>
+                    Fakülte / Birim
+                  </span>
 
-                <strong>
-                  {
-                    selectedProgram.faculty ||
-                    selectedProgram.fymkAdi ||
-                    selectedProgram.birimAdi ||
-                    "-"
-                  }
-                </strong>
-              </div>
+                  <strong>
+                    {
+                      selectedProgram.faculty ||
+                      selectedProgram.fymkAdi ||
+                      selectedProgram.birimAdi ||
+                      "-"
+                    }
+                    <small>📍 {selectedCampus.name} · Haritada göster</small>
+                  </strong>
+                </button>
+              ) : (
+                <div className="detail-row">
+                  <span>
+                    Fakülte / Birim
+                  </span>
+
+                  <strong>
+                    {
+                      selectedProgram.faculty ||
+                      selectedProgram.fymkAdi ||
+                      selectedProgram.birimAdi ||
+                      "-"
+                    }
+                  </strong>
+                </div>
+              )}
 
             </div>
 
