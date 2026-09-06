@@ -19,6 +19,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -41,6 +42,20 @@ const universityIcon = new L.Icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
+});
+
+const selectedUniversityIcon = new L.Icon({
+  iconUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: "selected-university-marker",
 });
 
 // ==================================================
@@ -89,60 +104,6 @@ function formatNumber(value) {
   return new Intl.NumberFormat("tr-TR").format(
     parsed
   );
-}
-
-function getStrategyStatus(program, studentRank) {
-  const programRank = numberValue(
-    program.successRank ?? program.basariSirasi ?? program.displayRank
-  );
-
-  if (!Number.isFinite(studentRank) || programRank === null) {
-    return {
-      key: "unknown",
-      label: "Veri yok",
-    };
-  }
-
-  if (programRank < studentRank * 0.85) {
-    return {
-      key: "risky",
-      label: "Riskli",
-    };
-  }
-
-  if (programRank <= studentRank * 1.15) {
-    return {
-      key: "balanced",
-      label: "Dengeli",
-    };
-  }
-
-  return {
-    key: "safe",
-    label: "Güvenli",
-  };
-}
-
-function getStrategyReason(program, studentRank) {
-  const programRank = numberValue(
-    program.successRank ?? program.basariSirasi ?? program.displayRank
-  );
-
-  if (!Number.isFinite(studentRank) || programRank === null) {
-    return "Başarı sırası verisi değerlendirilemedi.";
-  }
-
-  const ratio = programRank / studentRank;
-
-  if (ratio < 0.85) {
-    return `Geçen yıl ${formatNumber(programRank)} sıralamayla kapattı; senden daha iyi sıra istiyor.`;
-  }
-
-  if (ratio <= 1.15) {
-    return `Geçen yıl ${formatNumber(programRank)} sıralamayla kapattı; sıralamana yakın.`;
-  }
-
-  return `Geçen yıl ${formatNumber(programRank)} sıralamayla kapattı; daha geniş güven payı var.`;
 }
 
 // ==================================================
@@ -195,6 +156,9 @@ function App() {
   const [search, setSearch] =
     useState("");
 
+  const [searchInput, setSearchInput] =
+    useState("");
+
   const [searchPrograms, setSearchPrograms] =
     useState([]);
 
@@ -203,6 +167,22 @@ function App() {
 
   const [loadingSearchPrograms, setLoadingSearchPrograms] =
     useState(false);
+
+  const [searchResultLimit, setSearchResultLimit] =
+    useState(15);
+
+  useEffect(() => {
+    const value = searchInput.trim();
+    const timer = setTimeout(() => {
+      setSearch(value);
+    }, 280);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
+    setSearchResultLimit(15);
+  }, [search]);
 
   const [selectedUniversity, setSelectedUniversity] =
     useState(null);
@@ -237,28 +217,16 @@ function App() {
   const [maxRank, setMaxRank] =
     useState("");
 
-  const [fitRank, setFitRank] =
-    useState("");
-
-  const [fitScoreType, setFitScoreType] =
-    useState("SAY");
-
-  const [fitEducation, setFitEducation] =
-    useState("Lisans");
-
-  const [fitMode, setFitMode] =
-    useState("strict");
-
-  const [fitSearch, setFitSearch] =
-    useState("");
-
-  const [fitOpen, setFitOpen] =
-    useState(false);
-
   const [filtersOpen, setFiltersOpen] =
     useState(false);
 
   const [preferenceOpen, setPreferenceOpen] =
+    useState(false);
+
+  const [aboutOpen, setAboutOpen] =
+    useState(false);
+
+  const [browseOpen, setBrowseOpen] =
     useState(false);
 
   const [comparisonOpen, setComparisonOpen] =
@@ -276,27 +244,188 @@ function App() {
   const [draggedPreferenceCode, setDraggedPreferenceCode] =
     useState(null);
 
+  const [universitySheetTop, setUniversitySheetTop] =
+    useState(null);
+
+  const universitySheetDragRef = useRef({
+    active: false,
+    startY: 0,
+    startTop: 0,
+  });
+
+  const getUniversitySheetBounds = useCallback(() => {
+    const viewportHeight = window.innerHeight || 667;
+    const collapsedTop = Math.min(
+      Math.max(viewportHeight * 0.48, 260),
+      430
+    );
+    const expandedTop = Math.max(
+      104,
+      Math.min(viewportHeight * 0.16, 150)
+    );
+
+    return {
+      expandedTop,
+      collapsedTop,
+    };
+  }, []);
+
+  const startUniversitySheetDrag = (event) => {
+    if (!selectedUniversity) return;
+
+    const { collapsedTop } = getUniversitySheetBounds();
+    const currentTop =
+      universitySheetTop ?? collapsedTop;
+
+    universitySheetDragRef.current = {
+      active: true,
+      startY: event.clientY,
+      startTop: currentTop,
+    };
+
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  };
+
+  const moveUniversitySheetDrag = (event) => {
+    if (!universitySheetDragRef.current.active) return;
+
+    const { expandedTop, collapsedTop } =
+      getUniversitySheetBounds();
+
+    const delta =
+      event.clientY -
+      universitySheetDragRef.current.startY;
+
+    const nextTop = Math.min(
+      collapsedTop,
+      Math.max(
+        expandedTop,
+        universitySheetDragRef.current.startTop + delta
+      )
+    );
+
+    setUniversitySheetTop(nextTop);
+  };
+
+  const endUniversitySheetDrag = () => {
+    if (!universitySheetDragRef.current.active) return;
+
+    universitySheetDragRef.current.active = false;
+
+    const { expandedTop, collapsedTop } =
+      getUniversitySheetBounds();
+    const currentTop =
+      universitySheetTop ?? collapsedTop;
+    const middle =
+      expandedTop + (collapsedTop - expandedTop) * 0.52;
+
+    setUniversitySheetTop(
+      currentTop < middle
+        ? expandedTop
+        : collapsedTop
+    );
+  };
+
+  useEffect(() => {
+    if (!selectedUniversity) {
+      setUniversitySheetTop(null);
+      return;
+    }
+
+    const { collapsedTop } =
+      getUniversitySheetBounds();
+    setUniversitySheetTop(collapsedTop);
+  }, [selectedUniversity, getUniversitySheetBounds]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!selectedUniversity) return;
+      const { expandedTop, collapsedTop } =
+        getUniversitySheetBounds();
+      const currentTop =
+        universitySheetTop ?? collapsedTop;
+      setUniversitySheetTop(
+        Math.min(
+          collapsedTop,
+          Math.max(expandedTop, currentTop)
+        )
+      );
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () =>
+      window.removeEventListener("resize", handleResize);
+  }, [selectedUniversity, universitySheetTop, getUniversitySheetBounds]);
+
+  const blurSearch = () => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  };
+
+  const applyQuickFilter = (kind) => {
+    const values = {
+      devlet: () => setTypeFilter("Devlet Üniversitesi"),
+      vakif: () => setTypeFilter("Vakıf Üniversitesi"),
+      lisans: () => setEducationFilter("Lisans"),
+      onlisans: () => setEducationFilter("Önlisans"),
+      tyt: () => setScoreFilter("TYT"),
+      say: () => setScoreFilter("SAY"),
+    };
+    values[kind]?.();
+  };
+
+  const resetFilters = () => {
+    setCityFilter("Tümü");
+    setTypeFilter("Tümü");
+    setEducationFilter("Tümü");
+    setScoreFilter("Tümü");
+    setMinRank("");
+    setMaxRank("");
+  };
+
   const toggleFloatingPanel = (panel) => {
     const isOpen =
-      panel === "fit"
-        ? fitOpen
-        : panel === "filters"
-          ? filtersOpen
-          : preferenceOpen;
+      panel === "filters"
+        ? filtersOpen
+        : preferenceOpen;
 
-    setFitOpen(false);
     setFiltersOpen(false);
     setPreferenceOpen(false);
+    setAboutOpen(false);
+    setBrowseOpen(false);
 
     if (!isOpen) {
-      if (panel === "fit") {
-        setFitOpen(true);
-      } else if (panel === "filters") {
+      if (panel === "filters") {
         setFiltersOpen(true);
       } else {
         setPreferenceOpen(true);
       }
     }
+  };
+
+  const goHome = () => {
+    setFiltersOpen(false);
+    setPreferenceOpen(false);
+    setAboutOpen(false);
+    setBrowseOpen(false);
+    setSelectedProgram(null);
+    setSelectedUniversity(null);
+  };
+
+  const openAbout = () => {
+    setFiltersOpen(false);
+    setPreferenceOpen(false);
+    setBrowseOpen(false);
+    setAboutOpen((open) => !open);
+  };
+
+  const openBrowse = () => {
+    setFiltersOpen(false);
+    setPreferenceOpen(false);
+    setAboutOpen(false);
+    setBrowseOpen(true);
   };
 
   const comparisonSummary =
@@ -412,6 +541,17 @@ function App() {
         )
     );
   }, []);
+
+  const browseUniversities = useMemo(() =>
+    mapUniversities
+      .slice()
+      .sort((a, b) => {
+        const cityCompare = (a.city || '').localeCompare(b.city || '', 'tr');
+        if (cityCompare !== 0) return cityCompare;
+        return (a.name || '').localeCompare(b.name || '', 'tr');
+      })
+      .slice(0, 18),
+  [mapUniversities]);
 
   // ==================================================
   // CITIES
@@ -640,175 +780,6 @@ function App() {
     ]);
 
   // ==================================================
-  // SUITABLE PROGRAMS
-  // ==================================================
-
-  const suitablePrograms =
-    useMemo(() => {
-      if (
-        !searchProgramsLoaded ||
-        fitRank === ""
-      ) {
-        return [];
-      }
-
-      const studentRank =
-        Number(fitRank);
-
-      if (
-        !Number.isFinite(
-          studentRank
-        )
-      ) {
-        return [];
-      }
-
-      const fitQuery =
-        normalize(fitSearch);
-
-      return searchPrograms.filter(
-        (program) => {
-          const university =
-            universityMap.get(
-              program.universityId
-            );
-
-          if (!university) {
-            return false;
-          }
-
-          const programRank =
-            numberValue(
-              program.successRank
-            );
-
-          if (
-            programRank === null
-          ) {
-            return false;
-          }
-
-          const safeRank =
-            Math.round(studentRank * 1.25);
-
-          const rankMatch =
-            fitMode === "ambitious"
-              ? programRank >= Math.round(studentRank * 0.8)
-              : fitMode === "safe"
-                ? programRank >= safeRank
-                : programRank >= studentRank;
-
-          const scoreMatch =
-            fitScoreType ===
-              "Tümü" ||
-            program.scoreType ===
-              fitScoreType;
-
-          const duration =
-            numberValue(
-              program.duration
-            );
-
-          const education =
-            duration === 2
-              ? "Önlisans"
-              : "Lisans";
-
-          const educationMatch =
-            fitEducation ===
-              "Tümü" ||
-            education ===
-              fitEducation;
-
-          const cityMatch =
-            cityFilter ===
-              "Tümü" ||
-            sameCity(
-              university.city,
-              cityFilter
-            );
-
-          const typeMatch =
-            typeFilter ===
-              "Tümü" ||
-            university.type ===
-              typeFilter;
-
-          const queryMatch =
-            !fitQuery ||
-            normalize(
-              program.name
-            ).includes(
-              fitQuery
-            );
-
-          return (
-            rankMatch &&
-            scoreMatch &&
-            educationMatch &&
-            cityMatch &&
-            typeMatch &&
-            queryMatch
-          );
-        }
-      )
-        .sort(
-          (a, b) =>
-            numberValue(
-              a.successRank
-            ) -
-            numberValue(
-              b.successRank
-            )
-        );
-    }, [
-      searchPrograms,
-      searchProgramsLoaded,
-      universityMap,
-      fitRank,
-      fitScoreType,
-      fitEducation,
-      fitSearch,
-      fitMode,
-      cityFilter,
-      typeFilter,
-    ]);
-
-  // ==================================================
-  // UNIVERSITIES FOR SUITABLE SEARCH
-  // ==================================================
-
-  const suitableUniversities =
-    useMemo(() => {
-      if (
-        !fitRank ||
-        !searchProgramsLoaded
-      ) {
-        return baseFilteredUniversities;
-      }
-
-      const ids =
-        new Set(
-          suitablePrograms.map(
-            (program) =>
-              program.universityId
-          )
-        );
-
-      return baseFilteredUniversities.filter(
-        (university) =>
-          ids.has(
-            university.id
-          )
-      );
-    }, [
-      fitRank,
-      searchProgramsLoaded,
-      suitablePrograms,
-      baseFilteredUniversities,
-    ]);
-
-  // ==================================================
   // MAP UNIVERSITIES
   // ==================================================
 
@@ -821,12 +792,6 @@ function App() {
           "Tümü" ||
         minRank !== "" ||
         maxRank !== "";
-
-      if (
-        fitRank !== ""
-      ) {
-        return suitableUniversities;
-      }
 
       if (!programFilterActive) {
         return baseFilteredUniversities;
@@ -853,8 +818,6 @@ function App() {
           )
       );
     }, [
-      fitRank,
-      suitableUniversities,
       educationFilter,
       scoreFilter,
       minRank,
@@ -873,7 +836,7 @@ function App() {
       normalize(search);
 
     if (
-      query.length < 3 ||
+      query.length < 2 ||
       searchProgramsLoaded
     ) {
       return;
@@ -908,12 +871,6 @@ function App() {
     searchProgramsLoaded,
     loadSearchPrograms,
   ]);
-  useEffect(() => {
-    if (fitOpen && !searchProgramsLoaded) {
-      loadSearchPrograms();
-    }
-  }, [fitOpen, searchProgramsLoaded, loadSearchPrograms]);
-
   // ==================================================
   // ÜNİVERSİTE İÇİNDE PROGRAMLAR
   // ==================================================
@@ -925,76 +882,140 @@ function App() {
           universityProgramSearch
         );
 
+      const min =
+        minRank === ""
+          ? null
+          : Number(minRank);
+
+      const max =
+        maxRank === ""
+          ? null
+          : Number(maxRank);
+
       const normalized =
         universityPrograms.map(
-          (program) => ({
-            ...program,
+          (program) => {
+            const duration =
+              numberValue(
+                program.duration ??
+                program.ogrenimSuresi
+              );
 
-            displayName:
-              program.name ||
-              program.programName ||
-              program.birimAdi ||
-              "Program adı bulunamadı",
+            return {
+              ...program,
 
-            displayScoreType:
-              program.scoreType ||
-              program.puanTuru ||
-              "-",
+              displayName:
+                program.name ||
+                program.programName ||
+                program.birimAdi ||
+                "Program adı bulunamadı",
 
-            displayDuration:
-              program.duration ??
-              program.ogrenimSuresi ??
-              "-",
+              displayScoreType:
+                program.scoreType ||
+                program.puanTuru ||
+                "-",
 
-            displayQuota:
-              program.quota ??
-              program.kontenjan ??
-              "-",
+              displayEducation:
+                duration === 2
+                  ? "Önlisans"
+                  : duration
+                    ? "Lisans"
+                    : (program.education ||
+                        program.egitimTuru ||
+                        "-"),
 
-            displayPlaced:
-              program.placed ??
-              program.yerlesen ??
-              "-",
+              displayDuration:
+                program.duration ??
+                program.ogrenimSuresi ??
+                "-",
 
-            displayRank:
-              program.successRank ??
-              program.basariSirasi ??
-              null,
+              displayQuota:
+                program.quota ??
+                program.kontenjan ??
+                "-",
 
-            displayMinScore:
-              program.minScore ??
-              program.minPuan ??
-              null,
+              displayPlaced:
+                program.placed ??
+                program.yerlesen ??
+                "-",
 
-            displayMaxScore:
-              program.maxScore ??
-              program.maxPuan ??
-              null,
+              displayRank:
+                program.successRank ??
+                program.basariSirasi ??
+                null,
 
-            displayFaculty:
-              program.faculty ||
-              program.fymkAdi ||
-              program.birimAdi ||
-              "-",
-          })
+              displayMinScore:
+                program.minScore ??
+                program.minPuan ??
+                null,
+
+              displayMaxScore:
+                program.maxScore ??
+                program.maxPuan ??
+                null,
+
+              displayFaculty:
+                program.faculty ||
+                program.fymkAdi ||
+                program.birimAdi ||
+                "-",
+            };
+          }
         );
 
-      if (!query) {
-        return normalized;
-      }
-
       return normalized.filter(
-        (program) =>
-          normalize(
-            program.displayName
-          ).includes(query) ||
-          normalize(
-            program.displayScoreType
-          ).includes(query)
+        (program) => {
+          const educationMatch =
+            educationFilter === "Tümü" ||
+            program.displayEducation ===
+              educationFilter;
+
+          const scoreMatch =
+            scoreFilter === "Tümü" ||
+            program.displayScoreType ===
+              scoreFilter;
+
+          const rank =
+            numberValue(
+              program.displayRank
+            );
+
+          const minMatch =
+            min === null ||
+            (rank !== null && rank >= min);
+
+          const maxMatch =
+            max === null ||
+            (rank !== null && rank <= max);
+
+          const searchMatch =
+            !query ||
+            normalize(
+              program.displayName
+            ).includes(query) ||
+            normalize(
+              program.displayScoreType
+            ).includes(query) ||
+            normalize(
+              program.displayFaculty
+            ).includes(query);
+
+          return (
+            educationMatch &&
+            scoreMatch &&
+            minMatch &&
+            maxMatch &&
+            searchMatch
+          );
+        }
       );
     }, [
       universityPrograms,
       universityProgramSearch,
+      educationFilter,
+      scoreFilter,
+      minRank,
+      maxRank,
     ]);
   // ==================================================
   // SEARCH RESULTS
@@ -1002,93 +1023,67 @@ function App() {
 
   const searchResults =
     useMemo(() => {
-      const query =
-        normalize(search);
+      const query = normalize(search);
+      if (!query || query.length < 2) return [];
 
-      if (!query) {
-        return [];
-      }
+      const tokens = query.split(/\s+/).filter(Boolean);
+      const candidates = [];
+      const joined = (...parts) => normalize(parts.filter(Boolean).join(" "));
 
-      const results = [];
+      const match = (text) => {
+        const value = normalize(text);
+        if (!value || !tokens.every((token) => value.includes(token))) {
+          return { matched: false, score: 0 };
+        }
+        let score = 50 + Math.min(tokens.length, 6) * 4;
+        if (value === query) score = 130;
+        else if (value.startsWith(query)) score = 108;
+        else if (value.includes(query)) score = 92;
+        return { matched: true, score };
+      };
 
       for (const university of baseFilteredUniversities) {
-        if (
-          results.length >=
-          30
-        ) {
-          break;
-        }
-
-        const name =
-          normalize(
-            university.name
-          );
-
-        const city =
-          normalize(
-            university.city
-          );
-
-        if (
-          name.includes(query) ||
-          city.includes(query)
-        ) {
-          results.push({
-            type: "university",
-            university,
-          });
-        }
+        const hit = match(joined(university.name, university.city));
+        if (!hit.matched) continue;
+        const name = normalize(university.name);
+        let score = hit.score;
+        if (name === query) score += 35;
+        else if (name.startsWith(query)) score += 22;
+        candidates.push({ type: "university", university, score });
       }
 
-      if (
-        searchProgramsLoaded
-      ) {
+      if (searchProgramsLoaded) {
         for (const program of generalFilteredPrograms) {
-          if (
-            results.length >=
-            30
-          ) {
-            break;
-          }
-
-          const programName =
-            normalize(
-              program.name
-            );
-
-          if (
-            !programName.includes(
-              query
-            )
-          ) {
-            continue;
-          }
-
-          const university =
-            universityMap.get(
-              program.universityId
-            );
-
-          if (!university) {
-            continue;
-          }
-
-          results.push({
-            type: "program",
-            university,
-            program,
-          });
+          const university = universityMap.get(program.universityId);
+          if (!university) continue;
+          const hit = match(joined(program.name, program.faculty, program.universityName, university.city));
+          if (!hit.matched) continue;
+          const programName = normalize(program.name);
+          const universityName = normalize(program.universityName);
+          let score = hit.score;
+          if (programName === query) score += 70;
+          else if (programName.startsWith(query)) score += 42;
+          else if (programName.includes(query)) score += 26;
+          if (universityName.includes(query)) score += 18;
+          candidates.push({ type: "program", university, program, score });
         }
       }
 
-      return results;
-    }, [
-      search,
-      baseFilteredUniversities,
-      searchProgramsLoaded,
-      generalFilteredPrograms,
-      universityMap,
-    ]);
+      candidates.sort((a,b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        if (a.type !== b.type) return a.type === "program" ? -1 : 1;
+        const an = normalize(a.type === "program" ? a.program.name : a.university.name);
+        const bn = normalize(b.type === "program" ? b.program.name : b.university.name);
+        return an.localeCompare(bn, "tr");
+      });
+
+      return candidates;
+    }, [search, baseFilteredUniversities, searchProgramsLoaded, generalFilteredPrograms, universityMap]);
+
+  const visibleSearchResults = useMemo(
+    () => searchResults.slice(0, searchResultLimit),
+    [searchResults, searchResultLimit]
+  );
 
   // ==================================================
   // LOAD UNIVERSITY PROGRAMS
@@ -1154,6 +1149,11 @@ function App() {
   const openUniversity =
     useCallback(
       async (university) => {
+            setFiltersOpen(false);
+        setPreferenceOpen(false);
+        setAboutOpen(false);
+        setBrowseOpen(false);
+
         setSelectedUniversity(
           university
         );
@@ -1341,97 +1341,6 @@ function App() {
         }
       );
     };
-
-  const strategySummary = useMemo(() => {
-    const studentRank = numberValue(fitRank);
-    const summary = {
-      risky: 0,
-      balanced: 0,
-      safe: 0,
-      unknown: 0,
-      scoreMismatch: 0,
-    };
-
-    for (const program of preferences) {
-      const status = getStrategyStatus(program, studentRank);
-      summary[status.key] += 1;
-
-      const scoreType = program.scoreType ?? program.puanTuru;
-      if (
-        fitScoreType !== "Tümü" &&
-        scoreType &&
-        scoreType !== fitScoreType
-      ) {
-        summary.scoreMismatch += 1;
-      }
-    }
-
-    return summary;
-  }, [preferences, fitRank, fitScoreType]);
-
-  const strategyRecommendations = useMemo(() => {
-    const studentRank = numberValue(fitRank);
-
-    if (!searchProgramsLoaded || !Number.isFinite(studentRank)) {
-      return { risky: [], balanced: [], safe: [] };
-    }
-
-    const query = normalize(fitSearch);
-    const buckets = { risky: [], balanced: [], safe: [] };
-
-    for (const program of searchPrograms) {
-      const scoreType = program.scoreType ?? program.puanTuru;
-      if (fitScoreType !== "Tümü" && scoreType !== fitScoreType) continue;
-
-      const duration = numberValue(program.duration ?? program.ogrenimSuresi);
-      const education = duration === 2 ? "Önlisans" : "Lisans";
-      if (fitEducation !== "Tümü" && education !== fitEducation) continue;
-
-      const university = universityMap.get(program.universityId);
-      if (!university) continue;
-      if (cityFilter !== "Tümü" && !sameCity(university.city, cityFilter)) continue;
-      if (typeFilter !== "Tümü" && university.type !== typeFilter) continue;
-
-      const name = program.name ?? program.programName ?? program.birimAdi ?? "";
-      if (query && !normalize(name).includes(query)) continue;
-
-      const rank = numberValue(program.successRank ?? program.basariSirasi);
-      if (rank === null) continue;
-
-      const ratio = rank / studentRank;
-      if (ratio < 0.55 || ratio > 2.25) continue;
-
-      const status = getStrategyStatus(program, studentRank);
-      if (!buckets[status.key]) continue;
-
-      buckets[status.key].push({
-        ...program,
-        displayName: name || "Program",
-        displayUniversity: program.universityName ?? university.name ?? "-",
-        recommendationReason: getStrategyReason(program, studentRank),
-        _distance: Math.abs(Math.log(ratio)),
-      });
-    }
-
-    for (const key of Object.keys(buckets)) {
-      buckets[key].sort((a, b) => a._distance - b._distance || numberValue(a.successRank) - numberValue(b.successRank));
-      buckets[key] = buckets[key].slice(0, 6);
-    }
-
-    return buckets;
-  }, [
-    fitRank,
-    fitScoreType,
-    fitEducation,
-    fitSearch,
-    searchProgramsLoaded,
-    searchPrograms,
-    universityMap,
-    cityFilter,
-    typeFilter,
-  ]);
-
-
 
   const movePreference =
     (sourceCode, targetCode) => {
@@ -1694,13 +1603,35 @@ const activeFilterCount = [
           <input
             type="text"
             placeholder="🔎 Üniversite veya bölüm ara..."
-            value={search}
+            value={searchInput}
             onChange={(event) =>
-              setSearch(
+              setSearchInput(
                 event.target.value
               )
             }
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && searchResults.length > 0) {
+                const first = searchResults[0];
+                blurSearch();
+                if (first.type === "university") {
+                  openUniversity(first.university);
+                } else {
+                  openProgram(first.program, first.university);
+                }
+                setSearchInput("");
+                setSearch("");
+              }
+            }}
           />
+
+          <div className="quick-filter-strip" aria-label="Hızlı filtreler">
+            <button type="button" onClick={() => applyQuickFilter("devlet")}>Devlet</button>
+            <button type="button" onClick={() => applyQuickFilter("vakif")}>Vakıf</button>
+            <button type="button" onClick={() => applyQuickFilter("lisans")}>Lisans</button>
+            <button type="button" onClick={() => applyQuickFilter("onlisans")}>Önlisans</button>
+            <button type="button" onClick={() => applyQuickFilter("tyt")}>TYT</button>
+            <button type="button" onClick={() => applyQuickFilter("say")}>SAY</button>
+          </div>
 
           {loadingSearchPrograms &&
             search.trim() && (
@@ -1716,7 +1647,12 @@ const activeFilterCount = [
                 {searchResults.length >
                 0 ? (
 
-                  searchResults.map(
+                  <>
+                    <div className="search-results-count">
+                      {searchResults.length} sonuç bulundu • {Math.min(searchResultLimit, searchResults.length)} gösteriliyor
+                    </div>
+
+                    {visibleSearchResults.map(
                     (
                       result,
                       index
@@ -1733,11 +1669,12 @@ const activeFilterCount = [
                             }
                             className="search-result"
 
-                            onClick={() =>
-                              openUniversity(
-                                result.university
-                              )
-                            }
+                            onClick={() => {
+                              blurSearch();
+                              openUniversity(result.university);
+                              setSearchInput("");
+                              setSearch("");
+                            }}
                           >
 
                             <span className="result-type">
@@ -1781,12 +1718,12 @@ const activeFilterCount = [
                           <button
                             className="search-result-main"
 
-                            onClick={() =>
-                              openProgram(
-                                result.program,
-                                result.university
-                              )
-                            }
+                            onClick={() => {
+                              blurSearch();
+                              openProgram(result.program, result.university);
+                              setSearchInput("");
+                              setSearch("");
+                            }}
                           >
 
                             <span className="result-type">
@@ -1854,7 +1791,22 @@ const activeFilterCount = [
                         </div>
                       );
                     }
-                  )
+                    )}
+
+                    {searchResults.length > searchResultLimit && (
+                      <button
+                        type="button"
+                        className="search-load-more"
+                        onClick={() =>
+                          setSearchResultLimit((current) =>
+                            Math.min(current + 15, searchResults.length)
+                          )
+                        }
+                      >
+                        Daha fazla göster ({searchResults.length - searchResultLimit})
+                      </button>
+                    )}
+                  </>
 
                 ) : (
 
@@ -1869,46 +1821,55 @@ const activeFilterCount = [
 
         </div>
 
+        <nav className="top-nav" aria-label="Ana menü">
+          <button className="top-nav-item active" type="button" onClick={goHome}>⌂ <span>Ana Sayfa</span></button>
+          <button className="top-nav-item" type="button" onClick={openBrowse}>🎓 <span>Üniversiteler</span></button>
+          <button className="top-nav-item" type="button" onClick={() => toggleFloatingPanel("preferences")}>⭐ <span>Tercih Listem</span><b>{preferences.length}</b></button>
+          <button className="top-nav-item" type="button" onClick={() => setFiltersOpen(true)}>⚙ <span>Filtreler</span></button>
+          <button className="top-nav-item" type="button" onClick={openAbout}>ⓘ <span>Hakkında</span></button>
+        </nav>
+
         <div className="header-actions">
 
           <button
-            className={`fit-button mobile-nav-button ${fitOpen ? "is-active" : ""}`}
-            aria-label="Tercih Stratejim"
-            aria-pressed={fitOpen}
-            onClick={() =>
-              toggleFloatingPanel("fit")
-            }
+            className="header-universities-button"
+            onClick={openBrowse}
           >
-            <span className="mobile-nav-icon" aria-hidden="true">🎯</span>
-            <span className="mobile-nav-label">Tercih Stratejim</span>
+            🎓 Üniversiteler
           </button>
 
           <button
-            className={`header-list-button mobile-nav-button ${preferenceOpen ? "is-active" : ""}`}
-            aria-label="Tercih Listem"
-            aria-pressed={preferenceOpen}
+            className="header-list-button"
             onClick={() =>
               toggleFloatingPanel("preferences")
             }
           >
-            <span className="mobile-nav-icon" aria-hidden="true">⭐</span>
-            <span className="mobile-nav-label">Tercih Listem</span>
-            <span className="mobile-nav-count">{preferences.length}</span>
+            ⭐ Tercih Listem
+
+            <span>
+              {
+                preferences.length
+              }
+            </span>
           </button>
 
           <button
-            className={`filter-button mobile-nav-button ${filtersOpen ? "is-active" : ""}`}
-            aria-label="Filtreler"
-            aria-pressed={filtersOpen}
+            className="filter-button"
             onClick={() =>
               toggleFloatingPanel("filters")
             }
           >
-            <span className="mobile-nav-icon" aria-hidden="true">⚙</span>
-            <span className="mobile-nav-label">Filtreler</span>
-            {activeFilterCount > 0 && (
-              <span className="filter-count mobile-nav-filter-count">{activeFilterCount}</span>
+            ⚙ Filtreler
+
+            {activeFilterCount >
+              0 && (
+              <span className="filter-count">
+                {
+                  activeFilterCount
+                }
+              </span>
             )}
+
           </button>
 
         </div>
@@ -1916,250 +1877,73 @@ const activeFilterCount = [
       </header>
 
       {/* ========================================
-          UYGUN PROGRAMLAR
+          MODERN DASHBOARD SHELL
       ======================================== */}
 
-      {fitOpen && (
-        <aside className="fit-panel">
+      <aside className="explore-sidebar">
+        <div className="sidebar-search-label">KEŞFET</div>
+        <h2>Üniversiteni bul</h2>
+        <p className="sidebar-intro">Şehrini ve üniversite türünü seç, haritadaki seçenekleri hızlıca keşfet.</p>
 
-          <div className="fit-panel-header">
+        <button
+          className="sidebar-select"
+          onClick={() => setFiltersOpen(true)}
+        >
+          <span className="sidebar-icon indigo">⌖</span>
+          <span>
+            <strong>Şehir</strong>
+            <small>{cityFilter === "Tümü" ? "Tüm şehirler" : cityFilter}</small>
+          </span>
+          <b>⌄</b>
+        </button>
 
-            <div>
+        <button
+          className="sidebar-select"
+          onClick={() => setFiltersOpen(true)}
+        >
+          <span className="sidebar-icon cyan">▣</span>
+          <span>
+            <strong>Üniversite türü</strong>
+            <small>{typeFilter === "Tümü" ? "Tüm üniversiteler" : typeFilter}</small>
+          </span>
+          <b>⌄</b>
+        </button>
 
-              <div className="detail-label">
-                TERCİH STRATEJİSİ
-              </div>
+        <button
+          className="sidebar-select"
+          onClick={() => setFiltersOpen(true)}
+        >
+          <span className="sidebar-icon orange">▤</span>
+          <span>
+            <strong>Program türü</strong>
+            <small>{educationFilter === "Tümü" ? "Lisans + Önlisans" : educationFilter}</small>
+          </span>
+          <b>⌄</b>
+        </button>
 
-              <h2>
-                Tercih listenizi dengele
-              </h2>
+        <div className="sidebar-section-title">Hızlı Erişim</div>
 
-            </div>
+        <button className="sidebar-feature orange" onClick={openBrowse}>
+          <span>🔥</span>
+          <span><strong>Üniversiteleri keşfet</strong><small>Haritadan veya listeden seç</small></span>
+          <b>→</b>
+        </button>
 
-            <button
-              className="close-button"
-              onClick={() =>
-                setFitOpen(false)
-              }
-            >
-              ✕
-            </button>
+        <button className="sidebar-feature cyan" onClick={() => setFiltersOpen(true)}>
+          <span>▥</span>
+          <span><strong>2026 taban verileri</strong><small>Güncel program bilgileri</small></span>
+          <b>→</b>
+        </button>
 
-          </div>
+        <div className="sidebar-quote">
+          <strong>Doğru tercih,<br />daha aydınlık bir gelecek.</strong>
+          <p>Türkiye’deki üniversiteleri keşfet, karşılaştır ve hayallerine bir adım daha yaklaş.</p>
+        </div>
+      </aside>
 
-          <p className="fit-description">
-            Başarı sıranı gir. Tercih listen,
-            geçen yılın taban başarı sıralarına göre
-            riskli, dengeli ve güvenli olarak analiz edilir.
-          </p>
-
-          <label>
-            Başarı sıran
-          </label>
-
-          <input
-            className="fit-rank-input"
-            type="number"
-            min="1"
-            placeholder="Örn. 150000"
-            value={fitRank}
-            onChange={(event) =>
-              setFitRank(
-                event.target.value
-              )
-            }
-          />
-
-          <label>
-            Puan türün
-          </label>
-
-          <select
-            value={fitScoreType}
-            onChange={(event) =>
-              setFitScoreType(
-                event.target.value
-              )
-            }
-          >
-            <option value="Tümü">
-              Tüm puan türleri
-            </option>
-
-            <option value="TYT">TYT</option>
-            <option value="SAY">SAY</option>
-            <option value="EA">EA</option>
-            <option value="SÖZ">SÖZ</option>
-            <option value="DİL">DİL</option>
-          </select>
-
-          <label>
-            Eğitim türü
-          </label>
-
-          <select
-            value={fitEducation}
-            onChange={(event) =>
-              setFitEducation(
-                event.target.value
-              )
-            }
-          >
-
-            <option value="Tümü">
-              Tümü
-            </option>
-
-            <option value="Lisans">
-              Lisans
-            </option>
-
-            <option value="Önlisans">
-              Önlisans
-            </option>
-
-          </select>
-
-          <label>
-            İstersen bölüm ara
-          </label>
-
-          <input
-            className="fit-rank-input fit-search-input"
-            type="text"
-            placeholder="Örn. Bilgisayar Mühendisliği"
-            value={fitSearch}
-            onChange={(event) =>
-              setFitSearch(event.target.value)
-            }
-          />
-
-          {!fitRank ? (
-            <div className="fit-summary">
-              <span>
-                Analizi başlatmak için başarı sıralanı gir.
-              </span>
-            </div>
-          ) : preferences.length === 0 ? (
-            <div className="fit-summary">
-              <span>
-                Analiz için önce tercih listene program ekle.
-              </span>
-            </div>
-          ) : (
-            <>
-              <div className="strategy-summary-grid">
-                <div className="strategy-count risky">
-                  <strong>{strategySummary.risky}</strong>
-                  <span>Riskli</span>
-                </div>
-                <div className="strategy-count balanced">
-                  <strong>{strategySummary.balanced}</strong>
-                  <span>Dengeli</span>
-                </div>
-                <div className="strategy-count safe">
-                  <strong>{strategySummary.safe}</strong>
-                  <span>Güvenli</span>
-                </div>
-              </div>
-
-              <div className="strategy-warnings">
-                {strategySummary.safe === 0 && (
-                  <p>Listenizde güvenli tercih bulunmuyor; aşağıdaki önerilerden ekleyebilirsiniz.</p>
-                )}
-                {strategySummary.scoreMismatch > 0 && (
-                  <p>{strategySummary.scoreMismatch} tercih seçtiğiniz puan türüyle uyuşmuyor.</p>
-                )}
-                {strategySummary.unknown > 0 && (
-                  <p>{strategySummary.unknown} tercih için başarı sırası verisi yok.</p>
-                )}
-                {strategySummary.safe > 0 && strategySummary.balanced > 0 && (
-                  <p>Listenizde riskli, dengeli ve güvenli seçeneklerden oluşan bir dağılım var.</p>
-                )}
-              </div>
-
-              <div className="strategy-recommendations">
-                <div className="strategy-section-title">
-                  <div>
-                    <strong>Sana uygun öneriler</strong>
-                    <span>Başarı sırana en yakın seçenekler öne çıkarılır.</span>
-                  </div>
-                </div>
-
-                {(["risky", "balanced", "safe"]).map((key) => {
-                  const labels = {
-                    risky: "Riskli seçenekler",
-                    balanced: "Dengeli seçenekler",
-                    safe: "Güvenli seçenekler",
-                  };
-
-                  return (
-                    <div key={key} className={`strategy-recommendation-group ${key}`}>
-                      <div className="strategy-group-heading">
-                        <strong>{labels[key]}</strong>
-                        <span>{strategyRecommendations[key].length} öneri</span>
-                      </div>
-
-                      {strategyRecommendations[key].length === 0 ? (
-                        <div className="strategy-empty">Bu kategori için eşleşen program bulunamadı.</div>
-                      ) : (
-                        strategyRecommendations[key].map((program) => (
-                          <div key={program.code} className="strategy-recommendation-card">
-                            <div className="strategy-recommendation-content">
-                              <strong>{program.displayName}</strong>
-                              <small>{program.displayUniversity}</small>
-                              <span>2026 başarı sırası: {formatNumber(program.successRank)}</span>
-                              <em>{program.recommendationReason}</em>
-                            </div>
-                            <button
-                              className={`strategy-add-button ${preferenceCodes.has(String(program.code)) ? "added" : ""}`}
-                              type="button"
-                              disabled={preferenceCodes.has(String(program.code))}
-                              onClick={() => addToPreferences(program)}
-                            >
-                              {preferenceCodes.has(String(program.code)) ? "✓ Eklendi" : "+ Listeye ekle"}
-                            </button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="strategy-list-analysis">
-                <div className="strategy-section-title">
-                  <div>
-                    <strong>Mevcut tercih listen</strong>
-                    <span>Listenizdeki programların risk seviyeleri.</span>
-                  </div>
-                </div>
-
-                <div className="strategy-program-list">
-                  {preferences.map((program, index) => {
-                    const status = getStrategyStatus(
-                      program,
-                      numberValue(fitRank)
-                    );
-
-                    return (
-                      <div key={program.code} className="strategy-program-row">
-                        <span>{index + 1}</span>
-                        <div>
-                          <strong>{program.displayName || program.name || "Program"}</strong>
-                          <small>{program.displayUniversity || program.universityName || "-"}</small>
-                        </div>
-                        <em className={`strategy-tag ${status.key}`}>{status.label}</em>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-
-        </aside>
-      )}
+      {/* ========================================
+          UYGUN PROGRAMLAR
+      ======================================== */}
 
       {/* ========================================
           FİLTRELER
@@ -2356,7 +2140,6 @@ const activeFilterCount = [
               onClick={
                 () => {
                   resetFilters();
-                  setFitRank("");
                 }
               }
             >
@@ -2373,6 +2156,25 @@ const activeFilterCount = [
       ======================================== */}
 
       <main className="map-area">
+
+        <div className="map-dashboard-top">
+          <div className="map-stat-card indigo">
+            <span className="map-stat-icon">⌂</span>
+            <div><strong>{mapUniversities.length || 205}</strong><small>Üniversite</small></div>
+          </div>
+          <div className="map-stat-card cyan">
+            <span className="map-stat-icon">▤</span>
+            <div><strong>21.493+</strong><small>Program</small></div>
+          </div>
+          <div className="map-stat-card orange">
+            <span className="map-stat-icon">◎</span>
+            <div><strong>81</strong><small>İl</small></div>
+          </div>
+          <div className="map-stat-card soft">
+            <span className="map-stat-icon">✓</span>
+            <div><strong>2026</strong><small>Güncel veriler</small></div>
+          </div>
+        </div>
 
         <MapContainer
           center={[
@@ -2417,7 +2219,9 @@ const activeFilterCount = [
                   ]}
 
                   icon={
-                    universityIcon
+                    selectedUniversity?.id === university.id
+                      ? selectedUniversityIcon
+                      : universityIcon
                   }
                 >
 
@@ -2494,6 +2298,100 @@ const activeFilterCount = [
 
         </MapContainer>
 
+        <div className="dashboard-bottom">
+          <button className="dashboard-card image-card popular" type="button" onClick={openBrowse}>
+            <span className="dashboard-card-overlay">
+              <small>KEŞFET</small>
+              <strong>Üniversiteleri<br />Keşfet</strong>
+              <em>Şehir ve kampüsleri keşfet →</em>
+            </span>
+          </button>
+          <button className="dashboard-card image-card strategy" type="button" onClick={() => setFiltersOpen(true)}>
+            <span className="dashboard-card-overlay">
+              <small>VERİ</small>
+              <strong>2026 Taban<br />Verileri</strong>
+              <em>Güncel programları keşfet →</em>
+            </span>
+          </button>
+          <button className="dashboard-card image-card list" type="button" onClick={() => toggleFloatingPanel("preferences")}>
+            <span className="dashboard-card-overlay">
+              <small>KİŞİSEL</small>
+              <strong>Tercih<br />Listem</strong>
+              <em>Kendine özel liste oluştur →</em>
+            </span>
+          </button>
+          <div className="dashboard-quote-card">
+            <span>“</span>
+            <strong>Doğru tercih,<br />daha güçlü bir gelecek.</strong>
+            <small>Türkiye Üniversite Haritası</small>
+          </div>
+        </div>
+
+        {browseOpen && (
+          <aside className="browse-panel">
+            <div className="browse-panel-header">
+              <div>
+                <div className="detail-label">ÜNİVERSİTELER</div>
+                <h2>Üniversiteleri keşfet</h2>
+              </div>
+              <button className="close-button" onClick={() => setBrowseOpen(false)}>✕</button>
+            </div>
+            <p className="browse-intro">Şehrini seç, haritadaki üniversitelere hızlıca göz at ve detaylarını aç.</p>
+            <div className="browse-grid">
+              {browseUniversities.map((university) => (
+                <button
+                  key={university.id}
+                  className="browse-card"
+                  type="button"
+                  onClick={() => {
+                    openUniversity(university);
+                    setBrowseOpen(false);
+                  }}
+                >
+                  <span className="browse-card-icon">🎓</span>
+                  <span>
+                    <strong>{university.name}</strong>
+                    <small>{university.city} · {university.type || "Üniversite"}</small>
+                  </span>
+                  <b>→</b>
+                </button>
+              ))}
+            </div>
+          </aside>
+        )}
+
+        {aboutOpen && (
+          <aside className="about-panel">
+            <div className="about-panel-header">
+              <div>
+                <div className="detail-label">HAKKINDA</div>
+                <h2>Türkiye Üniversite Haritası</h2>
+              </div>
+              <button className="close-button" onClick={() => setAboutOpen(false)}>✕</button>
+            </div>
+            <div className="about-hero">
+              <span>✦</span>
+              <div>
+                <strong>Doğru bölümü bul. Şehrini seç. Tercihini oluştur.</strong>
+                <p>Türkiye’deki üniversiteleri ve 2026 programlarını tek bir harita üzerinde keşfetmek için tasarlandı.</p>
+              </div>
+            </div>
+            <div className="about-stats">
+              <div><strong>205</strong><span>Haritadaki üniversite</span></div>
+              <div><strong>21.493+</strong><span>Program verisi</span></div>
+              <div><strong>2026</strong><span>Güncel tercih yılı</span></div>
+            </div>
+            <div className="about-text">
+              <p>Bu platformun amacı; öğrencilerin üniversite, şehir ve bölüm seçeneklerini daha anlaşılır bir şekilde keşfetmesine yardımcı olmak.</p>
+              <p>Program detaylarını inceleyebilir, filtreleyebilir, karşılaştırabilir ve kendi tercih listeni oluşturabilirsin.</p>
+            </div>
+            <div className="about-note">
+              <span>💙</span>
+              <strong>Gençler için sade, hızlı ve yol gösteren bir tercih deneyimi.</strong>
+            </div>
+          </aside>
+        )}
+
         {/* =====================================
             UNIVERSITY PANEL
         ===================================== */}
@@ -2501,7 +2399,28 @@ const activeFilterCount = [
         {selectedUniversity &&
           !selectedProgram && (
 
-          <aside className="university-panel">
+          <aside
+            className="university-panel"
+            style={{
+              "--university-sheet-top": `${
+                universitySheetTop ??
+                getUniversitySheetBounds().collapsedTop
+              }px`,
+            }}
+          >
+
+            <div
+              className="university-sheet-handle"
+              onPointerDown={startUniversitySheetDrag}
+              onPointerMove={moveUniversitySheetDrag}
+              onPointerUp={endUniversitySheetDrag}
+              onPointerCancel={endUniversitySheetDrag}
+              role="slider"
+              aria-label="Üniversite panelini yukarı veya aşağı taşı"
+              aria-valuemin={getUniversitySheetBounds().expandedTop}
+              aria-valuemax={getUniversitySheetBounds().collapsedTop}
+              tabIndex={0}
+            />
 
             <button
               className="close-button"
@@ -2565,7 +2484,7 @@ const activeFilterCount = [
 
                     <strong>
                       {
-                        universityPrograms.length
+                        visibleUniversityPrograms.length
                       }
                     </strong>
 
@@ -2609,6 +2528,30 @@ const activeFilterCount = [
                     }
                   </span>
 
+                </div>
+
+                <div className="university-action-bar">
+                  <button
+                    type="button"
+                    className="university-action-button preference"
+                    onClick={() => {
+                      setSelectedProgram(null);
+                      setPreferenceOpen(true);
+                      setFiltersOpen(false);
+                    }}
+                  >
+                    ⭐ Tercih Listem <b>{preferences.length}</b>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="university-action-button compare"
+                    disabled={comparisonPrograms.length < 2}
+                    onClick={() => setComparisonOpen(true)}
+                    title={comparisonPrograms.length < 2 ? "Karşılaştırmak için en az 2 program seçin" : "Seçili programları karşılaştır"}
+                  >
+                    ⇄ Karşılaştır <b>{comparisonPrograms.length}</b>
+                  </button>
                 </div>
 
                 <input
@@ -2688,29 +2631,61 @@ const activeFilterCount = [
 
                             </button>
 
-                            <button
-                              className={
-                                isInPreferences(
-                                  normalized
-                                )
-                                  ? "program-add-button added"
-                                  : "program-add-button"
-                              }
+                            <div className="program-card-actions">
+                              <button
+                                type="button"
+                                className={
+                                  isInPreferences(
+                                    normalized
+                                  )
+                                    ? "program-add-button added"
+                                    : "program-add-button"
+                                }
+                                onClick={() =>
+                                  addToPreferences(
+                                    normalized
+                                  )
+                                }
+                                title={
+                                  isInPreferences(normalized)
+                                    ? "Tercih listesinde"
+                                    : "Tercih listesine ekle"
+                                }
+                              >
+                                {
+                                  isInPreferences(
+                                    normalized
+                                  )
+                                    ? "✓"
+                                    : "⭐"
+                                }
+                              </button>
 
-                              onClick={() =>
-                                addToPreferences(
-                                  normalized
-                                )
-                              }
-                            >
-                              {
-                                isInPreferences(
-                                  normalized
-                                )
-                                  ? "✓"
-                                  : "+"
-                              }
-                            </button>
+                              <button
+                                type="button"
+                                className={
+                                  isInComparison(normalized)
+                                    ? "program-compare-button selected"
+                                    : "program-compare-button"
+                                }
+                                onClick={() =>
+                                  toggleComparison(
+                                    normalized
+                                  )
+                                }
+                                title={
+                                  isInComparison(normalized)
+                                    ? "Karşılaştırmadan çıkar"
+                                    : "Karşılaştırmaya ekle"
+                                }
+                              >
+                                {
+                                  isInComparison(normalized)
+                                    ? "✓"
+                                    : "⇄"
+                                }
+                              </button>
+                            </div>
 
                           </div>
                         );
@@ -3346,6 +3321,81 @@ const activeFilterCount = [
                     {comparisonSummary.highestScore ?? "-"}
                   </strong>
                 </div>
+              </div>
+
+              <div className="comparison-mobile-cards">
+                {comparisonPrograms.map((program, index) => {
+                  const code = String(program.code);
+                  const name =
+                    program.name ||
+                    program.programName ||
+                    program.birimAdi ||
+                    "Program";
+                  const university =
+                    program.universityName ||
+                    program.university ||
+                    "-";
+                  const rank = program.successRank ?? program.basariSirasi;
+                  const minScore = program.minScore ?? program.minPuan;
+                  const maxScore = program.maxScore ?? program.maxPuan;
+                  const education =
+                    numberValue(
+                      program.duration ?? program.ogrenimSuresi
+                    ) === 2
+                      ? "Önlisans"
+                      : "Lisans";
+
+                  return (
+                    <article className="comparison-mobile-card" key={`mobile-${code}`}>
+                      <div className="comparison-mobile-card-head">
+                        <div className="comparison-mobile-number">{index + 1}</div>
+                        <div className="comparison-mobile-title">
+                          <strong>{name}</strong>
+                          <span>{university}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="comparison-remove"
+                          onClick={() => toggleComparison(program)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="comparison-mobile-grid">
+                        <div><span>Puan</span><strong>{program.scoreType || program.puanTuru || "-"}</strong></div>
+                        <div><span>Eğitim</span><strong>{education}</strong></div>
+                        <div><span>Kontenjan</span><strong>{program.quota ?? program.kontenjan ?? "-"}</strong></div>
+                        <div><span>Yerleşen</span><strong>{program.placed ?? program.yerlesen ?? "-"}</strong></div>
+                        <div className="comparison-mobile-highlight">
+                          <span>2026 Başarı Sırası</span>
+                          <strong>{formatNumber(rank)}</strong>
+                          {comparisonBest.bestRank === code && (
+                            <small>🏆 En iyi sıra</small>
+                          )}
+                        </div>
+                        <div className="comparison-mobile-highlight">
+                          <span>En küçük puan</span>
+                          <strong>{minScore ?? "-"}</strong>
+                          {comparisonBest.bestMinScore === code && (
+                            <small>⭐ En yüksek</small>
+                          )}
+                        </div>
+                        <div className="comparison-mobile-highlight">
+                          <span>En büyük puan</span>
+                          <strong>{maxScore ?? "-"}</strong>
+                          {comparisonBest.bestMaxScore === code && (
+                            <small>⭐ En yüksek</small>
+                          )}
+                        </div>
+                        <div className="comparison-mobile-wide">
+                          <span>Fakülte / Birim</span>
+                          <strong>{program.faculty || program.fymkAdi || program.birimAdi || "-"}</strong>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
 
               <table className="comparison-table">
