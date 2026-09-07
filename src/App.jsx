@@ -1647,6 +1647,10 @@ function App() {
       longitude: selectedUniversity?.longitude,
       zoom: 12,
     });
+    // Mobilde haritayı görebilmek için paneli aşağıya (küçük boyuta) çek
+    if (window.innerWidth <= 800) {
+      setUniversitySheetTop(window.innerHeight - 150);
+    }
   };
 
   const openCampus = (campus) => {

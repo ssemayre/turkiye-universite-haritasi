@@ -6027,11 +6027,11 @@ body {
 
 
 @media (max-width: 800px) {
-  /* Üst menüden gereksiz butonlarý gizle */
+  /* ï¿½st menï¿½den gereksiz butonlarï¿½ gizle */
   .header-actions { display: none !important; }
   .top-nav { display: none !important; }
   
-  /* Üst kýsmý sadece logo ve arama çubuðu olarak daralt */
+  /* ï¿½st kï¿½smï¿½ sadece logo ve arama ï¿½ubuï¿½u olarak daralt */
   .header {
     height: auto !important;
     padding: 10px !important;
@@ -6046,7 +6046,7 @@ body {
     margin-top: 10px !important;
   }
 
-  /* Alt Menü Tasarýmý (iPhone Glassmorphism) */
+  /* Alt Menï¿½ Tasarï¿½mï¿½ (iPhone Glassmorphism) */
   .mobile-bottom-bar {
     position: fixed !important;
     bottom: 20px !important;
@@ -6079,34 +6079,93 @@ body {
     height: 100% !important;
   }
 
-  /* Hýzlý Filtreleri arama çubuðunun altýna al */
+  /* Hï¿½zlï¿½ Filtreleri arama ï¿½ubuï¿½unun altï¿½na al */
   .modern-filters-bar {
     top: 100px !important;
     padding: 10px !important;
     background: transparent !important;
   }
 
-  /* Haritanýn alt ve üstündeki boþluklarý mobilde ayarla */
+  /* Haritanï¿½n alt ve ï¿½stï¿½ndeki boï¿½luklarï¿½ mobilde ayarla */
   .map-area {
     padding-top: 155px !important; 
     padding-bottom: 110px !important; 
   }
 
-  /* ÜNÝVERSÝTE DETAY EKRANI (POP-ÝT) ÇÖZÜMÜ */
-  .university-panel, .filter-panel, .browse-panel, .preference-drawer {
+  /* ï¿½Nï¿½VERSï¿½TE DETAY EKRANI (POP-ï¿½T) ï¿½ï¿½Zï¿½Mï¿½ */
+  .filter-panel, .browse-panel, .preference-drawer {
     position: fixed !important;
-    top: auto !important;
+    top: 15vh !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    height: 85vh !important; /* Ekranýn %85 ini kaplasýn, ne çok küçük ne tam ekran */
     border-radius: 28px 28px 0 0 !important;
     background: #fff !important;
     z-index: 10000 !important;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
     padding-bottom: 100px !important;
-    overflow-y: auto !important; /* ÝÇERÝK KAYDIRILABÝLSÝN (SCROLL) */
+    overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .university-panel {
+    border-radius: 28px 28px 0 0 !important;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
+    padding-bottom: 100px !important;
+    z-index: 10000 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Ãœst kÄ±smÄ± daralt (Kompakt Mobil BaÅŸlÄ±k) */
+  .university-panel-header {
+    padding: 0 15px !important;
+    margin-bottom: 5px !important;
+    text-align: center !important;
+  }
+  .university-panel-header h2 {
+    font-size: 16px !important;
+    margin: 2px 0 !important;
+  }
+  .university-panel-header p {
+    font-size: 11px !important;
+    margin: 0 !important;
+  }
+  
+  /* Ä°statistik KutularÄ±nÄ± KÃ¼Ã§Ã¼lt ve Yatay Yap */
+  .university-stats {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    padding: 0 15px !important;
+    margin-bottom: 5px !important;
+  }
+  .university-stat {
+    padding: 8px 5px !important;
+    flex: 1 !important;
+  }
+  .university-stat strong {
+    font-size: 14px !important;
+  }
+  .university-stat span {
+    font-size: 10px !important;
+  }
+  
+  /* YerleÅŸkeleri GÃ¶ster Butonunu KÃ¼Ã§Ã¼lt */
+  .university-view-button {
+    margin: 5px 15px 10px 15px !important;
+    padding: 10px !important;
+    font-size: 13px !important;
+    width: calc(100% - 30px) !important;
+  }
+  
+  .university-program-header {
+    padding: 0 15px !important;
+    margin-bottom: 5px !important;
+  }
+  .university-action-bar {
+    padding: 0 15px !important;
+    margin-bottom: 10px !important;
   }
 }
 
