@@ -6216,3 +6216,18 @@ body {
   flex: none !important; 
 }
 
+
+@media (max-width: 800px) {
+  /* Daha güçlü bir seçici ile içerideki çakýþan scroll u iptal ediyoruz */
+  #root .app-container .university-panel .university-program-list,
+  .university-panel .university-program-list {
+    overflow-y: visible !important;
+    overflow-x: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    flex: none !important;
+    -webkit-overflow-scrolling: auto !important;
+    overscroll-behavior: auto !important;
+  }
+}
+
