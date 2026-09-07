@@ -6129,13 +6129,11 @@ body {
   .university-panel {
     position: fixed !important;
     bottom: 0 !important;
-
     border-radius: 28px 28px 0 0 !important;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
-    padding-bottom: 100px !important;
     z-index: 10000 !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
   
   /* Üst kısmı daralt (Kompakt Mobil Başlık) */
@@ -6194,3 +6192,7 @@ body {
   .mobile-bottom-bar { display: none !important; }
 }
 
+
+.university-program-list {
+  padding-bottom: 120px !important;
+}
