@@ -1691,6 +1691,10 @@ function App() {
   };
 
   const focusSelectedProgramCampus = () => {
+    setSelectedProgram(null);
+    if (window.innerWidth <= 800) {
+      setUniversitySheetTop(window.innerHeight - 150);
+    }
     const latitude = Number(selectedCampus?.latitude);
     const longitude = Number(selectedCampus?.longitude);
 
