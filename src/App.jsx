@@ -2126,15 +2126,6 @@ const activeFilterCount = [
             }}
           />
 
-          <div className="quick-filter-strip" aria-label="Hızlı filtreler">
-            <button type="button" onClick={() => applyQuickFilter("devlet")}>Devlet</button>
-            <button type="button" onClick={() => applyQuickFilter("vakif")}>Vakıf</button>
-            <button type="button" onClick={() => applyQuickFilter("lisans")}>Lisans</button>
-            <button type="button" onClick={() => applyQuickFilter("onlisans")}>Önlisans</button>
-            <button type="button" onClick={() => applyQuickFilter("tyt")}>TYT</button>
-            <button type="button" onClick={() => applyQuickFilter("say")}>SAY</button>
-          </div>
-
           {loadingSearchPrograms &&
             search.trim() && (
               <div className="search-loading">
@@ -4198,6 +4189,21 @@ const activeFilterCount = [
         </div>
 
       )}
+      {/* MOBİL ALT MENÜ (Glassmorphism) */}
+      <nav className="mobile-bottom-bar">
+        <button type="button" onClick={openBrowse}>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>🎓</span>
+          <span>Keşfet</span>
+        </button>
+        <button type="button" onClick={() => toggleFloatingPanel("preferences")}>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>⭐</span>
+          <span>Tercihler</span>
+        </button>
+        <button type="button" onClick={() => setFiltersOpen(true)}>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>⚙</span>
+          <span>Filtreler</span>
+        </button>
+      </nav>
 
     </div>
   );
