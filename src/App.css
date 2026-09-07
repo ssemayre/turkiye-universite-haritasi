@@ -823,6 +823,9 @@ button:disabled {
 /* UNIVERSITY PANEL */
 
 .university-panel {
+    position: fixed !important;
+    bottom: 0 !important;
+
   position: fixed;
 
   top: 101px;
@@ -1925,6 +1928,9 @@ button:disabled {
   /* Üniversite detay paneli, mobil üst arama/filtre çubuğunun altında açılır.
      Diğer mobil panellerin konumuna dokunulmaz. */
   .university-panel {
+    position: fixed !important;
+    bottom: 0 !important;
+
     top: 332px;
 
     right: 12px;
@@ -5086,6 +5092,9 @@ body {
    ========================================================= */
 @media (max-width: 800px) {
   .university-panel {
+    position: fixed !important;
+    bottom: 0 !important;
+
     top: 8px !important;
     right: 8px !important;
     bottom: calc(78px + env(safe-area-inset-bottom)) !important;
@@ -5126,6 +5135,9 @@ body {
 @media (max-width: 800px) {
   .university-panel {
     position: fixed !important;
+    bottom: 0 !important;
+
+    position: fixed !important;
     top: 330px !important;
     left: 8px !important;
     right: 8px !important;
@@ -5161,6 +5173,9 @@ body {
    ========================================================= */
 @media (max-width: 800px) {
   .university-panel {
+    position: fixed !important;
+    bottom: 0 !important;
+
     position: fixed !important;
     top: var(--university-sheet-top, 48dvh) !important;
     left: 7px !important;
@@ -5756,6 +5771,9 @@ body {
 
 @media (min-width: 801px) {
   .university-panel {
+    position: fixed !important;
+    bottom: 0 !important;
+
     width: 400px !important;
     padding: 17px !important;
     border-radius: 16px !important;
@@ -6109,6 +6127,9 @@ body {
   }
   
   .university-panel {
+    position: fixed !important;
+    bottom: 0 !important;
+
     border-radius: 28px 28px 0 0 !important;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
     padding-bottom: 100px !important;
