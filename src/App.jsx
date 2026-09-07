@@ -3158,6 +3158,7 @@ const activeFilterCount = [
                 )}
               </>
             )}
+            </div>
           </aside>
         )}
 
