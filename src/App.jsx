@@ -2779,6 +2779,7 @@ const activeFilterCount = [
                 <h2>Üniversiteleri keşfet</h2>
               </div>
               <button className="close-button" onClick={() => setBrowseOpen(false)}>✕</button>
+            <div className="university-scrollable-content">
             </div>
             <p className="browse-intro">Şehrini seç, haritadaki üniversitelere hızlıca göz at ve detaylarını aç.</p>
             <div className="browse-grid">

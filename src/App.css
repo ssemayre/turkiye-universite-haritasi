@@ -6196,3 +6196,23 @@ body {
 .university-program-list {
   padding-bottom: 120px !important;
 }
+
+.university-scrollable-content {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: 150px !important;
+  padding-top: 10px !important;
+  margin-top: 10px !important;
+}
+.university-panel-header, .university-stats, .university-view-switch, .university-action-bar, .university-program-search {
+  flex: none !important;
+}
+.university-program-list { 
+  padding-bottom: 20px !important; 
+  overflow: visible !important; 
+  max-height: none !important; 
+  flex: none !important; 
+}
+
