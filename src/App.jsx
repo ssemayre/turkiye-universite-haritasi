@@ -2872,6 +2872,8 @@ const activeFilterCount = [
             >
               ✕
             </button>
+            <div className="university-scrollable-content">
+
 
             <div className="university-panel-header">
               <div className="detail-label">ÜNİVERSİTE</div>
