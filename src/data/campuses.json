@@ -329,7 +329,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1002-kahta",
+        "id": "1002-kahta-5-306",
         "name": "Kahta Yerleşkesi",
         "universityId": "1002",
         "universityName": "ADIYAMAN ÜNİVERSİTESİ",
@@ -723,7 +723,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1004-bolvadin",
+        "id": "1004-bolvadin-16-183",
         "name": "Bolvadi̇n Yerleşkesi",
         "universityId": "1004",
         "universityName": "AFYON KOCATEPE ÜNİVERSİTESİ (AFYONKARAHİSAR)",
@@ -744,7 +744,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1004-dinar",
+        "id": "1004-dinar-17-38",
         "name": "Di̇nar Yerleşkesi",
         "universityId": "1004",
         "universityName": "AFYON KOCATEPE ÜNİVERSİTESİ (AFYONKARAHİSAR)",
@@ -2018,7 +2018,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1009-merzifon",
+        "id": "1009-merzifon-10-206",
         "name": "Merzi̇fon Yerleşkesi",
         "universityId": "1009",
         "universityName": "AMASYA ÜNİVERSİTESİ",
@@ -4013,7 +4013,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1013-hopa",
+        "id": "1013-hopa-7-245",
         "name": "Hopa Yerleşkesi",
         "universityId": "1013",
         "universityName": "ARTVİN ÇORUH ÜNİVERSİTESİ",
@@ -4099,7 +4099,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1013-arhavi",
+        "id": "1013-arhavi-11-57",
         "name": "Arhavi Yerleşkesi",
         "universityId": "1013",
         "universityName": "ARTVİN ÇORUH ÜNİVERSİTESİ",
@@ -4351,7 +4351,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1014-oltu",
+        "id": "1014-oltu-9-932",
         "name": "Oltu Yerleşkesi",
         "universityId": "1014",
         "universityName": "ATATÜRK ÜNİVERSİTESİ (ERZURUM)",
@@ -5025,7 +5025,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1003-nazilli",
+        "id": "1003-nazilli-15-493",
         "name": "Nazi̇lli̇ Yerleşkesi",
         "universityId": "1003",
         "universityName": "AYDIN ADNAN MENDERES ÜNİVERSİTESİ",
@@ -5340,7 +5340,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1005-eleskirt",
+        "id": "1005-eleskirt-6-441",
         "name": "Eleşkirt Yerleşkesi",
         "universityId": "1005",
         "universityName": "AĞRI İBRAHİM ÇEÇEN ÜNİVERSİTESİ",
@@ -6178,7 +6178,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1106-denizcilik",
+        "id": "1106-denizcilik-6-624",
         "name": "Deni̇zci̇li̇k Yerleşkesi",
         "universityId": "1106",
         "universityName": "BANDIRMA ONYEDİ EYLÜL ÜNİVERSİTESİ (BALIKESİR)",
@@ -7686,7 +7686,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1073-golhisar",
+        "id": "1073-golhisar-6-696",
         "name": "Gölhi̇sar Yerleşkesi",
         "universityId": "1073",
         "universityName": "BURDUR MEHMET AKİF ERSOY ÜNİVERSİTESİ",
@@ -7792,7 +7792,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1073-golhisar",
+        "id": "1073-golhisar-11-61",
         "name": "Gölhi̇sar Yerleşkesi",
         "universityId": "1073",
         "universityName": "BURDUR MEHMET AKİF ERSOY ÜNİVERSİTESİ",
@@ -8319,7 +8319,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1097-gemlik",
+        "id": "1097-gemlik-13-40",
         "name": "Gemlik Yerleşkesi",
         "universityId": "1097",
         "universityName": "BURSA ULUDAĞ ÜNİVERSİTESİ",
@@ -8673,7 +8673,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1020-bingol",
+        "id": "1020-bingol-3-756",
         "name": "Bi̇ngöl Yerleşkesi",
         "universityId": "1020",
         "universityName": "BİNGÖL ÜNİVERSİTESİ",
@@ -9063,7 +9063,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1021-ahlat",
+        "id": "1021-ahlat-7-400",
         "name": "Ahlat Yerleşkesi",
         "universityId": "1021",
         "universityName": "BİTLİS EREN ÜNİVERSİTESİ",
@@ -10273,7 +10273,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1030-ergani",
+        "id": "1030-ergani-8-753",
         "name": "Ergani̇ Yerleşkesi",
         "universityId": "1030",
         "universityName": "DİCLE ÜNİVERSİTESİ (DİYARBAKIR)",
@@ -13183,7 +13183,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1045-kesap",
+        "id": "1045-kesap-8-320",
         "name": "Keşap Yerleşkesi",
         "universityId": "1045",
         "universityName": "GİRESUN ÜNİVERSİTESİ",
@@ -13247,7 +13247,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1045-sebinkarahisar",
+        "id": "1045-sebinkarahisar-11-517",
         "name": "Şebi̇nkarahi̇sar Yerleşkesi",
         "universityId": "1045",
         "universityName": "GİRESUN ÜNİVERSİTESİ",
@@ -13268,7 +13268,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1045-sebinkarahisar",
+        "id": "1045-sebinkarahisar-12-692",
         "name": "Şebi̇nkarahi̇sar Yerleşkesi",
         "universityId": "1045",
         "universityName": "GİRESUN ÜNİVERSİTESİ",
@@ -14191,7 +14191,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1050-viransehir",
+        "id": "1050-viransehir-14-524",
         "name": "Vi̇ranşehi̇r Yerleşkesi",
         "universityId": "1050",
         "universityName": "HARRAN ÜNİVERSİTESİ (ŞANLIURFA)",
@@ -15236,7 +15236,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1125-sarkikaraagac",
+        "id": "1125-sarkikaraagac-12-56",
         "name": "Şarki̇karaağaç Yerleşkesi",
         "universityId": "1125",
         "universityName": "ISPARTA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
@@ -15320,7 +15320,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1125-yalvac",
+        "id": "1125-yalvac-16-59",
         "name": "Yalvaç Yerleşkesi",
         "universityId": "1125",
         "universityName": "ISPARTA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
@@ -15341,7 +15341,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1125-egirdir",
+        "id": "1125-egirdir-17-746",
         "name": "Eğirdir Yerleşkesi",
         "universityId": "1125",
         "universityName": "ISPARTA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
@@ -16235,7 +16235,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1122-elbistan",
+        "id": "1122-elbistan-3-96",
         "name": "Elbi̇stan Yerleşkesi",
         "universityId": "1122",
         "universityName": "KAHRAMANMARAŞ İSTİKLAL ÜNİVERSİTESİ",
@@ -18424,7 +18424,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1067-luleburgaz",
+        "id": "1067-luleburgaz-9-762",
         "name": "Lüleburgaz Yerleşkesi",
         "universityId": "1067",
         "universityName": "KIRKLARELİ ÜNİVERSİTESİ",
@@ -19110,7 +19110,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1069-kocaeli",
+        "id": "1069-kocaeli-16-967",
         "name": "Kocaeli̇ Yerleşkesi",
         "universityId": "1069",
         "universityName": "KOCAELİ ÜNİVERSİTESİ",
@@ -21016,7 +21016,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1025-manisa",
+        "id": "1025-manisa-13-221",
         "name": "Mani̇sa Yerleşkesi",
         "universityId": "1025",
         "universityName": "MANİSA CELÂL BAYAR ÜNİVERSİTESİ",
@@ -21102,7 +21102,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1025-demirci",
+        "id": "1025-demirci-17-640",
         "name": "Demirci Yerleşkesi",
         "universityId": "1025",
         "universityName": "MANİSA CELÂL BAYAR ÜNİVERSİTESİ",
@@ -21808,7 +21808,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1074-anamur",
+        "id": "1074-anamur-6-860",
         "name": "Anamur Yerleşkesi",
         "universityId": "1074",
         "universityName": "MERSİN ÜNİVERSİTESİ",
@@ -21850,7 +21850,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1074-erdemli",
+        "id": "1074-erdemli-8-465",
         "name": "Erdemli̇ Yerleşkesi",
         "universityId": "1074",
         "universityName": "MERSİN ÜNİVERSİTESİ",
@@ -21913,7 +21913,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1074-denizcilik",
+        "id": "1074-denizcilik-11-124",
         "name": "Deni̇zci̇li̇k Yerleşkesi",
         "universityId": "1074",
         "universityName": "MERSİN ÜNİVERSİTESİ",
@@ -22499,7 +22499,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1076-fethiye",
+        "id": "1076-fethiye-8-612",
         "name": "Fethi̇ye Yerleşkesi",
         "universityId": "1076",
         "universityName": "MUĞLA SITKI KOÇMAN ÜNİVERSİTESİ",
@@ -22542,7 +22542,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1076-marmaris",
+        "id": "1076-marmaris-10-575",
         "name": "Marmari̇s Yerleşkesi",
         "universityId": "1076",
         "universityName": "MUĞLA SITKI KOÇMAN ÜNİVERSİTESİ",
@@ -22585,7 +22585,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1076-marmaris",
+        "id": "1076-marmaris-12-601",
         "name": "Marmaris Yerleşkesi",
         "universityId": "1076",
         "universityName": "MUĞLA SITKI KOÇMAN ÜNİVERSİTESİ",
@@ -22669,7 +22669,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1076-fethiye",
+        "id": "1076-fethiye-16-599",
         "name": "Fethi̇ye Yerleşkesi",
         "universityId": "1076",
         "universityName": "MUĞLA SITKI KOÇMAN ÜNİVERSİTESİ",
@@ -23098,7 +23098,7 @@
         "coordinateStatus": "verified"
       },
       {
-        "id": "1070-eregli",
+        "id": "1070-eregli-5-40",
         "name": "Ereğli̇ Yerleşkesi",
         "universityId": "1070",
         "universityName": "NECMETTİN ERBAKAN ÜNİVERSİTESİ (KONYA)",
@@ -23120,7 +23120,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1070-seydisehir",
+        "id": "1070-seydisehir-6-61",
         "name": "Seydi̇şehi̇r Yerleşkesi",
         "universityId": "1070",
         "universityName": "NECMETTİN ERBAKAN ÜNİVERSİTESİ (KONYA)",
@@ -23142,7 +23142,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1070-eregli",
+        "id": "1070-eregli-7-19",
         "name": "Ereğli̇ Yerleşkesi",
         "universityId": "1070",
         "universityName": "NECMETTİN ERBAKAN ÜNİVERSİTESİ (KONYA)",
@@ -23228,7 +23228,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1070-eregli",
+        "id": "1070-eregli-11-458",
         "name": "Ereğli Yerleşkesi",
         "universityId": "1070",
         "universityName": "NECMETTİN ERBAKAN ÜNİVERSİTESİ (KONYA)",
@@ -23397,7 +23397,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1080-hacıbektas",
+        "id": "1080-hacıbektas-6-945",
         "name": "Hacıbektaş Yerleşkesi",
         "universityId": "1080",
         "universityName": "NEVŞEHİR HACI BEKTAŞ VELİ ÜNİVERSİTESİ",
@@ -23699,7 +23699,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1081-nigde",
+        "id": "1081-nigde-6-99",
         "name": "Ni̇ğde Yerleşkesi",
         "universityId": "1081",
         "universityName": "NİĞDE ÖMER HALİSDEMİR ÜNİVERSİTESİ",
@@ -24133,7 +24133,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1082-bafra",
+        "id": "1082-bafra-14-609",
         "name": "Bafra Yerleşkesi",
         "universityId": "1082",
         "universityName": "ONDOKUZ MAYIS ÜNİVERSİTESİ (SAMSUN)",
@@ -24196,7 +24196,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1082-bafra",
+        "id": "1082-bafra-17-689",
         "name": "Bafra Yerleşkesi",
         "universityId": "1082",
         "universityName": "ONDOKUZ MAYIS ÜNİVERSİTESİ (SAMSUN)",
@@ -25198,7 +25198,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1086-denizli",
+        "id": "1086-denizli-12-485",
         "name": "Deni̇zli̇ Yerleşkesi",
         "universityId": "1086",
         "universityName": "PAMUKKALE ÜNİVERSİTESİ (DENİZLİ)",
@@ -25389,7 +25389,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1086-civril",
+        "id": "1086-civril-21-502",
         "name": "Çivril Yerleşkesi",
         "universityId": "1086",
         "universityName": "PAMUKKALE ÜNİVERSİTESİ (DENİZLİ)",
@@ -25462,7 +25462,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "2049-denizcilik",
+        "id": "2049-denizcilik-2-58",
         "name": "Deni̇zci̇li̇k Yerleşkesi",
         "universityId": "2049",
         "universityName": "PİRİ REİS ÜNİVERSİTESİ (İSTANBUL)",
@@ -25775,7 +25775,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1087-pazar",
+        "id": "1087-pazar-8-761",
         "name": "Pazar Yerleşkesi",
         "universityId": "1087",
         "universityName": "RECEP TAYYİP ERDOĞAN ÜNİVERSİTESİ (RİZE)",
@@ -26035,7 +26035,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1118-karasu",
+        "id": "1118-karasu-8-861",
         "name": "Karasu Yerleşkesi",
         "universityId": "1118",
         "universityName": "SAKARYA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
@@ -26141,7 +26141,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1118-akyazı",
+        "id": "1118-akyazı-13-419",
         "name": "Akyazı Yerleşkesi",
         "universityId": "1118",
         "universityName": "SAKARYA UYGULAMALI BİLİMLER ÜNİVERSİTESİ",
@@ -26690,7 +26690,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1110-hamidiye",
+        "id": "1110-hamidiye-8-586",
         "name": "Hami̇di̇ye Yerleşkesi",
         "universityId": "1110",
         "universityName": "SAĞLIK BİLİMLERİ ÜNİVERSİTESİ (İSTANBUL)",
@@ -26733,7 +26733,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1110-hamidiye",
+        "id": "1110-hamidiye-10-125",
         "name": "Hami̇di̇ye Yerleşkesi",
         "universityId": "1110",
         "universityName": "SAĞLIK BİLİMLERİ ÜNİVERSİTESİ (İSTANBUL)",
@@ -27305,7 +27305,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1089-aksehir",
+        "id": "1089-aksehir-19-915",
         "name": "Akşehi̇r Yerleşkesi",
         "universityId": "1089",
         "universityName": "SELÇUK ÜNİVERSİTESİ (KONYA)",
@@ -27347,7 +27347,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1089-beysehiraliakkanat",
+        "id": "1089-beysehiraliakkanat-21-806",
         "name": "Beyşehi̇r ali̇ akkanat Yerleşkesi",
         "universityId": "1089",
         "universityName": "SELÇUK ÜNİVERSİTESİ (KONYA)",
@@ -27369,7 +27369,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1089-beysehiraliakkanat",
+        "id": "1089-beysehiraliakkanat-22-17",
         "name": "Beyşehi̇r ali̇ akkanat Yerleşkesi",
         "universityId": "1089",
         "universityName": "SELÇUK ÜNİVERSİTESİ (KONYA)",
@@ -29342,7 +29342,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1043-zile",
+        "id": "1043-zile-11-231",
         "name": "Zi̇le Yerleşkesi",
         "universityId": "1043",
         "universityName": "TOKAT GAZİOSMANPAŞA ÜNİVERSİTESİ",
@@ -30035,7 +30035,7 @@
         "coordinateStatus": "auto-fetched"
       },
       {
-        "id": "1094-edirne",
+        "id": "1094-edirne-9-54",
         "name": "Edi̇rne Yerleşkesi",
         "universityId": "1094",
         "universityName": "TRAKYA ÜNİVERSİTESİ (EDİRNE)",
@@ -32775,7 +32775,7 @@
         "nameStatus": "verified"
       },
       {
-        "id": "1103-devrek",
+        "id": "1103-devrek-12-503",
         "name": "Devrek Yerleşkesi",
         "universityId": "1103",
         "universityName": "ZONGULDAK BÜLENT ECEVİT ÜNİVERSİTESİ",

@@ -276,7 +276,7 @@ function App() {
       if (!normalizedKey) return;
 
       const campuses = Array.isArray(record?.campuses)
-        ? record.campuses.map((campus) => ({
+        ? record.campuses.map((campus, index) => ({
             ...campus,
             latitude: coordinateValue(campus?.latitude),
             longitude: coordinateValue(campus?.longitude),
@@ -1143,7 +1143,7 @@ function App() {
 
     // Öncelik: üniversite için hazırlanmış gerçek kampüs verisi.
     if (record && Array.isArray(record.campuses) && record.campuses.length) {
-      return record.campuses.map((campus) => ({
+      return record.campuses.map((campus, index) => ({
         ...campus,
         universityId: selectedUniversity.id,
         universityName: selectedUniversity.name,
@@ -2745,7 +2745,7 @@ const activeFilterCount = [
                 Number.isFinite(Number(campus.latitude)) &&
                 Number.isFinite(Number(campus.longitude))
               )
-              .map((campus) => (
+              .map((campus, index) => (
               <Marker
                 key={`campus-${campus.id}`}
                 position={[Number(campus.latitude), Number(campus.longitude)]}
@@ -3032,7 +3032,7 @@ const activeFilterCount = [
                     <div className="university-campus-list">
                       {!selectedCampus ? (
                         universityCampuses.length > 0 ? (
-                          universityCampuses.map((campus) => (
+                          universityCampuses.map((campus, index) => (
                             <button
                               type="button"
                               key={campus.id}
