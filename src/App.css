@@ -6113,12 +6113,15 @@ body {
   /* �N�VERS�TE DETAY EKRANI (POP-�T) ��Z�M� */
   .program-detail, .filter-panel, .browse-panel, .preference-drawer {
     position: fixed !important;
-    top: 15vh !important;
+    top: auto !important;
+    height: 65dvh !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
     border-radius: 28px 28px 0 0 !important;
-    background: #fff !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
     z-index: 10000 !important;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
     padding-bottom: 100px !important;
@@ -6130,6 +6133,9 @@ body {
     position: fixed !important;
     bottom: 0 !important;
     border-radius: 28px 28px 0 0 !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.2) !important;
     z-index: 10000 !important;
     display: flex !important;
@@ -6254,4 +6260,25 @@ body {
     right: 15px !important;
     z-index: 999 !important;
   }
+}
+
+
+.sheet-pull-handle-visual {
+  width: 40px;
+  height: 5px;
+  background: #CBD5E1;
+  border-radius: 3px;
+  margin: 10px auto 15px auto;
+  display: block;
+}
+.university-sheet-handle::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 5px;
+  background: #CBD5E1;
+  border-radius: 3px;
 }
