@@ -71,11 +71,23 @@ const campusIcon = L.divIcon({
 // HELPERS
 // ==================================================
 
-function normalize(text) {
-  return String(text || "")
-    .toLocaleLowerCase("tr-TR")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+function normalize(str) {
+  return (str || "")
+    .toString()
+    .toLowerCase()
+    .replace(/i̇/g, "i")
+    .replace(/İ/g, "i")
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/â/g, "a")
+    .replace(/î/g, "i")
+    .replace(/û/g, "u")
+    .replace(/\s*\([^)]*\)\s*/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
