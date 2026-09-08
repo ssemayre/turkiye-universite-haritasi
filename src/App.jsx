@@ -2431,9 +2431,9 @@ const activeFilterCount = [
 
       {filtersOpen && (
         <aside className="filter-panel">
+            <div className="sheet-pull-handle-visual"></div>
 
           <div className="filter-header">
-              <div className="sheet-pull-handle-visual"></div>
 
             <h2>
               Filtreler
@@ -2790,8 +2790,8 @@ const activeFilterCount = [
 
         {browseOpen && (
           <aside className="browse-panel">
+            <div className="sheet-pull-handle-visual"></div>
             <div className="browse-panel-header">
-              <div className="sheet-pull-handle-visual"></div>
               <div>
                 <div className="detail-label">ÜNİVERSİTELER</div>
                 <h2>Üniversiteleri keşfet</h2>
@@ -3187,6 +3187,7 @@ const activeFilterCount = [
         {selectedProgram && (
 
           <aside className="program-detail">
+            <div className="sheet-pull-handle-visual"></div>
 
             <button
               className="close-button"
@@ -3200,7 +3201,6 @@ const activeFilterCount = [
               ✕
             </button>
 
-            <div className="sheet-pull-handle-visual"></div>
             <div className="detail-label">
               PROGRAM DETAYI
             </div>
@@ -3476,9 +3476,9 @@ const activeFilterCount = [
       {preferenceOpen && (
 
         <aside className="preference-drawer">
+            <div className="sheet-pull-handle-visual"></div>
 
           <div className="preference-header">
-              <div className="sheet-pull-handle-visual"></div>
 
             <div>
 
