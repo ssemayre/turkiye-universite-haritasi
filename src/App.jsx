@@ -3579,17 +3579,21 @@ const activeFilterCount = [
       <div style={{ color: '#0f172a', fontSize: '15px', fontWeight: '600' }}>
         {(() => {
           let minD = Infinity;
-          let minName = selectedKyk.nearby_campus;
+          let minName = null;
           Object.values(campusData).flat().forEach(c => {
             if (c.latitude && c.longitude) {
-              let d = getDistanceFromLatLonInKm(selectedKyk.coordinates.lat, selectedKyk.coordinates.lng, Number(c.latitude), Number(c.longitude));
-              if (d < minD) {
-                minD = d;
-                minName = c.name + (c.universityName ? " (" + c.universityName + ")" : "");
+              let lat = Number(c.latitude);
+              let lng = Number(c.longitude);
+              if (!isNaN(lat) && !isNaN(lng) && selectedKyk && selectedKyk.coordinates && selectedKyk.coordinates.lat) {
+                let d = getDistanceFromLatLonInKm(Number(selectedKyk.coordinates.lat), Number(selectedKyk.coordinates.lng), lat, lng);
+                if (d < minD) {
+                  minD = d;
+                  minName = c.name + (c.universityName ? " (" + c.universityName + ")" : "");
+                }
               }
             }
           });
-          if (minD !== Infinity) {
+          if (minD !== Infinity && minName) {
             let walkTime = Math.round((minD / 5) * 60);
             let walkStr = walkTime < 60 ? walkTime + " dk" : Math.round(walkTime/60) + " saat";
             return (
@@ -3603,21 +3607,23 @@ const activeFilterCount = [
               </div>
             );
           }
-          return minName;
+          return "Kampüs bulunamadı";
         })()}
       </div>
     </div>
 
     {/* Address card */}
-    <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-        <span style={{ fontSize: '18px' }}>🗺️</span>
-        <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
+    {(selectedKyk.address || (selectedKyk.district && selectedKyk.city)) ? (
+      <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+          <span style={{ fontSize: '18px' }}>🗺️</span>
+          <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
+        </div>
+        <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
+          {selectedKyk.address ? selectedKyk.address : selectedKyk.district + ", " + selectedKyk.city}
+        </div>
       </div>
-      <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
-        {selectedKyk.address}
-      </div>
-    </div>
+    ) : null}
     
     <a href={"https://www.google.com/maps/dir/?api=1&destination=" + selectedKyk.coordinates.lat + "," + selectedKyk.coordinates.lng} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px', background: '#2563eb', color: '#fff', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', fontSize: '15px', transition: 'background 0.2s', boxSizing: 'border-box' }}>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
