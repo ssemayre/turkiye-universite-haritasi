@@ -62,14 +62,18 @@ const selectedUniversityIcon = new L.Icon({
 
 const kykKizIcon = L.divIcon({
   className: "kyk-marker kyk-kiz-marker",
-  html: '<div class="kyk-marker-inner">👩‍🎓</div>',
+  html: `<div class="kyk-marker-inner" style="background:#ec4899; color:white; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(236,72,153,0.4); border: 2px solid white;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+  </div>`,
   iconSize: [36, 36],
   iconAnchor: [18, 18],
 });
 
 const kykErkekIcon = L.divIcon({
   className: "kyk-marker kyk-erkek-marker",
-  html: '<div class="kyk-marker-inner">👨‍🎓</div>',
+  html: `<div class="kyk-marker-inner" style="background:#3b82f6; color:white; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(59,130,246,0.4); border: 2px solid white;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+  </div>`,
   iconSize: [36, 36],
   iconAnchor: [18, 18],
 });
@@ -3549,62 +3553,78 @@ const activeFilterCount = [
       
         {selectedKyk && (
           <aside className="kyk-detail program-detail">
-              <div className="sheet-pull-handle-visual"></div>
-              <button
-                className="close-button"
-                onClick={() => setSelectedKyk(null)}
-              >
-                ✕
-              </button>
-              <div className="kyk-panel-header" style={{ marginBottom: '20px' }}>
-                <div className="detail-label">KYK YURDU</div>
-                <h2 style={{ fontSize: '20px', margin: '5px 0' }}>{selectedKyk.name}</h2>
-                <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>{selectedKyk.district}, {selectedKyk.city}</p>
+  <div className="sheet-pull-handle-visual"></div>
+  <button
+    className="close-button"
+    onClick={() => setSelectedKyk(null)}
+  >
+    ✕
+  </button>
+  <div className="kyk-panel-header" style={{ marginBottom: '15px', paddingTop: '10px' }}>
+    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+      <span style={{ background: '#10b981', color: '#fff', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>GSB KYK</span>
+      <span style={{ background: selectedKyk.gender === 'Kız' ? '#fbcfe8' : (selectedKyk.gender === 'Erkek' ? '#bfdbfe' : '#e5e7eb'), color: selectedKyk.gender === 'Kız' ? '#be185d' : (selectedKyk.gender === 'Erkek' ? '#1e3a8a' : '#4b5563'), padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>{selectedKyk.gender} Yurdu</span>
+    </div>
+    <h2 style={{ fontSize: '20px', margin: '5px 0', color: '#1e293b', fontWeight: '700', lineHeight: '1.3' }}>{selectedKyk.name}</h2>
+    <p style={{ color: '#64748b', margin: 0, fontSize: '14px' }}>{selectedKyk.district}{selectedKyk.district && selectedKyk.city ? ', ' : ''}{selectedKyk.city}</p>
+  </div>
+  
+  <div className="kyk-info-box">
+    {/* Distance card */}
+    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '16px', borderRadius: '12px', marginBottom: '15px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+        <span style={{ fontSize: '18px' }}>🎓</span>
+        <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>En Yakın Kampüs</h4>
+      </div>
+      <div style={{ color: '#0f172a', fontSize: '15px', fontWeight: '600' }}>
+        {(() => {
+          let minD = Infinity;
+          let minName = selectedKyk.nearby_campus;
+          Object.values(campusData).flat().forEach(c => {
+            if (c.latitude && c.longitude) {
+              let d = getDistanceFromLatLonInKm(selectedKyk.coordinates.lat, selectedKyk.coordinates.lng, Number(c.latitude), Number(c.longitude));
+              if (d < minD) {
+                minD = d;
+                minName = c.name + (c.universityName ? " (" + c.universityName + ")" : "");
+              }
+            }
+          });
+          if (minD !== Infinity) {
+            let walkTime = Math.round((minD / 5) * 60);
+            let walkStr = walkTime < 60 ? walkTime + " dk" : Math.round(walkTime/60) + " saat";
+            return (
+              <div>
+                <div style={{ marginBottom: '6px' }}>{minName}</div>
+                <div style={{ color: '#6366f1', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span>📍 {(minD).toFixed(1)} km</span>
+                  <span style={{ color: '#94a3b8' }}>•</span>
+                  <span>🚶‍♂️ Yürüyerek ~{walkStr}</span>
+                </div>
               </div>
-              
-              <div className="kyk-info-box">
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-                  <div style={{ flex: 1, background: '#f5f7fa', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '24px', marginBottom: '5px' }}>{selectedKyk.gender === 'Kız' ? '👩‍🎓' : '👨‍🎓'}</div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#444' }}>{selectedKyk.gender} Yurdu</div>
-                  </div>
-                  <div style={{ flex: 1, background: '#f5f7fa', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '24px', marginBottom: '5px' }}>📍</div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#444' }}>KYGM</div>
-                  </div>
-                </div>
-                
-                <div style={{ background: '#eef2ff', padding: '15px', borderRadius: '12px', marginBottom: '15px' }}>
-                  <h4 style={{ margin: '0 0 5px 0', color: '#3730a3', fontSize: '13px', textTransform: 'uppercase' }}>En Yakın Kampüs</h4>
-                  <div style={{ color: '#312e81', fontWeight: '600', fontSize: '14px' }}>
-                    {(() => {
-                      let minD = Infinity;
-                      let minName = selectedKyk.nearby_campus;
-                      Object.values(campusData).flat().forEach(c => {
-                        if (c.latitude && c.longitude) {
-                          let d = getDistanceFromLatLonInKm(selectedKyk.coordinates.lat, selectedKyk.coordinates.lng, Number(c.latitude), Number(c.longitude));
-                          if (d < minD) {
-                            minD = d;
-                            minName = c.name + (c.universityName ? " (" + c.universityName + ")" : "");
-                          }
-                        }
-                      });
-                      if (minD !== Infinity) {
-                        return minName + " - " + (minD).toFixed(1) + " km";
-                      }
-                      return minName;
-                    })()}
-                  </div>
-                </div>
+            );
+          }
+          return minName;
+        })()}
+      </div>
+    </div>
 
-                <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                  <h4 style={{ margin: '0 0 5px 0', color: '#64748b', fontSize: '13px', textTransform: 'uppercase' }}>Açık Adres</h4>
-                  <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
-                    {selectedKyk.address}
-                  </div>
-                </div>
-              </div>
-          </aside>
+    {/* Address card */}
+    <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+        <span style={{ fontSize: '18px' }}>🗺️</span>
+        <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
+      </div>
+      <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
+        {selectedKyk.address}
+      </div>
+    </div>
+    
+    <a href={"https://www.google.com/maps/dir/?api=1&destination=" + selectedKyk.coordinates.lat + "," + selectedKyk.coordinates.lng} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px', background: '#2563eb', color: '#fff', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', fontSize: '15px', transition: 'background 0.2s', boxSizing: 'border-box' }}>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+      Haritalarda Yol Tarifi
+    </a>
+  </div>
+</aside>
         )}
 
 </main>
