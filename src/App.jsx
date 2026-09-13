@@ -1443,6 +1443,12 @@ function App() {
     const campuses = Array.isArray(record?.campuses) ? record.campuses : [];
     if (!campuses.length) return null;
 
+    // 0) Doğrudan campus_id eklenmişse (HIZLI EŞLEŞTİRME SİSTEMİ):
+    if (program?.campus_id) {
+       const exactCampus = campuses.find(c => c.id === program.campus_id);
+       if (exactCampus) return { ...exactCampus, universityId: university.id, universityName: university.name };
+    }
+
     const programUnits = getUnitNames(program).map(normalize).filter(Boolean);
     const programName = normalize(program?.name || program?.programName || program?.bolumAdi || "");
 
