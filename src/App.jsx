@@ -2819,7 +2819,30 @@ const activeFilterCount = [
               </Popup>
             </Marker>
           ) : !campusViewOpen ? (
-            <MarkerClusterGroup
+            showAllCampuses ? (
+              <MarkerClusterGroup
+                chunkedLoading={true}
+                maxClusterRadius={70}
+                spiderfyOnMaxZoom={true}
+                showCoverageOnHover={false}
+                zoomToBoundsOnClick={true}
+                disableClusteringAtZoom={13}
+              >
+                {allCampusesList.map(campus => (
+                   <Marker 
+                      key={campus.id} 
+                      position={[Number(campus.latitude), Number(campus.longitude)]} 
+                      icon={campus.isMain ? mainCampusIcon : subCampusIcon} 
+                      eventHandlers={{ click: () => setSelectedSubCampus(campus) }}
+                   >
+                      <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
+                         <span className="university-tooltip"><strong>{campus.universityName}</strong><br/>{campus.name}</span>
+                      </Tooltip>
+                   </Marker>
+                ))}
+              </MarkerClusterGroup>
+            ) : (
+<MarkerClusterGroup
               chunkedLoading={true}
               maxClusterRadius={70}
               spiderfyOnMaxZoom={true}
@@ -2850,6 +2873,7 @@ const activeFilterCount = [
                 </Marker>
               ))}
             </MarkerClusterGroup>
+            )
           ) : (
             selectedUniversity &&
             universityCampuses
