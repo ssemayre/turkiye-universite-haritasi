@@ -121,8 +121,6 @@ const campusIcon = L.divIcon({
 // ==================================================
 
 function normalize(str) {
-  const isAnyModalOpen = selectedUniversity || selectedProgram || selectedKyk || filtersOpen || selectedSubCampus || preferenceOpen || browseOpen || aboutOpen;
-
   return (str || "")
     .toString()
     .toLowerCase()
