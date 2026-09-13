@@ -1,0 +1,262 @@
+[
+  {
+    "id": 1,
+    "name": "Cevizlibağ Atatürk Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "İstanbul",
+    "district": "Zeytinburnu",
+    "address": "Merkezefendi, Mevlana Cd. No:99, 34015 Zeytinburnu/İstanbul",
+    "coordinates": {
+      "lat": 41.0142,
+      "lng": 28.9103
+    },
+    "nearby_campus": "Yıldız Teknik Üniversitesi Davutpaşa Kampüsü"
+  },
+  {
+    "id": 2,
+    "name": "Fatih Sultan Mehmet Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "İstanbul",
+    "district": "Başakşehir",
+    "address": "Kayabaşı Mah., Başakşehir/İstanbul",
+    "coordinates": {
+      "lat": 41.1118,
+      "lng": 28.8136
+    },
+    "nearby_campus": "İbn Haldun Üniversitesi"
+  },
+  {
+    "id": 3,
+    "name": "Vezneciler Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "İstanbul",
+    "district": "Fatih",
+    "address": "Süleymaniye Mah., Vezneciler, Fatih/İstanbul",
+    "coordinates": {
+      "lat": 41.0125,
+      "lng": 28.961
+    },
+    "nearby_campus": "İstanbul Üniversitesi Beyazıt Kampüsü"
+  },
+  {
+    "id": 4,
+    "name": "Kanuni Sultan Süleyman Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "İstanbul",
+    "district": "Başakşehir",
+    "address": "Ziya Gökalp Mah., Başakşehir/İstanbul",
+    "coordinates": {
+      "lat": 41.109,
+      "lng": 28.784
+    },
+    "nearby_campus": "Sabahattin Zaim Üniversitesi"
+  },
+  {
+    "id": 5,
+    "name": "Tahsin Banguoğlu Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "Ankara",
+    "district": "Çankaya",
+    "address": "Üniversiteler Mah., ODTÜ İçi, Çankaya/Ankara",
+    "coordinates": {
+      "lat": 39.8822,
+      "lng": 32.784
+    },
+    "nearby_campus": "Orta Doğu Teknik Üniversitesi (ODTÜ)"
+  },
+  {
+    "id": 6,
+    "name": "Cebeci Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "Ankara",
+    "district": "Çankaya",
+    "address": "Cebeci Mah., Çankaya/Ankara",
+    "coordinates": {
+      "lat": 39.9328,
+      "lng": 32.8687
+    },
+    "nearby_campus": "Ankara Üniversitesi Cebeci Kampüsü"
+  },
+  {
+    "id": 7,
+    "name": "Atatürk Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "Ankara",
+    "district": "Yenimahalle",
+    "address": "Beşevler, Yenimahalle/Ankara",
+    "coordinates": {
+      "lat": 39.94,
+      "lng": 32.81
+    },
+    "nearby_campus": "Gazi Üniversitesi Beşevler Kampüsü"
+  },
+  {
+    "id": 8,
+    "name": "Hüseyin Gazi Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "Ankara",
+    "district": "Mamak",
+    "address": "Hüseyin Gazi Mah., Mamak/Ankara",
+    "coordinates": {
+      "lat": 39.957,
+      "lng": 32.93
+    },
+    "nearby_campus": "Ankara Üniversitesi"
+  },
+  {
+    "id": 9,
+    "name": "Zübeyde Hanım Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "İzmir",
+    "district": "Bornova",
+    "address": "Erzene Mah., Bornova/İzmir",
+    "coordinates": {
+      "lat": 38.4616,
+      "lng": 27.2155
+    },
+    "nearby_campus": "Ege Üniversitesi Merkez Kampüsü"
+  },
+  {
+    "id": 10,
+    "name": "Buca Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "İzmir",
+    "district": "Buca",
+    "address": "Buca Koop Mah., Buca/İzmir",
+    "coordinates": {
+      "lat": 38.375,
+      "lng": 27.17
+    },
+    "nearby_campus": "Dokuz Eylül Üniversitesi Tınaztepe Kampüsü"
+  },
+  {
+    "id": 11,
+    "name": "Çiğli Erkek Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "İzmir",
+    "district": "Çiğli",
+    "address": "Balatçık Mah., Çiğli/İzmir",
+    "coordinates": {
+      "lat": 38.49,
+      "lng": 27.02
+    },
+    "nearby_campus": "İzmir Katip Çelebi Üniversitesi"
+  },
+  {
+    "id": 12,
+    "name": "Samiha Ayverdi Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "Kocaeli",
+    "district": "İzmit",
+    "address": "Kabaoğlu Mah., Umuttepe, İzmit/Kocaeli",
+    "coordinates": {
+      "lat": 40.8225,
+      "lng": 29.9248
+    },
+    "nearby_campus": "Kocaeli Üniversitesi Umuttepe Kampüsü"
+  },
+  {
+    "id": 13,
+    "name": "Gazi Süleyman Paşa Erkek Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "Kocaeli",
+    "district": "İzmit",
+    "address": "Kabaoğlu Mah., Umuttepe, İzmit/Kocaeli",
+    "coordinates": {
+      "lat": 40.82,
+      "lng": 29.921
+    },
+    "nearby_campus": "Kocaeli Üniversitesi Umuttepe Kampüsü"
+  },
+  {
+    "id": 14,
+    "name": "Zekiye Gündoğdu Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "Kocaeli",
+    "district": "İzmit",
+    "address": "Umuttepe, İzmit/Kocaeli",
+    "coordinates": {
+      "lat": 40.824,
+      "lng": 29.926
+    },
+    "nearby_campus": "Kocaeli Üniversitesi Umuttepe Kampüsü"
+  },
+  {
+    "id": 15,
+    "name": "Yunus Emre Erkek Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "Eskişehir",
+    "district": "Tepebaşı",
+    "address": "Şirintepe Mah., Tepebaşı/Eskişehir",
+    "coordinates": {
+      "lat": 39.79,
+      "lng": 30.49
+    },
+    "nearby_campus": "Anadolu Üniversitesi Yunus Emre Kampüsü"
+  },
+  {
+    "id": 16,
+    "name": "Bala Hatun Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "Eskişehir",
+    "district": "Odunpazarı",
+    "address": "Yenikent Mah., Odunpazarı/Eskişehir",
+    "coordinates": {
+      "lat": 39.755,
+      "lng": 30.47
+    },
+    "nearby_campus": "Eskişehir Osmangazi Üniversitesi Meşelik Kampüsü"
+  },
+  {
+    "id": 17,
+    "name": "Dumlupınar Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "Eskişehir",
+    "district": "Odunpazarı",
+    "address": "Büyükdere Mah., Odunpazarı/Eskişehir",
+    "coordinates": {
+      "lat": 39.75,
+      "lng": 30.485
+    },
+    "nearby_campus": "Eskişehir Osmangazi Üniversitesi Meşelik Kampüsü"
+  },
+  {
+    "id": 18,
+    "name": "Uludağ Erkek Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "Bursa",
+    "district": "Nilüfer",
+    "address": "Görükle Mah., Nilüfer/Bursa",
+    "coordinates": {
+      "lat": 40.228,
+      "lng": 28.868
+    },
+    "nearby_campus": "Bursa Uludağ Üniversitesi Görükle Kampüsü"
+  },
+  {
+    "id": 19,
+    "name": "Halime Hatun Kız Öğrenci Yurdu",
+    "gender": "Kız",
+    "city": "Bursa",
+    "district": "Nilüfer",
+    "address": "Görükle Mah., Nilüfer/Bursa",
+    "coordinates": {
+      "lat": 40.231,
+      "lng": 28.871
+    },
+    "nearby_campus": "Bursa Uludağ Üniversitesi Görükle Kampüsü"
+  },
+  {
+    "id": 20,
+    "name": "Emir Sultan Erkek Öğrenci Yurdu",
+    "gender": "Erkek",
+    "city": "Bursa",
+    "district": "Yıldırım",
+    "address": "Mimar Sinan Mah., Yıldırım/Bursa",
+    "coordinates": {
+      "lat": 40.185,
+      "lng": 29.11
+    },
+    "nearby_campus": "Bursa Teknik Üniversitesi Mimar Sinan Kampüsü"
+  }
+]
