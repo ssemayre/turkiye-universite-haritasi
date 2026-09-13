@@ -2184,604 +2184,83 @@ const activeFilterCount = [
           HEADER
       ======================================== */}
 
-      <header className="header">
-
-        <div className="logo-area">
-
-          <h1>
-            Türkiye Üniversite Haritası
+      
+      {/* ========================================
+          UNIFIED MOBILE & DESKTOP HEADER
+      ======================================== */}
+      <header className="header-unified" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
+        
+        {/* Satır 1: Başlık */}
+        <div className="logo-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1 style={{ fontSize: '18px', fontWeight: '700', margin: 0, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '22px' }}>🎓</span> Türkiye Üniversite Haritası
           </h1>
-
-          <p>
-            Üniversite ve bölüm keşfet
-          </p>
-
         </div>
 
-        <div className="search-area">
-
+        {/* Satır 2: Arama */}
+        <div className="search-row">
           <input
             type="text"
-            placeholder="🔎 Üniversite veya bölüm ara..."
+            placeholder="🔎 Üniversite, bölüm veya şehir ara..."
             value={searchInput}
-            onChange={(event) =>
-              setSearchInput(
-                event.target.value
-              )
-            }
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && searchResults.length > 0) {
-                const first = searchResults[0];
-                blurSearch();
-                if (first.type === "university") {
-                  openUniversity(first.university);
-                } else {
-                  openProgram(first.program, first.university);
-                }
-                setSearchInput("");
-                setSearch("");
-              }
-            }}
+            onChange={(event) => setSearchInput(event.target.value)}
+            style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid #cbd5e1', padding: '0 16px', background: '#f1f5f9', color: '#334155', outline: 'none', fontSize: '16px' }}
           />
-
-          {loadingSearchPrograms &&
-            search.trim() && (
-              <div className="search-loading">
-                Programlar yükleniyor...
-              </div>
-            )}
-
-          {search.trim() &&
-            !loadingSearchPrograms && (
-              <div className="search-results">
-
-                {searchResults.length >
-                0 ? (
-
-                  <>
-                    <div className="search-results-count">
-                      {searchResults.length} sonuç bulundu • {Math.min(searchResultLimit, searchResults.length)} gösteriliyor
-                    </div>
-
-                    {visibleSearchResults.map(
-                    (
-                      result,
-                      index
-                    ) => {
-
-                      if (
-                        result.type ===
-                        "university"
-                      ) {
-                        return (
-                          <button
-                            key={
-                              `uni-${result.university.id}`
-                            }
-                            className="search-result"
-
-                            onClick={() => {
-                              blurSearch();
-                              openUniversity(result.university);
-                              setSearchInput("");
-                              setSearch("");
-                            }}
-                          >
-
-                            <span className="result-type">
-                              ÜNİVERSİTE
-                            </span>
-
-                            <strong>
-                              {
-                                result
-                                  .university
-                                  .name
-                              }
-                            </strong>
-
-                            <span>
-                              {
-                                result
-                                  .university
-                                  .city
-                              }{" "}
-                              •{" "}
-                              {
-                                result
-                                  .university
-                                  .type
-                              }
-                            </span>
-
-                          </button>
-                        );
-                      }
-
-                      if (result.type === "campus") {
-                        return (
-                          <button
-                            key={`campus-${result.campus.id}-${index}`}
-                            className="search-result"
-                            onClick={() => {
-                              blurSearch();
-                              openUniversity(result.university);
-                              setTimeout(() => {
-                                setSelectedCampus(result.campus);
-                                setCampusViewOpen(true);
-                              }, 100);
-                              setSearchInput("");
-                              setSearch("");
-                            }}
-                          >
-                            <span className="result-type" style={{ color: "#00bfa5", background: "rgba(0, 191, 165, 0.1)" }}>
-                              YERLEŞKE
-                            </span>
-                            <strong>{result.campus.name}</strong>
-                            <span>{result.university.name} • {result.campus.district || result.university.city}</span>
-                          </button>
-                        );
-                      }
-
-                      return (
-                        <div
-                          key={
-                            `program-${result.program.code}-${index}`
-                          }
-                          className="search-result program-search-result"
-                        >
-
-                          <button
-                            className="search-result-main"
-
-                            onClick={() => {
-                              blurSearch();
-                              openProgram(result.program, result.university);
-                              setSearchInput("");
-                              setSearch("");
-                            }}
-                          >
-
-                            <span className="result-type">
-                              PROGRAM
-                            </span>
-
-                            <strong>
-                              {
-                                result
-                                  .program
-                                  .name
-                              }
-                            </strong>
-
-                            <span>
-                              {
-                                result
-                                  .program
-                                  .universityName
-                              }
-                            </span>
-
-                            <small>
-                              {
-                                result
-                                  .program
-                                  .scoreType
-                              }{" "}
-                              • TBS:{" "}
-                              {
-                                formatNumber(
-                                  result
-                                    .program
-                                    .successRank
-                                )
-                              }
-                            </small>
-
-                          </button>
-
-                          <button
-                            className={
-                              isInPreferences(
-                                result.program
-                              )
-                                ? "quick-add-button added"
-                                : "quick-add-button"
-                            }
-
-                            onClick={() =>
-                              addToPreferences(
-                                result.program
-                              )
-                            }
-                          >
-                            {
-                              isInPreferences(
-                                result.program
-                              )
-                                ? "✓"
-                                : "+"
-                            }
-                          </button>
-
-                        </div>
-                      );
-                    }
-                    )}
-
-                    {searchResults.length > searchResultLimit && (
-                      <button
-                        type="button"
-                        className="search-load-more"
-                        onClick={() =>
-                          setSearchResultLimit((current) =>
-                            Math.min(current + 15, searchResults.length)
-                          )
-                        }
-                      >
-                        Daha fazla göster ({searchResults.length - searchResultLimit})
-                      </button>
-                    )}
-                  </>
-
-                ) : (
-
-                  <div className="no-result">
-                    Sonuç bulunamadı.
-                  </div>
-
-                )}
-
-              </div>
-            )}
-
         </div>
 
-        <nav className="top-nav" aria-label="Ana menü">
-          <button className="top-nav-item active" type="button" onClick={goHome}>⌂ <span>Ana Sayfa</span></button>
-          <button className="top-nav-item" type="button" onClick={openBrowse}>🎓 <span>Üniversiteler</span></button>
-          <button className="top-nav-item" type="button" onClick={() => toggleFloatingPanel("preferences")}>⭐ <span>Tercih Listem</span><b>{preferences.length}</b></button>
-          <button className="top-nav-item" type="button" onClick={() => setFiltersOpen(true)}>⚙ <span>Filtreler</span></button>
-          <button className="top-nav-item" type="button" onClick={openAbout}>ⓘ <span>Hakkında</span></button>
-        </nav>
-
-        <div className="header-actions">
-
-          <button
-            className="header-universities-button"
-            onClick={openBrowse}
-          >
-            🎓 Üniversiteler
+        {/* Satır 3: Hızlı Keşfet ve Filtreler */}
+        <div className="filters-row hide-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+          
+          <button 
+            className={`pill-btn ${showAllCampuses ? 'active' : ''}`}
+            onClick={() => setShowAllCampuses(!showAllCampuses)}>
+            📍 Tüm Yerleşkeler
           </button>
 
-          <button
-            className="header-list-button"
-            onClick={() =>
-              toggleFloatingPanel("preferences")
-            }
-          >
-            ⭐ Tercih Listem
-
-            <span>
-              {
-                preferences.length
-              }
-            </span>
+          <button 
+            className={`pill-btn ${showKyk ? 'active' : ''}`}
+            onClick={() => setShowKyk(!showKyk)}>
+            🏕️ KYK Yurtları
           </button>
 
-          <button
-            className="filter-button"
-            onClick={() =>
-              toggleFloatingPanel("filters")
-            }
-          >
-            ⚙ Filtreler
+          <button 
+            className={`pill-btn ${typeFilter === 'Devlet Üniversitesi' ? 'active' : ''}`}
+            onClick={() => setTypeFilter(typeFilter === 'Devlet Üniversitesi' ? 'Tümü' : 'Devlet Üniversitesi')}>
+            Devlet
+          </button>
 
-            {activeFilterCount >
-              0 && (
-              <span className="filter-count">
-                {
-                  activeFilterCount
-                }
-              </span>
-            )}
+          <button 
+            className={`pill-btn ${typeFilter === 'Vakıf Üniversitesi' ? 'active' : ''}`}
+            onClick={() => setTypeFilter(typeFilter === 'Vakıf Üniversitesi' ? 'Tümü' : 'Vakıf Üniversitesi')}>
+            Vakıf
+          </button>
 
+          <button 
+            className={`pill-btn ${educationFilter === 'Lisans' ? 'active' : ''}`}
+            onClick={() => setEducationFilter(educationFilter === 'Lisans' ? 'Tümü' : 'Lisans')}>
+            Lisans
+          </button>
+
+          <button 
+            className={`pill-btn ${educationFilter === 'Önlisans' ? 'active' : ''}`}
+            onClick={() => setEducationFilter(educationFilter === 'Önlisans' ? 'Tümü' : 'Önlisans')}>
+            Önlisans
+          </button>
+
+          <button 
+            className="pill-btn"
+            style={{ background: '#f8fafc' }}
+            onClick={() => setFiltersOpen(true)}>
+            ⚙ Detaylı Filtre
           </button>
 
         </div>
-
       </header>
-
-      {/* ========================================
-          MODERN DASHBOARD SHELL
-      ======================================== */}
-
-      {/* ========================================
-          ESKİ SOL PANEL KALDIRILDI (Daha Geniş Harita İçin)
-      ======================================== */}
-      {/* ========================================
-          UYGUN PROGRAMLAR
-      ======================================== */}
-
-      {/* ========================================
-          FİLTRELER
-      ======================================== */}
-
-      {filtersOpen && (
-        <aside className="filter-panel">
-            
-
-          <div className="filter-header">
-
-            <h2>
-              Filtreler
-            </h2>
-
-            <button
-              onClick={() =>
-                setFiltersOpen(false)
-              }
-            >
-              ✕
-            </button>
-
-          </div>
-
-          <label>
-            Şehir
-          </label>
-
-          <select
-            value={cityFilter}
-            onChange={(event) =>
-              setCityFilter(
-                event.target.value
-              )
-            }
-          >
-
-            <option value="Tümü">
-              Tüm şehirler
-            </option>
-
-            {cities.map(
-              (city) => (
-                <option
-                  key={city}
-                  value={city}
-                >
-                  {city}
-                </option>
-              )
-            )}
-
-          </select>
-
-          <label>
-            Üniversite türü
-          </label>
-
-          <select
-            value={typeFilter}
-            onChange={(event) =>
-              setTypeFilter(
-                event.target.value
-              )
-            }
-          >
-
-            <option value="Tümü">
-              Tümü
-            </option>
-
-            {universityTypes.map(
-              (type) => (
-                <option
-                  key={type}
-                  value={type}
-                >
-                  {type}
-                </option>
-              )
-            )}
-
-          </select>
-
-          <label>
-            Eğitim
-          </label>
-
-          <select
-            value={educationFilter}
-            onChange={(event) =>
-              setEducationFilter(
-                event.target.value
-              )
-            }
-          >
-
-            <option value="Tümü">
-              Tümü
-            </option>
-
-            <option value="Lisans">
-              Lisans
-            </option>
-
-            <option value="Önlisans">
-              Önlisans
-            </option>
-
-          </select>
-
-          <label>
-            Puan türü
-          </label>
-
-          <select
-            value={scoreFilter}
-            onChange={(event) =>
-              setScoreFilter(
-                event.target.value
-              )
-            }
-          >
-
-            <option value="Tümü">
-              Tümü
-            </option>
-
-            <option value="TYT">
-              TYT
-            </option>
-
-            <option value="SAY">
-              SAY
-            </option>
-
-            <option value="EA">
-              EA
-            </option>
-
-            <option value="SÖZ">
-              SÖZ
-            </option>
-
-            <option value="DİL">
-              DİL
-            </option>
-
-          </select>
-
-          <label>
-            En düşük başarı sırası
-          </label>
-
-          <input
-            className="rank-input"
-            type="number"
-            min="1"
-            placeholder="Örn. 0"
-            value={minRank}
-            onChange={(event) =>
-              setMinRank(
-                event.target.value
-              )
-            }
-          />
-
-          <label>
-            En yüksek başarı sırası
-          </label>
-
-          <input
-            className="rank-input"
-            type="number"
-            min="1"
-            placeholder="Örn. 100000"
-            value={maxRank}
-            onChange={(event) =>
-              setMaxRank(
-                event.target.value
-              )
-            }
-          />
-
-          <div className="rank-info">
-            Başarı sırası aralığına
-            göre programları filtreler.
-          </div>
-
-          <div className="filter-actions">
-
-            <button
-              className="reset-filter"
-              onClick={
-                () => {
-                  resetFilters();
-                }
-              }
-            >
-              Tüm filtreleri temizle
-            </button>
-
-          </div>
-
-        </aside>
-      )}
 
       {/* ========================================
           MAP
       ======================================== */}
-
-      <main className="map-area">
-
-        <div className="modern-filters-bar" style={{ position: 'relative', display: 'flex', gap: '10px', padding: '15px 20px', alignItems: 'center', background: '#fff', borderBottom: '1px solid #e0e0e0', overflowX: 'auto', zIndex: 2000 }}>
-          <div style={{ display: 'flex', gap: '8px', marginRight: 'auto', alignItems: 'center' }}>
-            <span style={{ fontSize: "16px", fontWeight: '600', color: '#555', marginRight: '5px' }}>Hızlı Keşfet:</span>
-            
-            <button 
-              onClick={() => setTypeFilter(typeFilter === 'Devlet Üniversitesi' ? 'Tümü' : 'Devlet Üniversitesi')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Devlet Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Devlet Üniversitesi' ? '#00bfa5' : '#fff', color: typeFilter === 'Devlet Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
-              Devlet
-            </button>
-            
-            <button 
-              onClick={() => setTypeFilter(typeFilter === 'Vakıf Üniversitesi' ? 'Tümü' : 'Vakıf Üniversitesi')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Vakıf Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Vakıf Üniversitesi' ? '#3949ab' : '#fff', color: typeFilter === 'Vakıf Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
-              Vakıf
-            </button>
-            
-            <button 
-              onClick={() => setEducationFilter(educationFilter === 'Lisans' ? 'Tümü' : 'Lisans')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Lisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Lisans' ? '#ff9800' : '#fff', color: educationFilter === 'Lisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
-              Lisans
-            </button>
-
-            <button 
-              onClick={() => setEducationFilter(educationFilter === 'Önlisans' ? 'Tümü' : 'Önlisans')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Önlisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Önlisans' ? '#ff9800' : '#fff', color: educationFilter === 'Önlisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
-              Önlisans
-            </button>
-
-            
-            <button 
-              onClick={() => setShowAllCampuses(!showAllCampuses)}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: showAllCampuses ? 'none' : '1px solid #ddd', background: showAllCampuses ? '#8b5cf6' : '#fff', color: showAllCampuses ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s', marginLeft: '10px' }}>
-              📍 Tüm Yerleşkeler
-            </button>
-
-            <button 
-              onClick={() => setShowKyk(!showKyk)}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: showKyk ? 'none' : '1px solid #ddd', background: showKyk ? '#e91e63' : '#fff', color: showKyk ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s', marginLeft: '10px' }}>
-              🏕️ KYK Yurtları
-            </button>
-            {showKyk && (
-              <select 
-                value={kykGenderFilter} 
-                onChange={(e) => setKykGenderFilter(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', color: '#444', fontSize: "16px", outline: 'none', cursor: 'pointer' }}>
-                <option value="Tümü">Tümü</option>
-                <option value="Kız">👩 Kız</option>
-                <option value="Erkek">👨 Erkek</option>
-              </select>
-            )}
-
-          </div>
-
-          <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <div style={{ fontSize: '12px', color: '#888', textAlign: 'right' }}>
-              <strong>{mapUniversities.length}</strong> Üniversite <br/> 
-              <strong>81</strong> İl
-            </div>
-            <button 
-              onClick={() => setFiltersOpen(true)}
-              style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#f0f2f5', color: '#333', cursor: 'pointer', fontSize: "16px", fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '16px' }}>⚙</span> Tüm Filtreler
-            </button>
-          </div>
-        </div>
-
+      <main className="map-area-unified" style={{ position: 'absolute', inset: 0, width: '100vw', height: '100dvh', zIndex: 10 }}>
         <MapContainer
           center={[
             39.0,

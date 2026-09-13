@@ -6377,168 +6377,219 @@ button, a, input, select, .touchable {
 }
 
 
-/* MOBILE FIRST OVERRIDES FOR BOTTOM SHEETS & NAV */
-
-.mobile-bottom-bar.nav-hidden {
-  transform: translateY(150px) !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.mobile-bottom-bar {
-  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease !important;
-  bottom: calc(20px + env(safe-area-inset-bottom)) !important;
-}
-
-@media (max-width: 800px) {
-  /* Hide scrollbar for the modern filters bar */
-  .modern-filters-bar {
-    display: flex !important;
-    overflow-x: auto !important;
-    white-space: nowrap !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
-    padding-top: max(15px, env(safe-area-inset-top)) !important;
-  }
-  .modern-filters-bar::-webkit-scrollbar {
-    display: none !important;
-  }
-  
-  /* Reset filter buttons so they don't break lines */
-  .modern-filters-bar button {
-    flex: 0 0 auto !important;
-  }
-  
-  /* Make sure bottom sheets cover from bottom edge */
-  .program-detail,
-  .university-panel,
-  .kyk-detail,
-  .filter-panel,
-  .preference-drawer {
-    position: fixed !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    max-height: 85dvh !important;
-    border-radius: 1.5rem 1.5rem 0 0 !important; /* rounded-t-3xl */
-    z-index: 10050 !important;
-    padding: 20px 20px calc(20px + env(safe-area-inset-bottom)) !important;
-    box-sizing: border-box !important;
-    -webkit-overflow-scrolling: touch !important;
-    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important;
-  }
-  
-  /* Drag handle specifically for mobile bottom sheets */
-  .program-detail::before,
-  .university-panel::before,
-  .kyk-detail::before,
-  .filter-panel::before,
-  .preference-drawer::before {
-    content: '';
-    display: block;
-    width: 36px;
-    height: 5px;
-    background-color: #cbd5e1;
-    border-radius: 3px;
-    margin: -10px auto 16px auto;
-  }
-
-  /* Make map zoom controls easier to reach */
-  .leaflet-control-zoom {
-    position: absolute !important;
-    bottom: 110px !important; 
-    right: 15px !important;
-    top: auto !important;
-    left: auto !important;
-  }
-  
-  /* Touch friendly buttons */
-  button, .open-university-button, .close-button {
-    min-height: 44px !important;
-    touch-action: manipulation !important;
-  }
-}
-
-/* Typography Hierarchy Enhancements */
-.detail-label {
-  font-size: 11px !important;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b !important;
-  font-weight: 700 !important;
-  margin-bottom: 8px !important;
-}
-
-.program-detail h2,
-.kyk-detail h2,
-.university-panel h2 {
-  font-size: 1.125rem !important; /* text-lg */
-  font-weight: 600 !important; /* font-semibold */
-  line-height: 1.3 !important;
-  color: #0f172a !important;
-  margin-top: 0 !important;
-  margin-bottom: 12px !important;
-}
-
-
-/* Fix iOS Safari Auto-Zoom Bug */
-input[type="text"], input[type="search"], .search-area > input {
-  font-size: 16px !important;
-}
-
-
 
 
 /* ========================================================
-   GUARANTEED VISIBILITY & Z-INDEX (USER REQUESTED)
+   UNIFIED MOBILE APP UI (CLEAN REFACTOR)
    ======================================================== */
+html, body, #root, .app {
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+  overscroll-behavior-y: none;
+  background-color: #F8FAFC;
+}
 
-/* 1. Üst Arama Çubuğu (Header) */
-.header {
-  z-index: 1100 !important;
-  pointer-events: auto !important;
+/* Remove 300ms tap delay and disable selection */
+button, a, input, select, .touchable {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix iOS Safari auto-zoom */
+input[type="text"], input[type="search"] {
+  font-size: 16px !important;
+}
+
+/* Hide scrollbars */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* 1. Header Kapsayıcı (Sabit ve Tek Parça) */
+.header-unified {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 2000 !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+  padding: max(12px, env(safe-area-inset-top)) 16px 12px 16px !important;
   display: flex !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-.logo-area, .search-area, .header-actions {
+  flex-direction: column !important;
+  gap: 12px !important;
   pointer-events: auto !important;
-  z-index: 1101 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04) !important;
 }
 
-/* 2. Filtre Butonları (Modern Filters Bar) */
-.modern-filters-bar {
-  position: relative !important; /* Haritanın üzerinde kalması için relative/absolute/fixed şart */
-  z-index: 1100 !important;
-  pointer-events: auto !important;
+.header-unified .logo-row {
   display: flex !important;
-  opacity: 1 !important;
-  visibility: visible !important;
+  justify-content: space-between !important;
+  align-items: center !important;
 }
 
-/* 3. Alt Navigasyon Çubuğu (Mobile Bottom Bar) */
+.header-unified .logo-row h1 {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+  color: #1e293b !important;
+}
+
+.header-unified .search-row input {
+  width: 100% !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 0 16px !important;
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  outline: none !important;
+}
+.header-unified .search-row input:focus {
+  border-color: #6366f1 !important;
+  background: #fff !important;
+}
+
+.header-unified .filters-row {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  padding-bottom: 2px !important;
+}
+
+/* Standartlaştırılmış Hap Butonlar */
+.pill-btn {
+  flex: 0 0 auto !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #fff !important;
+  color: #475569 !important;
+  min-height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+.pill-btn.active {
+  background: #6366f1 !important;
+  color: #fff !important;
+  border-color: #6366f1 !important;
+}
+
+/* 2. Harita Kapsayıcı (Ekrana Tam Oturan, Zemin) */
+.map-area-unified {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 10 !important; /* En altta */
+  height: 100dvh !important;
+  width: 100vw !important;
+}
+
+/* Harita zoom kontrollerini üst çubuğun altında kalmayacak şekilde taşı */
+.leaflet-control-zoom {
+  position: absolute !important;
+  top: 190px !important; /* Header yüksekliğini kurtaracak kadar */
+  right: 12px !important;
+  left: auto !important;
+  bottom: auto !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+/* 3. Alt Menü (Footer) */
 .mobile-bottom-bar {
-  z-index: 1100 !important;
-  pointer-events: auto !important;
+  position: fixed !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  height: 64px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
   display: flex !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  /* Alt tarafa güvenli alan hesaplaması */
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  z-index: 2000 !important;
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s !important;
 }
 
-/* Modal açıkken alt navigasyonu gizle */
 .mobile-bottom-bar.nav-hidden {
   transform: translateY(150px) !important;
   opacity: 0 !important;
   pointer-events: none !important;
-  visibility: hidden !important;
 }
 
-/* 4. Harita Bileşeni (Map Container) */
-.leaflet-container {
-  z-index: 400 !important;
+.mobile-bottom-bar button {
+  background: transparent !important;
+  border: none !important;
+  color: #475569 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  min-height: 44px !important;
+  padding: 4px 12px !important;
+}
+
+/* 4. Bottom Sheets (Detay Kartları) */
+.program-detail,
+.university-panel,
+.kyk-detail,
+.filter-panel,
+.preference-drawer {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  margin: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: 85dvh !important;
+  border-radius: 24px 24px 0 0 !important;
+  z-index: 3000 !important; /* Header'dan da üstte çıksın isterseniz yüksek tutun */
+  background: #fff !important;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.15) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+
+/* Drag handle */
+.program-detail::before,
+.university-panel::before,
+.kyk-detail::before,
+.filter-panel::before,
+.preference-drawer::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 5px;
+  background: #cbd5e1;
+  border-radius: 3px;
+  margin: -12px auto 16px auto;
+}
+
+/* Hide legacy headers on mobile if they still exist in JSX */
+@media (max-width: 800px) {
+  .header:not(.header-unified) { display: none !important; }
+  .modern-filters-bar { display: none !important; }
 }
