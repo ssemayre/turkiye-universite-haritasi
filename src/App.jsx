@@ -3580,7 +3580,7 @@ const activeFilterCount = [
                     {(() => {
                       let minD = Infinity;
                       let minName = selectedKyk.nearby_campus;
-                      campusData.forEach(c => {
+                      Object.values(campusData).flat().forEach(c => {
                         if (c.latitude && c.longitude) {
                           let d = getDistanceFromLatLonInKm(selectedKyk.coordinates.lat, selectedKyk.coordinates.lng, Number(c.latitude), Number(c.longitude));
                           if (d < minD) {
