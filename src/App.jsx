@@ -224,6 +224,11 @@ function MapController({
 // ==================================================
 
 function App() {
+
+  const [showKyk, setShowKyk] = useState(false);
+  const [kykGenderFilter, setKykGenderFilter] = useState("Tümü");
+  const [selectedKyk, setSelectedKyk] = useState(null);
+
   // ==================================================
   // STATE
   // ==================================================
