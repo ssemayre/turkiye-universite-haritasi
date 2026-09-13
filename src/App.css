@@ -6387,7 +6387,7 @@ button, a, input, select, .touchable {
 
 .mobile-bottom-bar {
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease !important;
-  bottom: env(safe-area-inset-bottom, 20px) !important;
+  bottom: calc(20px + env(safe-area-inset-bottom)) !important;
 }
 
 @media (max-width: 800px) {
@@ -6487,4 +6487,58 @@ button, a, input, select, .touchable {
 /* Fix iOS Safari Auto-Zoom Bug */
 input[type="text"], input[type="search"], .search-area > input {
   font-size: 16px !important;
+}
+
+
+
+
+/* ========================================================
+   GUARANTEED VISIBILITY & Z-INDEX (USER REQUESTED)
+   ======================================================== */
+
+/* 1. Üst Arama Çubuğu (Header) */
+.header {
+  z-index: 1100 !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.logo-area, .search-area, .header-actions {
+  pointer-events: auto !important;
+  z-index: 1101 !important;
+}
+
+/* 2. Filtre Butonları (Modern Filters Bar) */
+.modern-filters-bar {
+  position: relative !important; /* Haritanın üzerinde kalması için relative/absolute/fixed şart */
+  z-index: 1100 !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* 3. Alt Navigasyon Çubuğu (Mobile Bottom Bar) */
+.mobile-bottom-bar {
+  z-index: 1100 !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  /* Alt tarafa güvenli alan hesaplaması */
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* Modal açıkken alt navigasyonu gizle */
+.mobile-bottom-bar.nav-hidden {
+  transform: translateY(150px) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* 4. Harita Bileşeni (Map Container) */
+.leaflet-container {
+  z-index: 400 !important;
 }

@@ -2176,7 +2176,7 @@ const activeFilterCount = [
   minRank !== "",
   maxRank !== "",
 ].filter(Boolean).length;
-  const isAnyModalOpen = selectedUniversity || selectedProgram || selectedKyk || filtersOpen || selectedSubCampus || preferenceOpen || browseOpen || aboutOpen;
+  const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
     <div className="app">
 
@@ -2716,7 +2716,7 @@ const activeFilterCount = [
 
       <main className="map-area">
 
-        <div className="modern-filters-bar" style={{ display: 'flex', gap: '10px', padding: '15px 20px', alignItems: 'center', background: '#fff', borderBottom: '1px solid #e0e0e0', overflowX: 'auto', zIndex: 10 }}>
+        <div className="modern-filters-bar" style={{ position: 'relative', display: 'flex', gap: '10px', padding: '15px 20px', alignItems: 'center', background: '#fff', borderBottom: '1px solid #e0e0e0', overflowX: 'auto', zIndex: 2000 }}>
           <div style={{ display: 'flex', gap: '8px', marginRight: 'auto', alignItems: 'center' }}>
             <span style={{ fontSize: "16px", fontWeight: '600', color: '#555', marginRight: '5px' }}>Hızlı Keşfet:</span>
             
