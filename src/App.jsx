@@ -2176,6 +2176,7 @@ const activeFilterCount = [
   minRank !== "",
   maxRank !== "",
 ].filter(Boolean).length;
+  const isAnyModalOpen = selectedUniversity || selectedProgram || selectedKyk || filtersOpen || selectedSubCampus || preferenceOpen || browseOpen || aboutOpen;
   return (
     <div className="app">
 
