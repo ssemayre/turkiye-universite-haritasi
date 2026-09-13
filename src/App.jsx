@@ -121,6 +121,8 @@ const campusIcon = L.divIcon({
 // ==================================================
 
 function normalize(str) {
+  const isAnyModalOpen = selectedUniversity || selectedProgram || selectedKyk || filtersOpen || selectedSubCampus || preferenceOpen || browseOpen || aboutOpen;
+
   return (str || "")
     .toString()
     .toLowerCase()
@@ -2508,7 +2510,7 @@ const activeFilterCount = [
 
       {filtersOpen && (
         <aside className="filter-panel">
-            <div className="sheet-pull-handle-visual"></div>
+            
 
           <div className="filter-header">
 
@@ -2717,49 +2719,49 @@ const activeFilterCount = [
 
         <div className="modern-filters-bar" style={{ display: 'flex', gap: '10px', padding: '15px 20px', alignItems: 'center', background: '#fff', borderBottom: '1px solid #e0e0e0', overflowX: 'auto', zIndex: 10 }}>
           <div style={{ display: 'flex', gap: '8px', marginRight: 'auto', alignItems: 'center' }}>
-            <span style={{ fontSize: '14px', fontWeight: '600', color: '#555', marginRight: '5px' }}>Hızlı Keşfet:</span>
+            <span style={{ fontSize: "16px", fontWeight: '600', color: '#555', marginRight: '5px' }}>Hızlı Keşfet:</span>
             
             <button 
               onClick={() => setTypeFilter(typeFilter === 'Devlet Üniversitesi' ? 'Tümü' : 'Devlet Üniversitesi')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Devlet Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Devlet Üniversitesi' ? '#00bfa5' : '#fff', color: typeFilter === 'Devlet Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Devlet Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Devlet Üniversitesi' ? '#00bfa5' : '#fff', color: typeFilter === 'Devlet Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
               Devlet
             </button>
             
             <button 
               onClick={() => setTypeFilter(typeFilter === 'Vakıf Üniversitesi' ? 'Tümü' : 'Vakıf Üniversitesi')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Vakıf Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Vakıf Üniversitesi' ? '#3949ab' : '#fff', color: typeFilter === 'Vakıf Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              style={{ padding: '8px 16px', borderRadius: '20px', border: typeFilter === 'Vakıf Üniversitesi' ? 'none' : '1px solid #ddd', background: typeFilter === 'Vakıf Üniversitesi' ? '#3949ab' : '#fff', color: typeFilter === 'Vakıf Üniversitesi' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
               Vakıf
             </button>
             
             <button 
               onClick={() => setEducationFilter(educationFilter === 'Lisans' ? 'Tümü' : 'Lisans')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Lisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Lisans' ? '#ff9800' : '#fff', color: educationFilter === 'Lisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Lisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Lisans' ? '#ff9800' : '#fff', color: educationFilter === 'Lisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
               Lisans
             </button>
 
             <button 
               onClick={() => setEducationFilter(educationFilter === 'Önlisans' ? 'Tümü' : 'Önlisans')}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Önlisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Önlisans' ? '#ff9800' : '#fff', color: educationFilter === 'Önlisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s' }}>
+              style={{ padding: '8px 16px', borderRadius: '20px', border: educationFilter === 'Önlisans' ? 'none' : '1px solid #ddd', background: educationFilter === 'Önlisans' ? '#ff9800' : '#fff', color: educationFilter === 'Önlisans' ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s' }}>
               Önlisans
             </button>
 
             
             <button 
               onClick={() => setShowAllCampuses(!showAllCampuses)}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: showAllCampuses ? 'none' : '1px solid #ddd', background: showAllCampuses ? '#8b5cf6' : '#fff', color: showAllCampuses ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s', marginLeft: '10px' }}>
+              style={{ padding: '8px 16px', borderRadius: '20px', border: showAllCampuses ? 'none' : '1px solid #ddd', background: showAllCampuses ? '#8b5cf6' : '#fff', color: showAllCampuses ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s', marginLeft: '10px' }}>
               📍 Tüm Yerleşkeler
             </button>
 
             <button 
               onClick={() => setShowKyk(!showKyk)}
-              style={{ padding: '8px 16px', borderRadius: '20px', border: showKyk ? 'none' : '1px solid #ddd', background: showKyk ? '#e91e63' : '#fff', color: showKyk ? '#fff' : '#444', cursor: 'pointer', fontSize: '13px', fontWeight: '500', transition: 'all 0.2s', marginLeft: '10px' }}>
+              style={{ padding: '8px 16px', borderRadius: '20px', border: showKyk ? 'none' : '1px solid #ddd', background: showKyk ? '#e91e63' : '#fff', color: showKyk ? '#fff' : '#444', cursor: 'pointer', fontSize: "16px", fontWeight: '500', transition: 'all 0.2s', marginLeft: '10px' }}>
               🏕️ KYK Yurtları
             </button>
             {showKyk && (
               <select 
                 value={kykGenderFilter} 
                 onChange={(e) => setKykGenderFilter(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', color: '#444', fontSize: '13px', outline: 'none', cursor: 'pointer' }}>
+                style={{ padding: '8px 12px', borderRadius: '20px', border: '1px solid #ddd', background: '#fff', color: '#444', fontSize: "16px", outline: 'none', cursor: 'pointer' }}>
                 <option value="Tümü">Tümü</option>
                 <option value="Kız">👩 Kız</option>
                 <option value="Erkek">👨 Erkek</option>
@@ -2775,7 +2777,7 @@ const activeFilterCount = [
             </div>
             <button 
               onClick={() => setFiltersOpen(true)}
-              style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#f0f2f5', color: '#333', cursor: 'pointer', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#f0f2f5', color: '#333', cursor: 'pointer', fontSize: "16px", fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '16px' }}>⚙</span> Tüm Filtreler
             </button>
           </div>
@@ -2942,7 +2944,7 @@ const activeFilterCount = [
 
         {browseOpen && (
           <aside className="browse-panel">
-            <div className="sheet-pull-handle-visual"></div>
+            
             <div className="browse-panel-header">
               <div>
                 <div className="detail-label">ÜNİVERSİTELER</div>
@@ -3339,7 +3341,7 @@ const activeFilterCount = [
         {selectedProgram && (
 
           <aside className="program-detail">
-            <div className="sheet-pull-handle-visual"></div>
+            
 
             <button
               className="close-button"
@@ -3622,7 +3624,7 @@ const activeFilterCount = [
       
         {selectedKyk && (
           <aside className="kyk-detail program-detail">
-  <div className="sheet-pull-handle-visual"></div>
+  
   <button
     className="close-button"
     onClick={() => setSelectedKyk(null)}
@@ -3635,7 +3637,7 @@ const activeFilterCount = [
       <span style={{ background: selectedKyk.gender === 'Kız' ? '#fbcfe8' : (selectedKyk.gender === 'Erkek' ? '#bfdbfe' : '#e5e7eb'), color: selectedKyk.gender === 'Kız' ? '#be185d' : (selectedKyk.gender === 'Erkek' ? '#1e3a8a' : '#4b5563'), padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>{selectedKyk.gender} Yurdu</span>
     </div>
     <h2 style={{ fontSize: '20px', margin: '5px 0', color: '#1e293b', fontWeight: '700', lineHeight: '1.3' }}>{selectedKyk.name}</h2>
-    <p style={{ color: '#64748b', margin: 0, fontSize: '14px' }}>{selectedKyk.district}{selectedKyk.district && selectedKyk.city ? ', ' : ''}{selectedKyk.city}</p>
+    <p style={{ color: '#64748b', margin: 0, fontSize: "16px" }}>{selectedKyk.district}{selectedKyk.district && selectedKyk.city ? ', ' : ''}{selectedKyk.city}</p>
   </div>
   
   <div className="kyk-info-box">
@@ -3643,7 +3645,7 @@ const activeFilterCount = [
     <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '16px', borderRadius: '12px', marginBottom: '15px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
         <span style={{ fontSize: '18px' }}>🎓</span>
-        <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>En Yakın Kampüs</h4>
+        <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>En Yakın Kampüs</h4>
       </div>
       <div style={{ color: '#0f172a', fontSize: '15px', fontWeight: '600' }}>
         {(() => {
@@ -3672,7 +3674,7 @@ const activeFilterCount = [
             return (
               <div>
                 <div style={{ marginBottom: '6px' }}>{minName}</div>
-                <div style={{ color: '#6366f1', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <div style={{ color: '#6366f1', fontSize: "16px", display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <span>📍 {(minD).toFixed(1)} km</span>
                   <span style={{ color: '#94a3b8' }}>•</span>
                   <span>🚶‍♂️ Yürüyerek ~{walkStr}</span>
@@ -3690,9 +3692,9 @@ const activeFilterCount = [
       <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
           <span style={{ fontSize: '18px' }}>🗺️</span>
-          <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
+          <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
         </div>
-        <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
+        <div style={{ color: '#334155', fontSize: "16px", lineHeight: '1.5' }}>
           {selectedKyk.address ? selectedKyk.address : selectedKyk.district + ", " + selectedKyk.city}
         </div>
       </div>
@@ -3709,7 +3711,7 @@ const activeFilterCount = [
 
         {selectedSubCampus && (
           <aside className="kyk-detail program-detail">
-              <div className="sheet-pull-handle-visual"></div>
+              
               <button
                 className="close-button"
                 onClick={() => setSelectedSubCampus(null)}
@@ -3722,16 +3724,16 @@ const activeFilterCount = [
                   <span style={{ background: selectedSubCampus.isMain ? '#fef3c7' : '#d1fae5', color: selectedSubCampus.isMain ? '#b45309' : '#047857', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>{selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}</span>
                 </div>
                 <h2 style={{ fontSize: '20px', margin: '5px 0', color: '#1e293b', fontWeight: '700', lineHeight: '1.3' }}>{selectedSubCampus.name}</h2>
-                <p style={{ color: '#64748b', margin: 0, fontSize: '14px' }}>{selectedSubCampus.universityName}</p>
+                <p style={{ color: '#64748b', margin: 0, fontSize: "16px" }}>{selectedSubCampus.universityName}</p>
               </div>
               
               <div className="kyk-info-box" style={{ overflowY: 'auto', maxHeight: 'calc(100% - 130px)' }}>
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                     <span style={{ fontSize: '18px' }}>🗺️</span>
-                    <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
+                    <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
                   </div>
-                  <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
+                  <div style={{ color: '#334155', fontSize: "16px", lineHeight: '1.5' }}>
                     {selectedSubCampus.address || (selectedSubCampus.district + ", " + selectedSubCampus.city)}
                   </div>
                 </div>
@@ -3739,16 +3741,16 @@ const activeFilterCount = [
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
                     <span style={{ fontSize: '18px' }}>📚</span>
-                    <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>AKADEMİK BİRİMLER VE BÖLÜMLER (Fakülte / MYO)</h4>
+                    <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>AKADEMİK BİRİMLER VE BÖLÜMLER (Fakülte / MYO)</h4>
                   </div>
-                  <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
+                  <div style={{ color: '#334155', fontSize: "16px", lineHeight: '1.5' }}>
                     {selectedSubCampus.academicUnits && selectedSubCampus.academicUnits.length > 0 ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {selectedSubCampus.academicUnits.map((unit, idx) => (
                           <div key={idx} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '10px' }}>
                               <span style={{ background: unit.type === 'MYO' ? '#dbeafe' : (unit.type === 'Fakülte' ? '#fce7f3' : '#f3f4f6'), color: unit.type === 'MYO' ? '#1e40af' : (unit.type === 'Fakülte' ? '#be185d' : '#374151'), padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{unit.type}</span>
-                              <strong style={{ fontSize: '14px', color: '#1e293b', lineHeight: '1.2' }}>{unit.name}</strong>
+                              <strong style={{ fontSize: "16px", color: '#1e293b', lineHeight: '1.2' }}>{unit.name}</strong>
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                {unit.programs && unit.programs.map((prog, pidx) => (
@@ -3783,7 +3785,7 @@ const activeFilterCount = [
       {preferenceOpen && (
 
         <aside className="preference-drawer">
-            <div className="sheet-pull-handle-visual"></div>
+            
 
           <div className="preference-header">
 
@@ -4524,7 +4526,7 @@ const activeFilterCount = [
 
       )}
       {/* MOBİL ALT MENÜ (Glassmorphism) */}
-      <nav className="mobile-bottom-bar">
+      <nav className={`mobile-bottom-bar ${isAnyModalOpen ? 'nav-hidden' : ''}`}>
         <button type="button" onClick={openBrowse}>
           <span style={{fontSize: '20px', marginBottom: '2px'}}>🎓</span>
           <span>Keşfet</span>
