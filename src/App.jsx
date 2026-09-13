@@ -3731,21 +3731,33 @@ const activeFilterCount = [
                 </div>
 
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
                     <span style={{ fontSize: '18px' }}>📚</span>
-                    <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>Fakülte ve Bölümler</h4>
+                    <h4 style={{ margin: 0, color: '#475569', fontSize: '13px', textTransform: 'uppercase', fontWeight: '700' }}>AKADEMİK BİRİMLER VE BÖLÜMLER (Fakülte / MYO)</h4>
                   </div>
                   <div style={{ color: '#334155', fontSize: '14px', lineHeight: '1.5' }}>
-                    {selectedSubCampus.facultyNames && selectedSubCampus.facultyNames.length > 0 ? (
-                      <ul style={{ paddingLeft: '20px', margin: 0 }}>
-                        {selectedSubCampus.facultyNames.map((fac, idx) => (
-                          <li key={idx} style={{ marginBottom: '8px', fontWeight: '500' }}>{fac}</li>
+                    {selectedSubCampus.academicUnits && selectedSubCampus.academicUnits.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {selectedSubCampus.academicUnits.map((unit, idx) => (
+                          <div key={idx} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '10px' }}>
+                              <span style={{ background: unit.type === 'MYO' ? '#dbeafe' : (unit.type === 'Fakülte' ? '#fce7f3' : '#f3f4f6'), color: unit.type === 'MYO' ? '#1e40af' : (unit.type === 'Fakülte' ? '#be185d' : '#374151'), padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{unit.type}</span>
+                              <strong style={{ fontSize: '14px', color: '#1e293b', lineHeight: '1.2' }}>{unit.name}</strong>
+                            </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                               {unit.programs && unit.programs.map((prog, pidx) => (
+                                  <span key={pidx} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', color: '#475569', fontSize: '11px', padding: '4px 8px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                     <span style={{ color: prog.degree === 'Önlisans' ? '#0284c7' : '#ea580c', fontWeight: 'bold' }}>[{prog.degree}]</span>
+                                     {prog.name}
+                                  </span>
+                               ))}
+                            </div>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     ) : (
-                      <span style={{ color: '#94a3b8' }}>Bu yerleşkeye ait fakülte detayı bulunmuyor.</span>
-                    )}
-                  </div>
+                      <span style={{ color: '#94a3b8' }}>Bu yerleşkeye ait akademik birim/bölüm detayı bulunmuyor.</span>
+                    )}</div>
                 </div>
                 
                 <a href={"https://www.google.com/maps/dir/?api=1&destination=" + selectedSubCampus.latitude + "," + selectedSubCampus.longitude} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px', background: '#8b5cf6', color: '#fff', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', fontSize: '15px', transition: 'background 0.2s', boxSizing: 'border-box' }}>
