@@ -1608,7 +1608,7 @@ function App() {
         try {
           const response =
             await fetch(
-              `/programs/${universityId}.json`
+              `/programs/${universityId}.json?v=` + Date.now()
             );
 
           if (!response.ok) {
@@ -3581,7 +3581,7 @@ const activeFilterCount = [
                   type="button"
                   className="detail-row detail-location-row"
                   onClick={focusSelectedProgramCampus}
-                  title={`${selectedCampus.name} konumunu haritada göster`}
+                  title={`${selectedProgram.campus_name || selectedCampus.name || selectedProgram.faculty} konumunu haritada göster`}
                 >
                   <span>
                     Fakülte / Birim
@@ -3594,7 +3594,7 @@ const activeFilterCount = [
                       selectedProgram.birimAdi ||
                       "-"
                     }
-                    <small>📍 {selectedCampus.name} · Haritada göster</small>
+                    <small>📍 {selectedProgram.campus_name || selectedCampus.name || selectedProgram.faculty || "Yerleşke Konumu Belirleniyor"} · Haritada göster</small>
                   </strong>
                 </button>
               ) : (
