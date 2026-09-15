@@ -1718,13 +1718,20 @@ function App() {
         setSelectedProgram(null);
         setCampusFocusOnly(false);
 
-        // Redirect to campuses logic
-        const mainCampus = allCampusesList.find(c => c.universityId === university.id && c.isMain);
+        // Redirect to campuses logic using fuzzy matching
+        const norm = (s) => (s||'').toLowerCase().replace(/\s+/g,'').replace(/\(.*?\)/g, '');
+        const uName = norm(university.name);
+        
+        let mainCampus = allCampusesList.find(c => c.isMain && norm(c.universityName) === uName);
+        if (!mainCampus) {
+            mainCampus = allCampusesList.find(c => c.isMain && (norm(c.universityName).includes(uName) || uName.includes(norm(c.universityName))));
+        }
+        
         if (mainCampus) {
             setSelectedSubCampus(mainCampus);
             map?.flyTo([Number(mainCampus.latitude), Number(mainCampus.longitude)], 14);
         } else {
-            const anyCampus = allCampusesList.find(c => c.universityId === university.id);
+            const anyCampus = allCampusesList.find(c => norm(c.universityName) === uName || norm(c.universityName).includes(uName) || uName.includes(norm(c.universityName)));
             if (anyCampus) {
                 setSelectedSubCampus(anyCampus);
                 map?.flyTo([Number(anyCampus.latitude), Number(anyCampus.longitude)], 14);
@@ -2388,6 +2395,21 @@ const activeFilterCount = [
                       <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
                          <span className="university-tooltip"><strong>{campus.universityName}</strong><br/>{campus.name}</span>
                       </Tooltip>
+                      <Popup>
+                         <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
+                           <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
+                             {campus.isMain ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
+                           </div>
+                           <h3 style={{ margin: '5px 0', fontSize: '14px' }}>{campus.universityName}</h3>
+                           <p style={{ margin: '0', fontSize: '12px', color: '#64748b' }}>{campus.name}</p>
+                           <button 
+                             style={{ marginTop: '10px', background: '#2563eb', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                             onClick={(e) => { e.stopPropagation(); setSelectedSubCampus(campus); }}
+                           >
+                             Detayları Gör
+                           </button>
+                         </div>
+                      </Popup>
                    </Marker>
                 ))}
               </MarkerClusterGroup>
