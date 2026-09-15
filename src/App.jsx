@@ -249,6 +249,7 @@ function App() {
   const [expandedUnits, setExpandedUnits] = useState({});
   const [reviewVotes, setReviewVotes] = useState({});
   const [qaVotes, setQaVotes] = useState({});
+  const [selectedSubCampus, setSelectedSubCampus] = useState(null);
 
   useEffect(() => {
     setCampusDetailTab('info');
@@ -299,7 +300,6 @@ function App() {
   const [kykGenderFilter, setKykGenderFilter] = useState("Tümü");
   const [selectedKyk, setSelectedKyk] = useState(null);
   const [showAllCampuses, setShowAllCampuses] = useState(false);
-  const [selectedSubCampus, setSelectedSubCampus] = useState(null);
 
   // ==================================================
   // STATE
