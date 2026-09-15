@@ -245,7 +245,7 @@ function MapController({
 import { useAuth } from './AuthContext';
 
 function App() {
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, signOut } = useAuth();
   
   // ── SOSYAL KATMAN ──────────────────────────────────────────
   const [campusDetailTab, setCampusDetailTab] = useState('info');
@@ -2264,11 +2264,25 @@ const activeFilterCount = [
       ======================================== */}
       <header className="header-unified" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
         
-        {/* Satır 1: Başlık */}
+        {/* Satır 1: Başlık ve Kullanıcı Profil */}
         <div className="logo-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontSize: '18px', fontWeight: '700', margin: 0, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '22px' }}>🎓</span> Türkiye Üniversite Haritası
           </h1>
+          
+          <div className="user-profile-section" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '4px 12px 4px 4px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', color: '#475569' }}>
+                <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '28px', height: '28px', borderRadius: '50%' }} />
+                <span>{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', marginLeft: '4px', color: '#ef4444', fontWeight: 'bold' }}>✕</button>
+              </div>
+            ) : (
+              <button onClick={openAuthModal} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)' }}>
+                Giriş Yap
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Satır 2: Arama */}
