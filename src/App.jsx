@@ -299,7 +299,7 @@ function App() {
   const [showKyk, setShowKyk] = useState(false);
   const [kykGenderFilter, setKykGenderFilter] = useState("Tümü");
   const [selectedKyk, setSelectedKyk] = useState(null);
-  const [showAllCampuses, setShowAllCampuses] = useState(false);
+  const [showAllCampuses, setShowAllCampuses] = useState(true);
 
   // ==================================================
   // STATE
@@ -1714,9 +1714,22 @@ function App() {
         setAboutOpen(false);
         setBrowseOpen(false);
 
-        setSelectedUniversity(university);
+        setSelectedUniversity(null); // DISABLED the old flat list
         setSelectedProgram(null);
         setCampusFocusOnly(false);
+
+        // Redirect to campuses logic
+        const mainCampus = allCampusesList.find(c => c.universityId === university.id && c.isMain);
+        if (mainCampus) {
+            setSelectedSubCampus(mainCampus);
+            map?.flyTo([Number(mainCampus.latitude), Number(mainCampus.longitude)], 14);
+        } else {
+            const anyCampus = allCampusesList.find(c => c.universityId === university.id);
+            if (anyCampus) {
+                setSelectedSubCampus(anyCampus);
+                map?.flyTo([Number(anyCampus.latitude), Number(anyCampus.longitude)], 14);
+            }
+        }
         setCampusViewOpen(false);
         setSelectedCampus(null);
         setSelectedCampusFaculty(null);
