@@ -242,8 +242,11 @@ function MapController({
 // APP
 // ==================================================
 
-function App() {
+import { useAuth } from './AuthContext';
 
+function App() {
+  const { user, openAuthModal } = useAuth();
+  
   // ── SOSYAL KATMAN ──────────────────────────────────────────
   const [campusDetailTab, setCampusDetailTab] = useState('info');
   const [expandedUnits, setExpandedUnits] = useState({});
@@ -3396,7 +3399,12 @@ const activeFilterCount = [
                       <div className="csd-stars">★★★★☆</div>
                       <div className="csd-rating-count">{MOCK_REVIEWS.length} değerlendirme</div>
                     </div>
-                    <button className="csd-add-review-btn">+ Yorum Yap</button>
+                    <button 
+                      className="csd-add-review-btn" 
+                      onClick={() => !user && openAuthModal()}
+                    >
+                      + Yorum Yap
+                    </button>
                   </div>
                   {MOCK_REVIEWS.map(review => (
                     <div key={review.id} className="csd-review-card">
@@ -3432,7 +3440,12 @@ const activeFilterCount = [
               {/* ━━ SORU & CEVAP ━━ */}
               {campusDetailTab === 'qa' && (
                 <div className="csd-section-list">
-                  <button className="csd-ask-btn">+ Soru Sor</button>
+                  <button 
+                    className="csd-ask-btn" 
+                    onClick={() => !user && openAuthModal()}
+                  >
+                    + Soru Sor
+                  </button>
                   {MOCK_QA.map(qa => (
                     <div key={qa.id} className="csd-qa-item">
                       <div className="csd-qa-question-row">
