@@ -33,12 +33,20 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const signInWithEmail = async (email, password) => {
+    return await supabase.auth.signInWithPassword({ email, password });
+  };
+
+  const signUpWithEmail = async (email, password) => {
+    return await supabase.auth.signUp({ email, password });
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, authModalOpen, openAuthModal, closeAuthModal, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, loading, authModalOpen, openAuthModal, closeAuthModal, signInWithGoogle, signInWithEmail, signUpWithEmail, signOut }}>
       {children}
     </AuthContext.Provider>
   );
