@@ -1830,12 +1830,12 @@ function App() {
         
         if (mainCampus) {
             setSelectedSubCampus(mainCampus);
-            map?.flyTo([Number(mainCampus.latitude), Number(mainCampus.longitude)], 14);
+            setMapFocus({ latitude: Number(mainCampus.latitude), longitude: Number(mainCampus.longitude), zoom: 14 });
         } else {
             const anyCampus = allCampusesList.find(c => norm(c.universityName) === uName || norm(c.universityName).includes(uName) || uName.includes(norm(c.universityName)));
             if (anyCampus) {
                 setSelectedSubCampus(anyCampus);
-                map?.flyTo([Number(anyCampus.latitude), Number(anyCampus.longitude)], 14);
+                setMapFocus({ latitude: Number(anyCampus.latitude), longitude: Number(anyCampus.longitude), zoom: 14 });
             }
         }
         setCampusViewOpen(false);
