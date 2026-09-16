@@ -312,6 +312,51 @@ function App() {
     }
   };
 
+  // --- YENİ SORU CEVAP YAPISI ---
+  const [realQuestions, setRealQuestions] = useState([]);
+  const [isQuestionFormOpen, setIsQuestionFormOpen] = useState(false);
+  const [questionContent, setQuestionContent] = useState('');
+  const [isSubmittingQuestion, setIsSubmittingQuestion] = useState(false);
+
+  useEffect(() => {
+    if (selectedSubCampus && campusDetailTab === 'qa') {
+      fetchQuestions();
+    }
+  }, [selectedSubCampus?.id, campusDetailTab]);
+
+  const fetchQuestions = async () => {
+    const { data, error } = await supabase
+      .from('questions')
+      .select('*')
+      .eq('university_id', selectedSubCampus.id)
+      .order('created_at', { ascending: false });
+    if (data) setRealQuestions(data);
+  };
+
+  const submitQuestion = async () => {
+    if (!questionContent.trim()) {
+      alert('Lütfen sorunuzu yazın!');
+      return;
+    }
+    setIsSubmittingQuestion(true);
+
+    const { data, error } = await supabase.from('questions').insert({
+      university_id: selectedSubCampus.id,
+      user_id: user.id,
+      content: questionContent
+    }).select('*').single();
+
+    setIsSubmittingQuestion(false);
+    
+    if (error) {
+      alert('Soru gönderilirken hata oluştu: ' + error.message);
+    } else {
+      setIsQuestionFormOpen(false);
+      setQuestionContent('');
+      setRealQuestions([data, ...realQuestions]);
+    }
+  };
+
   const getDirectionsUrl = (lat, lng) => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     return isIOS
@@ -3552,55 +3597,67 @@ const activeFilterCount = [
               {/* ━━ SORU & CEVAP ━━ */}
               {campusDetailTab === 'qa' && (
                 <div className="csd-section-list">
-                  <button 
-                    className="csd-ask-btn" 
-                    onClick={() => user ? alert('Soru sorma formu yakında eklenecektir.') : openAuthModal()}
-                  >
-                    + Soru Sor
-                  </button>
-                  {MOCK_QA.map(qa => (
-                    <div key={qa.id} className="csd-qa-item">
-                      <div className="csd-qa-question-row">
-                        <div className="csd-qa-votes">
-                          <button
-                            className={`csd-upvote ${(qaVotes[`q${qa.id}`] || 0) > 0 ? 'csd-upvote--active' : ''}`}
-                            onClick={() => setQaVotes(p => ({ ...p, [`q${qa.id}`]: (p[`q${qa.id}`] || 0) > 0 ? 0 : 1 }))}
-                          >▲</button>
-                          <span className="csd-vote-count">{qa.votes + (qaVotes[`q${qa.id}`] || 0)}</span>
-                          <button className="csd-downvote">▼</button>
-                        </div>
-                        <div className="csd-qa-question-body">
-                          <p className="csd-qa-question-text">{qa.question}</p>
-                          <div className="csd-qa-meta">
-                            <span>💬 {qa.answers.length} cevap</span>
-                            <span className="csd-qa-author">{qa.author}</span>
-                            <span className="csd-qa-date">{qa.date}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="csd-qa-answers">
-                        {qa.answers.map(ans => (
-                          <div key={ans.id} className="csd-answer-row">
-                            <div className="csd-qa-votes csd-qa-votes--sm">
-                              <button
-                                className={`csd-upvote ${(qaVotes[`a${qa.id}-${ans.id}`] || 0) > 0 ? 'csd-upvote--active' : ''}`}
-                                onClick={() => setQaVotes(p => ({ ...p, [`a${qa.id}-${ans.id}`]: (p[`a${qa.id}-${ans.id}`] || 0) > 0 ? 0 : 1 }))}
-                              >▲</button>
-                              <span className="csd-vote-count csd-vote-count--sm">{ans.votes + (qaVotes[`a${qa.id}-${ans.id}`] || 0)}</span>
-                            </div>
-                            <div className="csd-answer-body">
-                              <div className="csd-answer-author">
-                                <span>{ans.avatar}</span>
-                                <strong>{ans.author}</strong>
-                              </div>
-                              <p className="csd-answer-text">{ans.text}</p>
-                            </div>
-                          </div>
-                        ))}
-                        <button className="csd-answer-btn">Cevapla</button>
+                  {!isQuestionFormOpen && (
+                    <button 
+                      className="csd-ask-btn" 
+                      onClick={() => user ? setIsQuestionFormOpen(true) : openAuthModal()}
+                    >
+                      + Soru Sor
+                    </button>
+                  )}
+
+                  {isQuestionFormOpen && (
+                    <div className="csd-review-form" style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '15px', border: '1px solid #e2e8f0' }}>
+                      <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#1e293b' }}>Sorunuzu Yazın</h4>
+                      <textarea 
+                        value={questionContent}
+                        onChange={(e) => setQuestionContent(e.target.value)}
+                        placeholder="Örn: Yurt kapasitesi nasıl? Ulaşım zor mu?"
+                        style={{ width: '100%', height: '80px', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', resize: 'vertical', fontFamily: 'inherit', fontSize: '14px', boxSizing: 'border-box', marginBottom: '15px' }}
+                      />
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                        <button 
+                          onClick={() => setIsQuestionFormOpen(false)}
+                          style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', color: '#64748b', cursor: 'pointer', fontWeight: '500' }}
+                          disabled={isSubmittingQuestion}
+                        >
+                          İptal
+                        </button>
+                        <button 
+                          onClick={submitQuestion}
+                          style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', background: '#3b82f6', color: 'white', cursor: 'pointer', fontWeight: '500' }}
+                          disabled={isSubmittingQuestion}
+                        >
+                          {isSubmittingQuestion ? 'Gönderiliyor...' : 'Gönder'}
+                        </button>
                       </div>
                     </div>
-                  ))}
+                  )}
+
+                  {realQuestions.length === 0 ? (
+                    <div className="csd-empty" style={{ textAlign: 'center', padding: '30px 10px', color: '#94a3b8' }}>
+                      Henüz hiç soru sorulmamış. İlk soruyu sen sor!
+                    </div>
+                  ) : (
+                    realQuestions.map(qa => (
+                      <div key={qa.id} className="csd-qa-item">
+                        <div className="csd-qa-question-row">
+                          <div className="csd-qa-votes">
+                            <button className="csd-upvote">▲</button>
+                            <span className="csd-vote-count">{qa.upvotes || 0}</span>
+                            <button className="csd-downvote">▼</button>
+                          </div>
+                          <div className="csd-qa-question-body">
+                            <p className="csd-qa-question-text">{qa.content}</p>
+                            <div className="csd-qa-meta">
+                              <span className="csd-qa-author">👤 Kayıtlı Öğrenci</span>
+                              <span className="csd-qa-date">{new Date(qa.created_at).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
 
