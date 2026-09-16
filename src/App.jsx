@@ -255,6 +255,71 @@ function App() {
   const [qaVotes, setQaVotes] = useState({});
   const [selectedSubCampus, setSelectedSubCampus] = useState(null);
 
+  // --- OYLAMA YAPISI ---
+  const [voteTotals, setVoteTotals] = useState({});
+  const [userVotes, setUserVotes] = useState({});
+
+  const fetchVotes = async () => {
+    const items = [];
+    realReviews.forEach(r => items.push({ type: 'comment', id: r.id }));
+    realQuestions.forEach(q => {
+        items.push({ type: 'question', id: q.id });
+        if (q.answers) {
+            q.answers.forEach(a => items.push({ type: 'answer', id: a.id }));
+        }
+    });
+
+    if (items.length === 0) return;
+    const ids = items.map(i => i.id);
+    
+    const { data } = await supabase.from('votes').select('*').in('item_id', ids);
+    if (data) {
+        const totals = {};
+        const userV = {};
+        data.forEach(v => {
+            // Check if this vote's item_type matches one of our items
+            const isValid = items.some(i => i.id === v.item_id && i.type === v.item_type);
+            if (!isValid) return;
+
+            const key = `${v.item_type}_${v.item_id}`;
+            totals[key] = (totals[key] || 0) + v.vote_value;
+            if (user && v.user_id === user.id) {
+                userV[key] = v.vote_value;
+            }
+        });
+        setVoteTotals(totals);
+        setUserVotes(userV);
+    }
+  };
+
+  useEffect(() => {
+    fetchVotes();
+  }, [realReviews, realQuestions, user]);
+
+  const handleVote = async (type, id, value) => {
+    if (!user) {
+       openAuthModal();
+       return;
+    }
+    const key = `${type}_${id}`;
+    const currentValue = userVotes[key] || 0;
+    
+    let newValue = value;
+    if (currentValue === value) {
+       newValue = 0; // Cancel vote
+    }
+    
+    const diff = newValue - currentValue;
+    setVoteTotals(prev => ({ ...prev, [key]: (prev[key] || 0) + diff }));
+    setUserVotes(prev => ({ ...prev, [key]: newValue }));
+
+    // Execute in DB
+    await supabase.from('votes').delete().match({ user_id: user.id, item_type: type, item_id: id });
+    if (newValue !== 0) {
+       await supabase.from('votes').insert({ user_id: user.id, item_type: type, item_id: id, vote_value: newValue });
+    }
+  };
+
   // --- YENİ YORUM YAPISI ---
   const [realReviews, setRealReviews] = useState([]);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
@@ -3612,7 +3677,11 @@ const activeFilterCount = [
                       İlk değerlendiren siz olun!
                     </div>
                   ) : (
-                    realReviews.map(review => (
+                    realReviews.map(review => {
+                      const vKey = `comment_${review.id}`;
+                      const score = voteTotals[vKey] || 0;
+                      const uVote = userVotes[vKey] || 0;
+                      return (
                       <div key={review.id} className="csd-review-card">
                         <div className="csd-review-top">
                           <span className="csd-review-avatar" style={{ background: '#3b82f6', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
@@ -3629,8 +3698,24 @@ const activeFilterCount = [
                           </div>
                         </div>
                         <p className="csd-review-text">{review.content}</p>
+                        <div className="csd-review-actions" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                          <button
+                            className={`csd-vote-btn ${uVote === 1 ? 'csd-vote-btn--active' : ''}`}
+                            onClick={() => handleVote('comment', review.id, 1)}
+                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', background: uVote === 1 ? '#eff6ff' : 'white', color: uVote === 1 ? '#3b82f6' : '#64748b', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                          >
+                            👍 <span style={{ fontWeight: '600' }}>{score > 0 ? `+${score}` : (score < 0 ? score : 'Yararlı')}</span>
+                          </button>
+                          <button
+                            className={`csd-vote-btn ${uVote === -1 ? 'csd-vote-btn--active-down' : ''}`}
+                            onClick={() => handleVote('comment', review.id, -1)}
+                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', background: uVote === -1 ? '#fee2e2' : 'white', color: uVote === -1 ? '#ef4444' : '#64748b', cursor: 'pointer', fontSize: '12px' }}
+                          >
+                            👎
+                          </button>
+                        </div>
                       </div>
-                    ))
+                    )})
                   )}
                 </div>
               )}
@@ -3680,13 +3765,25 @@ const activeFilterCount = [
                       Henüz hiç soru sorulmamış. İlk soruyu sen sor!
                     </div>
                   ) : (
-                    realQuestions.map(qa => (
+                    realQuestions.map(qa => {
+                      const qKey = `question_${qa.id}`;
+                      const qScore = voteTotals[qKey] || 0;
+                      const qVote = userVotes[qKey] || 0;
+                      return (
                       <div key={qa.id} className="csd-qa-item">
                         <div className="csd-qa-question-row">
                           <div className="csd-qa-votes">
-                            <button className="csd-upvote">▲</button>
-                            <span className="csd-vote-count">{qa.upvotes || 0}</span>
-                            <button className="csd-downvote">▼</button>
+                            <button 
+                              className={`csd-upvote ${qVote === 1 ? 'csd-upvote--active' : ''}`}
+                              onClick={() => handleVote('question', qa.id, 1)}
+                              style={{ color: qVote === 1 ? '#3b82f6' : '#94a3b8' }}
+                            >▲</button>
+                            <span className="csd-vote-count">{qScore}</span>
+                            <button 
+                              className={`csd-downvote ${qVote === -1 ? 'csd-downvote--active' : ''}`}
+                              onClick={() => handleVote('question', qa.id, -1)}
+                              style={{ color: qVote === -1 ? '#ef4444' : '#94a3b8' }}
+                            >▼</button>
                           </div>
                           <div className="csd-qa-question-body">
                             <p className="csd-qa-question-text">{qa.content}</p>
@@ -3698,11 +3795,24 @@ const activeFilterCount = [
                         </div>
                         
                         <div className="csd-qa-answers">
-                          {qa.answers && qa.answers.map(ans => (
+                          {qa.answers && qa.answers.map(ans => {
+                            const aKey = `answer_${ans.id}`;
+                            const aScore = voteTotals[aKey] || 0;
+                            const aVote = userVotes[aKey] || 0;
+                            return (
                             <div key={ans.id} className="csd-answer-row">
                               <div className="csd-qa-votes csd-qa-votes--sm">
-                                <button className="csd-upvote">▲</button>
-                                <span className="csd-vote-count csd-vote-count--sm">{ans.upvotes || 0}</span>
+                                <button 
+                                  className={`csd-upvote ${aVote === 1 ? 'csd-upvote--active' : ''}`}
+                                  onClick={() => handleVote('answer', ans.id, 1)}
+                                  style={{ color: aVote === 1 ? '#3b82f6' : '#94a3b8' }}
+                                >▲</button>
+                                <span className="csd-vote-count csd-vote-count--sm">{aScore}</span>
+                                <button 
+                                  className={`csd-downvote ${aVote === -1 ? 'csd-downvote--active' : ''}`}
+                                  onClick={() => handleVote('answer', ans.id, -1)}
+                                  style={{ color: aVote === -1 ? '#ef4444' : '#94a3b8' }}
+                                >▼</button>
                               </div>
                               <div className="csd-answer-body">
                                 <div className="csd-answer-author">
@@ -3713,7 +3823,7 @@ const activeFilterCount = [
                                 <p className="csd-answer-text">{ans.content}</p>
                               </div>
                             </div>
-                          ))}
+                          )})}
                           
                           {replyingToQuestionId === qa.id ? (
                             <div className="csd-review-form" style={{ marginTop: '15px', background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
@@ -3750,7 +3860,7 @@ const activeFilterCount = [
                           )}
                         </div>
                       </div>
-                    ))
+                    )})
                   )}
                 </div>
               )}
