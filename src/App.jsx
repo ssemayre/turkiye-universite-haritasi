@@ -276,8 +276,8 @@ function App() {
   const fetchReviews = async () => {
     const { data, error } = await supabase
       .from('comments')
-      .select('*, profiles(full_name, avatar_url)')
-      .eq('campus_id', selectedSubCampus.id)
+      .select('*')
+      .eq('university_id', selectedSubCampus.id)
       .order('created_at', { ascending: false });
     if (data) setRealReviews(data);
   };
@@ -292,22 +292,13 @@ function App() {
       return;
     }
     setIsSubmittingReview(true);
-    
-    // Check if profile exists, if not create a minimal one.
-    const { data: prof } = await supabase.from('profiles').select('id').eq('id', user.id).single();
-    if (!prof) {
-       await supabase.from('profiles').insert({
-          id: user.id,
-          full_name: user.email?.split('@')[0] || 'Anonim Kullanıcı'
-       });
-    }
 
     const { data, error } = await supabase.from('comments').insert({
-      campus_id: selectedSubCampus.id,
+      university_id: selectedSubCampus.id,
       user_id: user.id,
       rating: reviewRating,
       content: reviewContent
-    }).select('*, profiles(full_name, avatar_url)').single();
+    }).select('*').single();
 
     setIsSubmittingReview(false);
     
@@ -3538,15 +3529,11 @@ const activeFilterCount = [
                     realReviews.map(review => (
                       <div key={review.id} className="csd-review-card">
                         <div className="csd-review-top">
-                          {review.profiles?.avatar_url ? (
-                             <img src={review.profiles.avatar_url} alt="avatar" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
-                          ) : (
-                             <span className="csd-review-avatar" style={{ background: '#3b82f6', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
-                               {(review.profiles?.full_name || '?')[0].toUpperCase()}
-                             </span>
-                          )}
+                          <span className="csd-review-avatar" style={{ background: '#3b82f6', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
+                            👤
+                          </span>
                           <div className="csd-review-meta">
-                            <span className="csd-review-author">{review.profiles?.full_name || 'İsimsiz Kullanıcı'}</span>
+                            <span className="csd-review-author">Kayıtlı Öğrenci</span>
                             <span className="csd-review-date">{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
                           </div>
                           <div className="csd-review-stars">
