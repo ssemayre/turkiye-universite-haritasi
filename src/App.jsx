@@ -317,6 +317,10 @@ function App() {
   const [isQuestionFormOpen, setIsQuestionFormOpen] = useState(false);
   const [questionContent, setQuestionContent] = useState('');
   const [isSubmittingQuestion, setIsSubmittingQuestion] = useState(false);
+  
+  const [replyingToQuestionId, setReplyingToQuestionId] = useState(null);
+  const [answerContent, setAnswerContent] = useState('');
+  const [isSubmittingAnswer, setIsSubmittingAnswer] = useState(false);
 
   useEffect(() => {
     if (selectedSubCampus && campusDetailTab === 'qa') {
@@ -327,10 +331,17 @@ function App() {
   const fetchQuestions = async () => {
     const { data, error } = await supabase
       .from('questions')
-      .select('*')
+      .select('*, answers(*)')
       .eq('university_id', selectedSubCampus.id)
       .order('created_at', { ascending: false });
-    if (data) setRealQuestions(data);
+      
+    if (data) {
+      const sorted = data.map(q => ({
+        ...q,
+        answers: (q.answers || []).sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      }));
+      setRealQuestions(sorted);
+    }
   };
 
   const submitQuestion = async () => {
@@ -353,7 +364,37 @@ function App() {
     } else {
       setIsQuestionFormOpen(false);
       setQuestionContent('');
-      setRealQuestions([data, ...realQuestions]);
+      setRealQuestions([{...data, answers: []}, ...realQuestions]);
+    }
+  };
+
+  const submitAnswer = async (questionId) => {
+    if (!answerContent.trim()) {
+      alert('Lütfen cevabınızı yazın!');
+      return;
+    }
+    setIsSubmittingAnswer(true);
+
+    const { data, error } = await supabase.from('answers').insert({
+      question_id: questionId,
+      user_id: user.id,
+      content: answerContent
+    }).select('*').single();
+
+    setIsSubmittingAnswer(false);
+    
+    if (error) {
+      alert('Cevap gönderilirken hata oluştu: ' + error.message);
+    } else {
+      setReplyingToQuestionId(null);
+      setAnswerContent('');
+      
+      setRealQuestions(prev => prev.map(q => {
+         if (q.id === questionId) {
+             return { ...q, answers: [...(q.answers || []), data] };
+         }
+         return q;
+      }));
     }
   };
 
@@ -3654,6 +3695,59 @@ const activeFilterCount = [
                               <span className="csd-qa-date">{new Date(qa.created_at).toLocaleDateString('tr-TR')}</span>
                             </div>
                           </div>
+                        </div>
+                        
+                        <div className="csd-qa-answers">
+                          {qa.answers && qa.answers.map(ans => (
+                            <div key={ans.id} className="csd-answer-row">
+                              <div className="csd-qa-votes csd-qa-votes--sm">
+                                <button className="csd-upvote">▲</button>
+                                <span className="csd-vote-count csd-vote-count--sm">{ans.upvotes || 0}</span>
+                              </div>
+                              <div className="csd-answer-body">
+                                <div className="csd-answer-author">
+                                  <span>👤</span>
+                                  <strong>Kayıtlı Öğrenci</strong>
+                                  <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '6px' }}>{new Date(ans.created_at).toLocaleDateString('tr-TR')}</span>
+                                </div>
+                                <p className="csd-answer-text">{ans.content}</p>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {replyingToQuestionId === qa.id ? (
+                            <div className="csd-review-form" style={{ marginTop: '15px', background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                              <textarea 
+                                value={answerContent}
+                                onChange={(e) => setAnswerContent(e.target.value)}
+                                placeholder="Cevabınızı yazın..."
+                                style={{ width: '100%', height: '60px', padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', resize: 'vertical', fontFamily: 'inherit', fontSize: '13px', boxSizing: 'border-box', marginBottom: '10px' }}
+                              />
+                              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                <button 
+                                  onClick={() => { setReplyingToQuestionId(null); setAnswerContent(''); }}
+                                  style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #cbd5e1', background: 'white', color: '#64748b', cursor: 'pointer', fontSize: '12px', fontWeight: '500' }}
+                                  disabled={isSubmittingAnswer}
+                                >
+                                  İptal
+                                </button>
+                                <button 
+                                  onClick={() => submitAnswer(qa.id)}
+                                  style={{ padding: '6px 12px', borderRadius: '4px', border: 'none', background: '#3b82f6', color: 'white', cursor: 'pointer', fontSize: '12px', fontWeight: '500' }}
+                                  disabled={isSubmittingAnswer}
+                                >
+                                  {isSubmittingAnswer ? 'Gönderiliyor...' : 'Gönder'}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <button 
+                              className="csd-answer-btn" 
+                              onClick={() => user ? setReplyingToQuestionId(qa.id) : openAuthModal()}
+                            >
+                              Cevap Ver
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))
