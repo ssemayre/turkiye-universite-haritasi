@@ -255,71 +255,6 @@ function App() {
   const [qaVotes, setQaVotes] = useState({});
   const [selectedSubCampus, setSelectedSubCampus] = useState(null);
 
-  // --- OYLAMA YAPISI ---
-  const [voteTotals, setVoteTotals] = useState({});
-  const [userVotes, setUserVotes] = useState({});
-
-  const fetchVotes = async () => {
-    const items = [];
-    realReviews.forEach(r => items.push({ type: 'comment', id: r.id }));
-    realQuestions.forEach(q => {
-        items.push({ type: 'question', id: q.id });
-        if (q.answers) {
-            q.answers.forEach(a => items.push({ type: 'answer', id: a.id }));
-        }
-    });
-
-    if (items.length === 0) return;
-    const ids = items.map(i => i.id);
-    
-    const { data } = await supabase.from('votes').select('*').in('item_id', ids);
-    if (data) {
-        const totals = {};
-        const userV = {};
-        data.forEach(v => {
-            // Check if this vote's item_type matches one of our items
-            const isValid = items.some(i => i.id === v.item_id && i.type === v.item_type);
-            if (!isValid) return;
-
-            const key = `${v.item_type}_${v.item_id}`;
-            totals[key] = (totals[key] || 0) + v.vote_value;
-            if (user && v.user_id === user.id) {
-                userV[key] = v.vote_value;
-            }
-        });
-        setVoteTotals(totals);
-        setUserVotes(userV);
-    }
-  };
-
-  useEffect(() => {
-    fetchVotes();
-  }, [realReviews, realQuestions, user]);
-
-  const handleVote = async (type, id, value) => {
-    if (!user) {
-       openAuthModal();
-       return;
-    }
-    const key = `${type}_${id}`;
-    const currentValue = userVotes[key] || 0;
-    
-    let newValue = value;
-    if (currentValue === value) {
-       newValue = 0; // Cancel vote
-    }
-    
-    const diff = newValue - currentValue;
-    setVoteTotals(prev => ({ ...prev, [key]: (prev[key] || 0) + diff }));
-    setUserVotes(prev => ({ ...prev, [key]: newValue }));
-
-    // Execute in DB
-    await supabase.from('votes').delete().match({ user_id: user.id, item_type: type, item_id: id });
-    if (newValue !== 0) {
-       await supabase.from('votes').insert({ user_id: user.id, item_type: type, item_id: id, vote_value: newValue });
-    }
-  };
-
   // --- YENİ YORUM YAPISI ---
   const [realReviews, setRealReviews] = useState([]);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
@@ -462,6 +397,72 @@ function App() {
       }));
     }
   };
+
+  // --- OYLAMA YAPISI ---
+  const [voteTotals, setVoteTotals] = useState({});
+  const [userVotes, setUserVotes] = useState({});
+
+  const fetchVotes = async () => {
+    const items = [];
+    realReviews.forEach(r => items.push({ type: 'comment', id: r.id }));
+    realQuestions.forEach(q => {
+        items.push({ type: 'question', id: q.id });
+        if (q.answers) {
+            q.answers.forEach(a => items.push({ type: 'answer', id: a.id }));
+        }
+    });
+
+    if (items.length === 0) return;
+    const ids = items.map(i => i.id);
+    
+    const { data } = await supabase.from('votes').select('*').in('item_id', ids);
+    if (data) {
+        const totals = {};
+        const userV = {};
+        data.forEach(v => {
+            // Check if this vote's item_type matches one of our items
+            const isValid = items.some(i => i.id === v.item_id && i.type === v.item_type);
+            if (!isValid) return;
+
+            const key = `${v.item_type}_${v.item_id}`;
+            totals[key] = (totals[key] || 0) + v.vote_value;
+            if (user && v.user_id === user.id) {
+                userV[key] = v.vote_value;
+            }
+        });
+        setVoteTotals(totals);
+        setUserVotes(userV);
+    }
+  };
+
+  useEffect(() => {
+    fetchVotes();
+  }, [realReviews, realQuestions, user]);
+
+  const handleVote = async (type, id, value) => {
+    if (!user) {
+       openAuthModal();
+       return;
+    }
+    const key = `${type}_${id}`;
+    const currentValue = userVotes[key] || 0;
+    
+    let newValue = value;
+    if (currentValue === value) {
+       newValue = 0; // Cancel vote
+    }
+    
+    const diff = newValue - currentValue;
+    setVoteTotals(prev => ({ ...prev, [key]: (prev[key] || 0) + diff }));
+    setUserVotes(prev => ({ ...prev, [key]: newValue }));
+
+    // Execute in DB
+    await supabase.from('votes').delete().match({ user_id: user.id, item_type: type, item_id: id });
+    if (newValue !== 0) {
+       await supabase.from('votes').insert({ user_id: user.id, item_type: type, item_id: id, vote_value: newValue });
+    }
+  };
+
 
   const getDirectionsUrl = (lat, lng) => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
