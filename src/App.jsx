@@ -250,12 +250,22 @@ function App() {
   
   // ── SOSYAL KATMAN ──────────────────────────────────────────
   const [campusDetailTab, setCampusDetailTab] = useState('info');
+  const [expandedUnits, setExpandedUnits] = useState({});
+  const [reviewVotes, setReviewVotes] = useState({});
+  const [qaVotes, setQaVotes] = useState({});
+  const [selectedSubCampus, setSelectedSubCampus] = useState(null);
+
   // --- YENİ YORUM YAPISI ---
   const [realReviews, setRealReviews] = useState([]);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewContent, setReviewContent] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  useEffect(() => {
+    setCampusDetailTab('info');
+    setExpandedUnits({});
+  }, [selectedSubCampus?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selectedSubCampus && campusDetailTab === 'reviews') {
@@ -310,16 +320,6 @@ function App() {
       setRealReviews([data, ...realReviews]);
     }
   };
-
-  const [expandedUnits, setExpandedUnits] = useState({});
-  const [reviewVotes, setReviewVotes] = useState({});
-  const [qaVotes, setQaVotes] = useState({});
-  const [selectedSubCampus, setSelectedSubCampus] = useState(null);
-
-  useEffect(() => {
-    setCampusDetailTab('info');
-    setExpandedUnits({});
-  }, [selectedSubCampus?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getDirectionsUrl = (lat, lng) => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
