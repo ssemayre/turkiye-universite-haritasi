@@ -24,6 +24,10 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    console.log("Auth State Changed. Current User:", user);
+  }, [user]);
+
   const openAuthModal = () => setAuthModalOpen(true);
   const closeAuthModal = () => setAuthModalOpen(false);
 

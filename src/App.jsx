@@ -3415,7 +3415,7 @@ const activeFilterCount = [
                     </div>
                     <button 
                       className="csd-add-review-btn" 
-                      onClick={() => !user && openAuthModal()}
+                      onClick={() => user ? alert('Harika! Giriş yapmış durumdasınız. Yorum yapma formu çok yakında eklenecektir.') : openAuthModal()}
                     >
                       + Yorum Yap
                     </button>
@@ -3456,7 +3456,7 @@ const activeFilterCount = [
                 <div className="csd-section-list">
                   <button 
                     className="csd-ask-btn" 
-                    onClick={() => !user && openAuthModal()}
+                    onClick={() => user ? alert('Soru sorma formu yakında eklenecektir.') : openAuthModal()}
                   >
                     + Soru Sor
                   </button>
