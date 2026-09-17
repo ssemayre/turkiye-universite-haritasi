@@ -597,6 +597,8 @@ function App() {
   const [cityFilter, setCityFilter] =
     useState("Tümü");
 
+  const [showMyo, setShowMyo] = useState(false);
+
   const [typeFilter, setTypeFilter] =
     useState("Tümü");
 
@@ -1073,6 +1075,8 @@ function App() {
     useMemo(() => {
       return mapUniversities.filter(
         (university) => {
+          if (!showMyo && university.type === 'MYO') return false;
+
           const cityMatch =
             cityFilter === "Tümü" ||
             sameCity(
@@ -1095,6 +1099,7 @@ function App() {
       mapUniversities,
       cityFilter,
       typeFilter,
+      showMyo,
     ]);
 
   // ==================================================
@@ -2519,16 +2524,22 @@ const activeFilterCount = [
         </div>
 
         {/* Satır 3: Hızlı Keşfet ve Filtreler */}
-        <div className="filters-row hide-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-          
-          <button 
-            className={`pill-btn ${showAllCampuses ? 'active' : ''}`}
-            onClick={() => setShowAllCampuses(!showAllCampuses)}>
-            📍 Tüm Yerleşkeler
-          </button>
+          <div className="filters-row hide-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+            
+            <button 
+              className={`pill-btn ${showAllCampuses ? 'active' : ''}`}
+              onClick={() => setShowAllCampuses(!showAllCampuses)}>
+              🏫 Tüm Yerleşkeler
+            </button>
 
-          <button 
-            className={`pill-btn ${showKyk ? 'active' : ''}`}
+            <button 
+              className={`pill-btn ${showMyo ? 'active' : ''}`}
+              onClick={() => setShowMyo(!showMyo)}>
+              🏢 Tüm MYO'ları Göster
+            </button>
+
+            <button 
+              className={`pill-btn ${showKyk ? 'active' : ''}`}
             onClick={() => setShowKyk(!showKyk)}>
             🏕️ KYK Yurtları
           </button>
@@ -3538,9 +3549,10 @@ const activeFilterCount = [
             <div className="csd-tabbar">
               {[
                 { key: 'info',    label: 'Bilgi',            icon: 'ℹ️' },
-                { key: 'units',   label: 'Bölümler',         icon: '🎓' },
+                { key: 'units',   label: 'Bölümler',         icon: '📚' },
+                { key: 'campuses',label: 'Yerleşkeler',      icon: '🏢' },
                 { key: 'reviews', label: 'Değerlendirmeler', icon: '⭐' },
-                { key: 'qa',      label: 'Soru & Cevap',     icon: '❓' },
+                { key: 'qa',      label: 'Soru & Cevap',     icon: '💬' },
               ].map(tab => (
                 <button
                   key={tab.key}
@@ -3604,6 +3616,29 @@ const activeFilterCount = [
                         </button>
                         {expandedUnits[idx] && (
                           <div className="csd-accordion-body">
+                            {(() => {
+                              const match = selectedSubCampus?.name?.match(/^(.*?\bÜniversitesi\b)/i);
+                              const uniName = match ? match[1] : (selectedSubCampus?.name?.split(' ')[0] || '');
+                              const myo = unit.type === 'MYO' ? universities.find(u => u.type === 'MYO' && u.name.includes(uniName) && u.name.includes(unit.name)) : null;
+                              
+                              if (myo) {
+                                return (
+                                  <div style={{ marginBottom: '10px' }}>
+                                    <button 
+                                      onClick={() => {
+                                        setMapFocus({ latitude: Number(myo.latitude), longitude: Number(myo.longitude), zoom: 15 });
+                                        setSelectedSubCampus(myo);
+                                        setCampusDetailTab('info');
+                                      }}
+                                      style={{ background: '#eff6ff', color: '#3b82f6', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 12px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                    >
+                                      📍 Konum: {myo.name}
+                                    </button>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
                             {unit.programs && unit.programs.length > 0 ? (
                               <div className="csd-program-list">
                                 {unit.programs.map((prog, pidx) => (
@@ -3623,6 +3658,45 @@ const activeFilterCount = [
                   ) : (
                     <div className="csd-empty">Bu yerleşkeye ait akademik birim bilgisi bulunmuyor.</div>
                   )}
+                </div>
+              )}
+
+              {/* ━━ YERLEŞKELER ━━ */}
+              {campusDetailTab === 'campuses' && (
+                <div className="csd-section-list">
+                  {(() => {
+                    const match = selectedSubCampus.name.match(/^(.*?\bÜniversitesi\b)/i);
+                    const uniName = match ? match[1] : selectedSubCampus.name.split(' ')[0];
+                    const relatedMyos = universities.filter(u => u.type === 'MYO' && u.name.includes(uniName));
+                    
+                    return (
+                      <>
+                        <div className="csd-card">
+                          <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Meslek Yüksekokulları (MYO)</h3>
+                          {relatedMyos.length === 0 ? (
+                            <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Bu üniversiteye ait kayıtlı MYO bulunamadı.</p>
+                          ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {relatedMyos.map(myo => (
+                                <button
+                                  key={myo.id}
+                                  style={{ textAlign: 'left', padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                  onClick={() => {
+                                    setMapFocus({ latitude: Number(myo.latitude), longitude: Number(myo.longitude), zoom: 15 });
+                                    setSelectedSubCampus(myo);
+                                    setCampusDetailTab('info');
+                                  }}
+                                >
+                                  <span style={{ fontWeight: '500', color: '#1e293b', fontSize: '14px' }}>{myo.name}</span>
+                                  <span style={{ fontSize: '12px', color: '#3b82f6', background: '#eff6ff', padding: '4px 10px', borderRadius: '12px', whiteSpace: 'nowrap', marginLeft: '8px' }}>Haritada Gör</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 
