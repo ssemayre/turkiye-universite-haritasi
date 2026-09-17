@@ -524,8 +524,6 @@ function App() {
   const [showKyk, setShowKyk] = useState(false);
   const [kykGenderFilter, setKykGenderFilter] = useState("Tümü");
   const [selectedKyk, setSelectedKyk] = useState(null);
-  const [showAllCampuses, setShowAllCampuses] = useState(true);
-
   // ==================================================
   // STATE
   // ==================================================
@@ -2525,12 +2523,6 @@ const activeFilterCount = [
 
         {/* Satır 3: Hızlı Keşfet ve Filtreler */}
           <div className="filters-row hide-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-            
-            <button 
-              className={`pill-btn ${showAllCampuses ? 'active' : ''}`}
-              onClick={() => setShowAllCampuses(!showAllCampuses)}>
-              🏫 Tüm Yerleşkeler
-            </button>
 
             <button 
               className={`pill-btn ${showMyo ? 'active' : ''}`}
@@ -2625,106 +2617,44 @@ const activeFilterCount = [
                 </div>
               </Popup>
             </Marker>
-          ) : !campusViewOpen ? (
-            showAllCampuses ? (
-              <MarkerClusterGroup
-                chunkedLoading={true}
-                maxClusterRadius={70}
-                spiderfyOnMaxZoom={true}
-                showCoverageOnHover={false}
-                zoomToBoundsOnClick={true}
-                disableClusteringAtZoom={13}
-              >
-                {allCampusesList.map(campus => (
-                   <Marker 
-                      key={campus.id} 
-                      position={[Number(campus.latitude), Number(campus.longitude)]} 
-                      icon={campus.isMain ? mainCampusIcon : subCampusIcon} 
-                      eventHandlers={{ click: () => setSelectedSubCampus(campus) }}
-                   >
-                      <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
-                         <span className="university-tooltip"><strong>{campus.universityName}</strong><br/>{campus.name}</span>
-                      </Tooltip>
-                      <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
-                         <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
-                           <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
-                             {campus.isMain ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
-                           </div>
-                           <h3 style={{ margin: '5px 0', fontSize: '14px' }}>{campus.universityName}</h3>
-                           <p style={{ margin: '0', fontSize: '12px', color: '#64748b' }}>{campus.name}</p>
-                           <button 
-                             style={{ marginTop: '10px', background: '#2563eb', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                             onClick={(e) => { e.stopPropagation(); setSelectedSubCampus(campus); }}
-                           >
-                             Detayları Gör
-                           </button>
-                         </div>
-                      </Popup>
-                   </Marker>
-                ))}
-              </MarkerClusterGroup>
-            ) : (
-<MarkerClusterGroup
+          ) : (
+            <MarkerClusterGroup
               chunkedLoading={true}
               maxClusterRadius={70}
               spiderfyOnMaxZoom={true}
               showCoverageOnHover={false}
               zoomToBoundsOnClick={true}
-              disableClusteringAtZoom={12}
+              disableClusteringAtZoom={13}
             >
-              {filteredUniversities.map((university) => (
-                <Marker
-                  key={university.id}
-                  position={[university.latitude, university.longitude]}
-                  icon={selectedUniversity?.id === university.id ? selectedUniversityIcon : universityIcon}
-                >
-                  <Tooltip direction="top" offset={[0, -35]} opacity={0.95} sticky>
-                    <span className="university-tooltip">{university.name}</span>
-                  </Tooltip>
-
-                  <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
-                    <div className="popup">
-                      <h2>{university.name}</h2>
-                      <p><strong>Şehir:</strong> {university.city}</p>
-                      <p><strong>Tür:</strong> {university.type}</p>
-                      <button className="open-university-button" onClick={() => openUniversity(university)}>
-                        Üniversiteyi incele
-                      </button>
-                    </div>
-                  </Popup>
-                </Marker>
+              {filteredUniversities.map(university => (
+                 <Marker 
+                    key={university.id} 
+                    position={[Number(university.latitude), Number(university.longitude)]} 
+                    icon={university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon} 
+                    eventHandlers={{ click: () => setSelectedSubCampus(university) }}
+                 >
+                    <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
+                       <span className="university-tooltip"><strong>{university.city}</strong><br/>{university.name}</span>
+                    </Tooltip>
+                    <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
+                       <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
+                         <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
+                           {university.type === 'Ana Kampüs' ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
+                         </div>
+                         <h3 style={{ margin: '5px 0', fontSize: '14px' }}>{university.name}</h3>
+                         <p style={{ margin: '0', fontSize: '12px', color: '#64748b' }}>{university.city}</p>
+                         <button 
+                           style={{ marginTop: '10px', background: '#2563eb', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                           className="open-university-button"
+                           onClick={(e) => { e.stopPropagation(); setSelectedSubCampus(university); }}
+                         >
+                           Detayları Gör
+                         </button>
+                       </div>
+                    </Popup>
+                 </Marker>
               ))}
             </MarkerClusterGroup>
-            )
-          ) : (
-            selectedUniversity &&
-            universityCampuses
-              .filter((campus) =>
-                Number.isFinite(Number(campus.latitude)) &&
-                Number.isFinite(Number(campus.longitude))
-              )
-              .map((campus, index) => (
-              <Marker
-                key={`campus-${campus.id}`}
-                position={[Number(campus.latitude), Number(campus.longitude)]}
-                icon={campusIcon}
-                eventHandlers={{ click: () => openCampus(campus) }}
-              >
-                <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
-                  <span className="campus-tooltip">{campus.name}</span>
-                </Tooltip>
-                <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
-                  <div className="campus-popup">
-                    <div className="detail-label">{campus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
-                    <h3>{campus.name}</h3>
-                    <p>{campus.district ? `${campus.district}, ${campus.city}` : campus.city}</p>
-                    <button className="open-university-button" onClick={() => openCampus(campus)}>
-                      Yerleşkeyi incele
-                    </button>
-                  </div>
-                </Popup>
-              </Marker>
-            ))
           )}
 
         
@@ -4738,3 +4668,4 @@ const activeFilterCount = [
 }
 
 export default App;
+
