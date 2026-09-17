@@ -2614,7 +2614,7 @@ const activeFilterCount = [
               <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
                 <span className="campus-tooltip">{selectedCampus.name}</span>
               </Tooltip>
-              <Popup>
+              <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
                 <div className="campus-popup">
                   <div className="detail-label">{selectedCampus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
                   <h3>{selectedCampus.name}</h3>
@@ -2645,7 +2645,7 @@ const activeFilterCount = [
                       <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
                          <span className="university-tooltip"><strong>{campus.universityName}</strong><br/>{campus.name}</span>
                       </Tooltip>
-                      <Popup>
+                      <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
                          <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
                            <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
                              {campus.isMain ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
@@ -2682,7 +2682,7 @@ const activeFilterCount = [
                     <span className="university-tooltip">{university.name}</span>
                   </Tooltip>
 
-                  <Popup>
+                  <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
                     <div className="popup">
                       <h2>{university.name}</h2>
                       <p><strong>Şehir:</strong> {university.city}</p>
@@ -2713,7 +2713,7 @@ const activeFilterCount = [
                 <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
                   <span className="campus-tooltip">{campus.name}</span>
                 </Tooltip>
-                <Popup>
+                <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
                   <div className="campus-popup">
                     <div className="detail-label">{campus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
                     <h3>{campus.name}</h3>
@@ -3619,7 +3619,7 @@ const activeFilterCount = [
                             {(() => {
                               const match = selectedSubCampus?.name?.match(/^(.*?\bÜniversitesi\b)/i);
                               const uniName = match ? match[1] : (selectedSubCampus?.name?.split(' ')[0] || '');
-                              const myo = unit.type === 'MYO' ? universities.find(u => u.type === 'MYO' && u.name.includes(uniName) && u.name.includes(unit.name)) : null;
+                              const myo = unit.type === 'MYO' ? universities.find(u => u.type === 'MYO' && normalize(u.name).includes(normalize(uniName)) && normalize(u.name).includes(normalize(unit.name))) : null;
                               
                               if (myo) {
                                 return (
@@ -3656,7 +3656,13 @@ const activeFilterCount = [
                       </div>
                     ))
                   ) : (
-                    <div className="csd-empty">Bu yerleşkeye ait akademik birim bilgisi bulunmuyor.</div>
+                    <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>🚧</div>
+                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Veriler Güncelleniyor</h4>
+                      <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
+                        Bu üniversitenin bölüm ve program verileri şu anda güncellenmektedir. Çok yakında eklenecektir!
+                      </p>
+                    </div>
                   )}
                 </div>
               )}
@@ -3667,7 +3673,7 @@ const activeFilterCount = [
                   {(() => {
                     const match = selectedSubCampus.name.match(/^(.*?\bÜniversitesi\b)/i);
                     const uniName = match ? match[1] : selectedSubCampus.name.split(' ')[0];
-                    const relatedMyos = universities.filter(u => u.type === 'MYO' && u.name.includes(uniName));
+                    const relatedMyos = universities.filter(u => u.type === 'MYO' && normalize(u.name).includes(normalize(uniName)));
                     
                     return (
                       <>

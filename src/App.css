@@ -7031,3 +7031,9 @@ input[type="text"], input[type="search"] {
   }
   .csd-header { padding-top: 20px; }
 }
+.open-university-button, .campus-popup button { box-sizing: border-box !important; }
+.popup, .campus-popup { box-sizing: border-box !important; }
+
+
+.open-university-button, .campus-popup button { box-sizing: border-box !important; }
+.popup, .campus-popup { box-sizing: border-box !important; }
