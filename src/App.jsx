@@ -25,7 +25,6 @@ import {
 
 import "./App.css";
 
-import universities from "./data/universities.json";
 import campusData from "./data/campuses.json";
 import kykData from "./data/kyk-yurtlari.json";
 
@@ -247,6 +246,24 @@ import { supabase } from './supabaseClient';
 
 function App() {
   const { user, openAuthModal, signOut } = useAuth();
+  
+  const [universities, setUniversities] = useState([]);
+
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      const { data, error } = await supabase.from('universities').select('id, name, lat, lng, type, city');
+      if (error) {
+        console.error("Error fetching universities:", error);
+      } else if (data) {
+        setUniversities(data.map(u => ({
+          ...u,
+          latitude: u.lat,
+          longitude: u.lng
+        })));
+      }
+    };
+    fetchUniversities();
+  }, []);
   
   // ── SOSYAL KATMAN ──────────────────────────────────────────
   const [campusDetailTab, setCampusDetailTab] = useState('info');
@@ -930,7 +947,7 @@ function App() {
     }
 
     return map;
-  }, []);
+  }, [universities]);
 
   // ==================================================
   // UNIVERSITIES WITH COORDINATES
@@ -946,7 +963,7 @@ function App() {
           university.longitude
         )
     );
-  }, []);
+  }, [universities]);
 
   const browseUniversities = useMemo(() =>
     mapUniversities
