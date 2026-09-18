@@ -198,6 +198,34 @@ function MapController({
   const map = useMap();
   const lastTargetRef = useRef(null);
 
+  // Tell Leaflet about the floating header so autoPan always clears it
+  useEffect(() => {
+    const handlePopupOpen = (e) => {
+      const headerEl = document.querySelector('.header');
+      const headerH = headerEl ? headerEl.offsetHeight : 170;
+      
+      // Get popup position in pixel coords
+      const popup = e.popup;
+      const px = map.latLngToContainerPoint(popup.getLatLng());
+      
+      // Get popup element height
+      const popupEl = popup.getElement();
+      const popupH = popupEl ? popupEl.offsetHeight : 200;
+      
+      // Top of popup in container coordinates
+      const popupTop = px.y - popupH - 30; // 30 = tip height + margin
+
+      if (popupTop < headerH + 10) {
+        // Need to pan down so popup clears header
+        const panAmount = headerH + 10 - popupTop;
+        map.panBy([0, -panAmount], { animate: true, duration: 0.25 });
+      }
+    };
+    
+    map.on('popupopen', handlePopupOpen);
+    return () => map.off('popupopen', handlePopupOpen);
+  }, [map]);
+
   useEffect(() => {
     const target = focusTarget || selectedUniversity;
 

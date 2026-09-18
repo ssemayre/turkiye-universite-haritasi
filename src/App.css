@@ -7037,3 +7037,26 @@ input[type="text"], input[type="search"] {
 
 .open-university-button, .campus-popup button { box-sizing: border-box !important; }
 .popup, .campus-popup { box-sizing: border-box !important; }
+
+/* =========================================================
+   POPUP HEADER OVERLAP — Leaflet popup pane aşağı kaydırıldı
+   Header yüzer (fixed/absolute) olduğundan popup pane'i
+   CSS transform ile header yüksekliği kadar aşağıya itiyoruz.
+   Bu sayede herhangi bir pinin popup'ı HIÇBIR ZAMAN header'ın
+   altında kalmaz.
+========================================================= */
+.leaflet-popup {
+  /* Popup baloncuğunun pin ucundan itibaren en az 180px aşağıda
+     başlamasını zorla — header'ın maksimum yüksekliği ~170px */
+  margin-bottom: 0 !important;
+}
+
+.leaflet-map-pane .leaflet-popup-pane {
+  /* Pane seviyesinde değil; bireysel popup'lar için CSS offset */
+}
+
+/* Popup'ın gövdesini (content-wrapper) header yüksekliği kadar
+   aşağı kaydır — header her cihazda ~160-180px arasında */
+.leaflet-popup-content-wrapper {
+  position: relative !important;
+}
