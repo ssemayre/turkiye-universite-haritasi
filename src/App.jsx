@@ -983,6 +983,13 @@ function App() {
   // UNIVERSITIES WITH COORDINATES
   // ==================================================
 
+  const markerRefs = useRef({});
+  const [activeCampusFilterId, setActiveCampusFilterId] = useState(null);
+
+  useEffect(() => {
+    setActiveCampusFilterId(null);
+  }, [selectedSubCampus]);
+
   const mapUniversities = useMemo(() => {
     return universities.filter(
       (university) =>
@@ -1898,6 +1905,31 @@ function App() {
       return candidates;
     }, [search, baseFilteredUniversities, searchProgramsLoaded, generalFilteredPrograms, universityMap]);
 
+  const activeRelatedMyos = useMemo(() => {
+    if (!selectedSubCampus || campusDetailTab !== 'campuses') return [];
+    
+    let coreName = normalize(selectedSubCampus.originalUniName || selectedSubCampus.universityName || selectedSubCampus.name).split('(')[0].trim();
+    coreName = coreName.replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
+    if (!coreName) coreName = normalize(selectedSubCampus.name).split(' ')[0];
+    
+    return universities.filter(u => {
+      if (u.type !== 'MYO' || u.id === selectedSubCampus.id) return false;
+      const normalizedMyo = normalize(u.name);
+      return (normalizedMyo.includes(coreName) || coreName.includes(normalizedMyo)) && Number.isFinite(Number(u.lat));
+    });
+  }, [selectedSubCampus, campusDetailTab, universities]);
+
+  const displayedUniversities = useMemo(() => {
+    const base = filteredUniversities;
+    const final = [...base];
+    for (const myo of activeRelatedMyos) {
+      if (!base.find(u => u.id === myo.id)) {
+        final.push(myo);
+      }
+    }
+    return final;
+  }, [filteredUniversities, activeRelatedMyos]);
+
   const visibleSearchResults = useMemo(
     () => searchResults.slice(0, searchResultLimit),
     [searchResults, searchResultLimit]
@@ -2652,10 +2684,11 @@ const activeFilterCount = [
               zoomToBoundsOnClick={true}
               disableClusteringAtZoom={13}
             >
-              {filteredUniversities.map(university => (
-                 <Marker 
-                    key={university.id} 
-                    position={[Number(university.latitude), Number(university.longitude)]} 
+                {displayedUniversities.map(university => (
+                   <Marker 
+                      ref={(r) => { if (r) markerRefs.current[university.id] = r; }}
+                      key={university.id} 
+                      position={[Number(university.latitude || university.lat), Number(university.longitude || university.lng)]} 
                     icon={university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon} 
                     eventHandlers={{ click: () => setSelectedSubCampus(university) }}
                  >
@@ -3569,6 +3602,12 @@ const activeFilterCount = [
                   
                   {/* Sticky Search Bar */}
                   <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 10, background: '#fff', padding: '12px 16px', borderBottom: '1px solid #e2e8f0' }}>
+                    {activeCampusFilterId && (
+                      <div style={{ marginBottom: '8px', padding: '8px 12px', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: '600' }}>Sadece {mapUniversities.find(u => u.id === activeCampusFilterId)?.name || 'seçili yerleşke'} bölümleri gösteriliyor</span>
+                        <button onClick={() => setActiveCampusFilterId(null)} style={{ background: 'none', border: 'none', color: '#1e40af', cursor: 'pointer', fontSize: '18px', padding: 0, lineHeight: 1 }}>&times;</button>
+                      </div>
+                    )}
                     <input 
                       type="text" 
                       placeholder="Bu üniversitede program ara..." 
@@ -3590,9 +3629,12 @@ const activeFilterCount = [
                         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                       </div>
                     ) : campusPrograms && campusPrograms.length > 0 ? (
-                      (() => {
-                        const filtered = campusPrograms.filter(p => (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR')));
-                        if (filtered.length === 0) {
+                        (() => {
+                          const filtered = campusPrograms.filter(p => {
+                            if (activeCampusFilterId && p.campus_id !== activeCampusFilterId) return false;
+                            return (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
+                          });
+                          if (filtered.length === 0) {
                           return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
                         }
                         return filtered.map((p, idx) => {
@@ -3644,6 +3686,13 @@ const activeFilterCount = [
                                         
                                         if (lat && lng) {
                                           setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
+                                          // Ensure the popup opens when we arrive
+                                          if (target && target.id) {
+                                            setTimeout(() => {
+                                              const marker = markerRefs.current[target.id];
+                                              if (marker) marker.openPopup();
+                                            }, 400); // 400ms allows flyTo animation to begin
+                                          }
                                         }
                                       }}
                                       style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 10px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -3692,55 +3741,36 @@ const activeFilterCount = [
               {/* ━━ YERLEŞKELER ━━ */}
               {campusDetailTab === 'campuses' && (
                 <div className="csd-section-list">
-                  {(() => {
-                    // Extract core name (e.g., "KOCAELİ" from "KOCAELİ ÜNİVERSİTESİ")
-                    let coreName = normalize(selectedSubCampus.name);
-                    coreName = coreName.replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
-                    
-                    // Fallback to first word if coreName is empty
-                    if (!coreName) coreName = normalize(selectedSubCampus.name).split(' ')[0];
-                    
-                    const relatedMyos = universities.filter(u => {
-                      if (u.type !== 'MYO' || u.id === selectedSubCampus.id) return false;
-                      const normalizedMyo = normalize(u.name);
-                      return normalizedMyo.includes(coreName) || coreName.includes(normalizedMyo);
-                    });
-                    
-                    return (
-                      <>
-                        <div className="csd-card">
-                          <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Meslek Yüksekokulları (MYO)</h3>
-                          {relatedMyos.length === 0 ? (
-                            <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                              </svg>
-                              <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>MYO Bulunamadı</h4>
-                              <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Bu üniversiteye ait kayıtlı Meslek Yüksekokulu bulunmuyor.</p>
-                            </div>
-                          ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              {relatedMyos.map(myo => (
-                                <button
-                                  key={myo.id}
-                                  style={{ textAlign: 'left', padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                                  onClick={() => {
-                                    setMapFocus({ latitude: Number(myo.latitude), longitude: Number(myo.longitude), zoom: 15 });
-                                    setSelectedSubCampus(myo);
-                                    setCampusDetailTab('info');
-                                  }}
-                                >
-                                  <span style={{ fontWeight: '500', color: '#1e293b', fontSize: '14px' }}>{myo.name}</span>
-                                  <span style={{ fontSize: '12px', color: '#3b82f6', background: '#eff6ff', padding: '4px 10px', borderRadius: '12px', whiteSpace: 'nowrap', marginLeft: '8px' }}>Haritada Gör</span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    );
-                  })()}
+                  <div className="csd-card">
+                    <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Meslek Yüksekokulları (MYO)</h3>
+                    {activeRelatedMyos.length === 0 ? (
+                      <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
+                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>MYO Bulunamadı</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Bu üniversiteye ait kayıtlı Meslek Yüksekokulu bulunmuyor.</p>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {activeRelatedMyos.map(myo => (
+                          <button
+                            key={myo.id}
+                            style={{ textAlign: 'left', padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                            onClick={() => {
+                              setMapFocus({ latitude: Number(myo.lat || myo.latitude), longitude: Number(myo.lng || myo.longitude), zoom: 15 });
+                              setActiveCampusFilterId(myo.id);
+                              setCampusDetailTab('units');
+                            }}
+                          >
+                            <span style={{ fontWeight: '500', color: '#1e293b', fontSize: '14px' }}>{myo.name}</span>
+                            <span style={{ fontSize: '12px', color: '#3b82f6', background: '#eff6ff', padding: '4px 10px', borderRadius: '12px', whiteSpace: 'nowrap', marginLeft: '8px' }}>Bölümleri Gör</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
