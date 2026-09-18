@@ -2606,7 +2606,7 @@ const activeFilterCount = [
               <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
                 <span className="campus-tooltip">{selectedCampus.name}</span>
               </Tooltip>
-              <Popup autoPan={true} autoPanPaddingTopLeft={[20, 150]} autoPanPaddingBottomRight={[20, 20]} minWidth={240} maxWidth={300}>
+              <Popup autoPan={true} autoPanPaddingTopLeft={[20, 220]} autoPanPaddingBottomRight={[20, 20]} minWidth={240} maxWidth={300}>
                 <div className="campus-popup">
                   <div className="detail-label">{selectedCampus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
                   <h3>{selectedCampus.name}</h3>
@@ -2636,7 +2636,7 @@ const activeFilterCount = [
                     <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
                        <span className="university-tooltip"><strong>{university.city}</strong><br/>{university.name}</span>
                     </Tooltip>
-                    <Popup autoPan={true} autoPanPaddingTopLeft={[20, 150]} autoPanPaddingBottomRight={[20, 20]} minWidth={240} maxWidth={300}>
+                    <Popup autoPan={true} autoPanPaddingTopLeft={[20, 220]} autoPanPaddingBottomRight={[20, 20]} minWidth={240} maxWidth={300}>
                        <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
                          <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
                            {university.type === 'Ana Kampüs' ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
