@@ -6483,14 +6483,13 @@ input[type="text"], input[type="search"] {
 
 /* 2. Harita Kapsayıcı (Ekrana Tam Oturan, Zemin) */
 .map-area-unified {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 10 !important; /* En altta */
-  height: 100dvh !important;
-  width: 100vw !important;
+  position: relative !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  z-index: 10 !important;
+  width: 100% !important;
+  overflow: hidden !important;
 }
 
 /* Harita zoom kontrollerini üst çubuğun altında kalmayacak şekilde taşı */
