@@ -291,7 +291,7 @@ function App() {
     const uniId = selectedSubCampus.universityId || selectedSubCampus.id;
     const { data, error } = await supabase
       .from('programs')
-      .select('name, faculty, degree_level')
+      .select('*')
       .eq('university_id', uniId);
     
     if (data) {
@@ -3557,7 +3557,7 @@ const activeFilterCount = [
                 <div className="csd-section-list" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
                   
                   {/* Sticky Search Bar */}
-                  <div style={{ position: 'sticky', top: 0, zIndex: 10, background: '#fff', padding: '12px 16px', borderBottom: '1px solid #e2e8f0' }}>
+                  <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 10, background: '#fff', padding: '12px 16px', borderBottom: '1px solid #e2e8f0' }}>
                     <input 
                       type="text" 
                       placeholder="Bu üniversitede program ara..." 
@@ -3567,7 +3567,8 @@ const activeFilterCount = [
                     />
                   </div>
 
-                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Scrollable List Area */}
+                  <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {isFetchingCampusPrograms ? (
                       <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
                         <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -3606,8 +3607,8 @@ const activeFilterCount = [
                                 <div style={{ padding: '0 16px 16px 16px', borderTop: '1px solid #f1f5f9' }}>
                                   <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      <span style={{ fontSize: '12px', fontWeight: '600', padding: '4px 8px', borderRadius: '6px', background: p.degree_level === 'Lisans' ? '#eff6ff' : '#f0fdf4', color: p.degree_level === 'Lisans' ? '#3b82f6' : '#16a34a' }}>
-                                        {p.degree_level || 'Bilinmiyor'}
+                                      <span style={{ fontSize: '12px', fontWeight: '600', padding: '4px 8px', borderRadius: '6px', background: p.degree_level === 'Önlisans' ? '#eff6ff' : '#f0fdf4', color: p.degree_level === 'Önlisans' ? '#3b82f6' : '#16a34a' }}>
+                                        {p.degree_level === 'Önlisans' ? 'TYT • 2 Yıl' : 'Lisans • 4 Yıl'}
                                       </span>
                                       <span style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>
                                         {p.faculty || 'Fakülte belirtilmemiş'}
@@ -3615,15 +3616,11 @@ const activeFilterCount = [
                                     </div>
                                     <button 
                                       onClick={() => {
-                                        let coreName = normalize(selectedSubCampus?.name || '').replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
-                                        if (!coreName) coreName = normalize(selectedSubCampus?.name || '').split(' ')[0];
-                                        const normalizedFaculty = normalize(p.faculty || '');
-                                        const campus = universities.find(u => {
-                                          const normalizedCampus = normalize(u.name);
-                                          return (normalizedCampus.includes(coreName) || coreName.includes(normalizedCampus)) && normalizedCampus.includes(normalizedFaculty);
-                                        });
-                                        if (campus && campus.latitude && campus.longitude) {
-                                          setMapFocus({ latitude: Number(campus.latitude), longitude: Number(campus.longitude), zoom: 16 });
+                                        if (p.campus_id) {
+                                          const exactCampus = universities.find(u => String(u.id) === String(p.campus_id));
+                                          if (exactCampus && exactCampus.lat) {
+                                            setMapFocus({ latitude: Number(exactCampus.lat), longitude: Number(exactCampus.lng), zoom: 16 });
+                                          }
                                         } else if (selectedSubCampus && selectedSubCampus.latitude && selectedSubCampus.longitude) {
                                           setMapFocus({ latitude: Number(selectedSubCampus.latitude), longitude: Number(selectedSubCampus.longitude), zoom: 15 });
                                         }
