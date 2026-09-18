@@ -3598,7 +3598,7 @@ const activeFilterCount = [
                         return filtered.map((p, idx) => {
                           const isExpanded = expandedProgramId === idx;
                           return (
-                            <div key={idx} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}>
+                            <div key={idx} style={{ flexShrink: 0, background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}>
                               
                               {/* CLOSED VIEW (HEADER) */}
                               <div 
