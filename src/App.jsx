@@ -3626,14 +3626,24 @@ const activeFilterCount = [
                                       </span>
                                     </div>
                                     <button 
-                                      onClick={() => {
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        let target = null;
                                         if (p.campus_id) {
-                                          const exactCampus = universities.find(u => String(u.id) === String(p.campus_id));
-                                          if (exactCampus && exactCampus.lat) {
-                                            setMapFocus({ latitude: Number(exactCampus.lat), longitude: Number(exactCampus.lng), zoom: 16 });
-                                          }
-                                        } else if (selectedSubCampus && selectedSubCampus.latitude && selectedSubCampus.longitude) {
-                                          setMapFocus({ latitude: Number(selectedSubCampus.latitude), longitude: Number(selectedSubCampus.longitude), zoom: 15 });
+                                          target = universities.find(u => String(u.id) === String(p.campus_id));
+                                        }
+                                        if (!target || !target.lat) {
+                                          target = universities.find(u => String(u.id) === String(p.university_id));
+                                        }
+                                        if (!target || !target.lat) {
+                                          target = selectedSubCampus;
+                                        }
+                                        
+                                        const lat = target?.lat || target?.latitude;
+                                        const lng = target?.lng || target?.longitude;
+                                        
+                                        if (lat && lng) {
+                                          setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
                                         }
                                       }}
                                       style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 10px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
