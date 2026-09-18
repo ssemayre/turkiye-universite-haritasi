@@ -191,40 +191,9 @@ function formatNumber(value) {
 // MAP CONTROLLER
 // ==================================================
 
-function MapController({
-  selectedUniversity,
-  focusTarget,
-}) {
+function MapController({ selectedUniversity, focusTarget }) {
   const map = useMap();
   const lastTargetRef = useRef(null);
-
-  // Tell Leaflet about the floating header so autoPan always clears it
-  useEffect(() => {
-    const handlePopupOpen = (e) => {
-      const headerEl = document.querySelector('.header');
-      const headerH = headerEl ? headerEl.offsetHeight : 170;
-      
-      // Get popup position in pixel coords
-      const popup = e.popup;
-      const px = map.latLngToContainerPoint(popup.getLatLng());
-      
-      // Get popup element height
-      const popupEl = popup.getElement();
-      const popupH = popupEl ? popupEl.offsetHeight : 200;
-      
-      // Top of popup in container coordinates
-      const popupTop = px.y - popupH - 30; // 30 = tip height + margin
-
-      if (popupTop < headerH + 10) {
-        // Need to pan down so popup clears header
-        const panAmount = headerH + 10 - popupTop;
-        map.panBy([0, -panAmount], { animate: true, duration: 0.25 });
-      }
-    };
-    
-    map.on('popupopen', handlePopupOpen);
-    return () => map.off('popupopen', handlePopupOpen);
-  }, [map]);
 
   useEffect(() => {
     const target = focusTarget || selectedUniversity;
@@ -233,32 +202,20 @@ function MapController({
     const longitude = Number(target?.longitude);
     const zoom = Number(target?.zoom) || (focusTarget ? 15 : 12);
 
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      return;
-    }
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
 
     const nextTargetKey = `${latitude}|${longitude}|${zoom}`;
-
-    if (lastTargetRef.current === nextTargetKey) {
-      return;
-    }
+    if (lastTargetRef.current === nextTargetKey) return;
 
     lastTargetRef.current = nextTargetKey;
 
-    // Fakülte/program geçişlerinde animasyonun haritayı kararsız
-    // bırakmasını önlemek için doğrudan güvenli bir görünüm ayarlıyoruz.
     map.stop();
     map.setView([latitude, longitude], zoom, { animate: false });
 
-    // Panel/overlay değişimlerinden sonra Leaflet boyutunu yeniden hesaplasın.
     requestAnimationFrame(() => {
       map.invalidateSize({ pan: false, debounceMoveend: true });
-      window.setTimeout(() => {
-        map.invalidateSize({ pan: false, debounceMoveend: true });
-      }, 80);
-      window.setTimeout(() => {
-        map.invalidateSize({ pan: false, debounceMoveend: true });
-      }, 350);
+      window.setTimeout(() => map.invalidateSize({ pan: false, debounceMoveend: true }), 80);
+      window.setTimeout(() => map.invalidateSize({ pan: false, debounceMoveend: true }), 350);
     });
   }, [focusTarget, selectedUniversity, map]);
 
@@ -555,21 +512,6 @@ function App() {
   // ==================================================
   // STATE
   // ==================================================
-
-  // Harita konteynerini header altından başlatmak için yüksekliği ölç
-  const [headerHeight, setHeaderHeight] = useState(164);
-
-  useEffect(() => {
-    const measure = () => {
-      const el = document.querySelector('.header');
-      if (el) setHeaderHeight(el.offsetHeight);
-    };
-    measure();
-    // 300ms sonra tekrar ölç (CSS yüklenmesi tamamlandıktan sonra)
-    const t = setTimeout(measure, 300);
-    window.addEventListener('resize', measure);
-    return () => { clearTimeout(t); window.removeEventListener('resize', measure); };
-  }, []);
 
   const [search, setSearch] =
     useState("");
@@ -2616,7 +2558,7 @@ const activeFilterCount = [
       {/* ========================================
           MAP
       ======================================== */}
-      <main className="map-area-unified" style={{ position: 'absolute', top: `${headerHeight}px`, left: 0, right: 0, bottom: 0, width: '100vw', height: `calc(100dvh - ${headerHeight}px)`, zIndex: 10 }}>
+      <main className="map-area-unified" style={{ position: 'absolute', inset: 0, width: '100vw', height: '100dvh', zIndex: 10 }}>
         <MapContainer
           center={[
             39.0,
@@ -2649,7 +2591,7 @@ const activeFilterCount = [
               <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
                 <span className="campus-tooltip">{selectedCampus.name}</span>
               </Tooltip>
-              <Popup autoPan={false} minWidth={240} maxWidth={300}>
+              <Popup autoPan={true} autoPanPaddingTopLeft={[0, 250]} autoPanPaddingBottomRight={[0, 20]} minWidth={240} maxWidth={300}>
                 <div className="campus-popup">
                   <div className="detail-label">{selectedCampus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
                   <h3>{selectedCampus.name}</h3>
@@ -2674,26 +2616,12 @@ const activeFilterCount = [
                     key={university.id} 
                     position={[Number(university.latitude), Number(university.longitude)]} 
                     icon={university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon} 
-                    eventHandlers={{ 
-                      click: (e) => {
-                        setSelectedSubCampus(university);
-                        // Pan the map BEFORE popup opens so it's never behind the header
-                        const leafletMap = e.target._map;
-                        const headerEl = document.querySelector('.header');
-                        const headerH = headerEl ? headerEl.offsetHeight + 16 : 190;
-                        const markerPx = leafletMap.latLngToContainerPoint(e.latlng);
-                        // Popup extends ~230px above the marker tip
-                        const estimatedPopupTopY = markerPx.y - 230;
-                        if (estimatedPopupTopY < headerH) {
-                          leafletMap.panBy([0, -(headerH - estimatedPopupTopY)], { animate: false });
-                        }
-                      }
-                    }}
+                    eventHandlers={{ click: () => setSelectedSubCampus(university) }}
                  >
                     <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
                        <span className="university-tooltip"><strong>{university.city}</strong><br/>{university.name}</span>
                     </Tooltip>
-                    <Popup autoPan={false} minWidth={240} maxWidth={300}>
+                    <Popup autoPan={true} autoPanPaddingTopLeft={[0, 250]} autoPanPaddingBottomRight={[0, 20]} minWidth={240} maxWidth={300}>
                        <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
                          <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
                            {university.type === 'Ana Kampüs' ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
