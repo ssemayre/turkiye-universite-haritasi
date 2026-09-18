@@ -2553,8 +2553,9 @@ const activeFilterCount = [
       {/* ========================================
           MAP
       ======================================== */}
-      <main className="map-area-unified" style={{ flex: 1, position: 'relative', width: '100%', overflow: 'hidden', zIndex: 10 }}>
-        <MapContainer
+      <main className="map-area-unified" style={{ flex: 1, display: 'flex', flexDirection: 'row', position: 'relative', width: '100%', overflow: 'hidden', zIndex: 10 }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <MapContainer
           center={[
             39.0,
             35.0,
@@ -2665,7 +2666,7 @@ const activeFilterCount = [
           )}
 
 </MapContainer>
-
+        </div>
         {browseOpen && (
           <aside className="browse-panel">
             
@@ -3441,17 +3442,16 @@ const activeFilterCount = [
             onWheel={e => e.stopPropagation()}
           >
             {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
-            <div className="csd-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '24px 20px 20px 24px', background: 'linear-gradient(to bottom, #ffffff, #f8fafc)', borderBottom: '1px solid #e2e8f0', zIndex: 10 }}>
-              <div style={{ paddingRight: '16px' }}>
-                <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', margin: '0 0 6px 0', lineHeight: '1.25', letterSpacing: '-0.02em' }}>
+            <div className="csd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '16px', flexShrink: 0, borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+              <div>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#0f172a', margin: '0 0 4px 0', lineHeight: '1.2' }}>
                   {selectedSubCampus.name}
                 </h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748b' }}>
+                  <span style={{ fontSize: '13px', color: '#64748b' }}>
                     {selectedSubCampus.universityName}
                   </span>
-                  <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#cbd5e1' }}></span>
-                  <span style={{ fontSize: '12px', fontWeight: '700', padding: '2px 8px', borderRadius: '12px', background: selectedSubCampus.isMain ? '#fef3c7' : '#dcfce3', color: selectedSubCampus.isMain ? '#d97706' : '#16a34a' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '12px', background: selectedSubCampus.isMain ? '#fef3c7' : '#dcfce3', color: selectedSubCampus.isMain ? '#d97706' : '#16a34a' }}>
                     {selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}
                   </span>
                 </div>
@@ -3459,9 +3459,7 @@ const activeFilterCount = [
               
               <button 
                 onClick={() => setSelectedSubCampus(null)}
-                style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', fontSize: '16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = '#fca5a5'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#f1f5f9', border: 'none', color: '#475569', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
               >
                 ✕
               </button>
