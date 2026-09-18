@@ -3645,19 +3645,19 @@ const activeFilterCount = [
                                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
                                     <div>
                                       <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Puan Türü</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.score_type || 'Yükleniyor...'}</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.score_type || '-'}</div>
                                     </div>
                                     <div>
                                       <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Kontenjan</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.quota ? `${p.quota} Kişi` : 'Yükleniyor...'}</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.quota || '-'}</div>
                                     </div>
                                     <div>
                                       <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Taban Puan</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.base_score || 'Yükleniyor...'}</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.base_score || '-'}</div>
                                     </div>
                                     <div>
                                       <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Başarı Sırası</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.success_rank || 'Yükleniyor...'}</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.rank || '-'}</div>
                                     </div>
                                   </div>
                                 </div>
