@@ -556,6 +556,21 @@ function App() {
   // STATE
   // ==================================================
 
+  // Harita konteynerini header altından başlatmak için yüksekliği ölç
+  const [headerHeight, setHeaderHeight] = useState(164);
+
+  useEffect(() => {
+    const measure = () => {
+      const el = document.querySelector('.header');
+      if (el) setHeaderHeight(el.offsetHeight);
+    };
+    measure();
+    // 300ms sonra tekrar ölç (CSS yüklenmesi tamamlandıktan sonra)
+    const t = setTimeout(measure, 300);
+    window.addEventListener('resize', measure);
+    return () => { clearTimeout(t); window.removeEventListener('resize', measure); };
+  }, []);
+
   const [search, setSearch] =
     useState("");
 
@@ -2601,7 +2616,7 @@ const activeFilterCount = [
       {/* ========================================
           MAP
       ======================================== */}
-      <main className="map-area-unified" style={{ position: 'absolute', inset: 0, width: '100vw', height: '100dvh', zIndex: 10 }}>
+      <main className="map-area-unified" style={{ position: 'absolute', top: `${headerHeight}px`, left: 0, right: 0, bottom: 0, width: '100vw', height: `calc(100dvh - ${headerHeight}px)`, zIndex: 10 }}>
         <MapContainer
           center={[
             39.0,
