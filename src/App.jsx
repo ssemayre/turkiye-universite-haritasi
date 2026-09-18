@@ -257,6 +257,10 @@ function App() {
   const [qaVotes, setQaVotes] = useState({});
   const [selectedSubCampus, setSelectedSubCampus] = useState(null);
 
+  // --- BÖLÜMLER (PROGRAMS) YENİ YAPI ---
+  const [campusPrograms, setCampusPrograms] = useState([]);
+  const [isFetchingCampusPrograms, setIsFetchingCampusPrograms] = useState(false);
+
   // --- YENİ YORUM YAPISI ---
   const [realReviews, setRealReviews] = useState([]);
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
@@ -267,8 +271,34 @@ function App() {
   useEffect(() => {
     setCampusDetailTab('info');
     setExpandedUnits({});
+    setCampusPrograms([]); // Reset programs when campus changes
   }, [selectedSubCampus?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Programs Fetch
+  useEffect(() => {
+    if (selectedSubCampus && campusDetailTab === 'units') {
+      fetchCampusPrograms();
+    }
+  }, [selectedSubCampus?.id, campusDetailTab]);
+
+  const fetchCampusPrograms = async () => {
+    if (!selectedSubCampus) return;
+    setIsFetchingCampusPrograms(true);
+    const uniId = selectedSubCampus.universityId || selectedSubCampus.id;
+    const { data, error } = await supabase
+      .from('programs')
+      .select('name, faculty, degree_level')
+      .eq('university_id', uniId);
+    
+    if (data) {
+      setCampusPrograms(data);
+    } else if (error) {
+      console.error('Bölümler çekilirken hata:', error);
+    }
+    setIsFetchingCampusPrograms(false);
+  };
+
+  // Reviews Fetch
   useEffect(() => {
     if (selectedSubCampus && campusDetailTab === 'reviews') {
       fetchReviews();
@@ -3521,71 +3551,56 @@ const activeFilterCount = [
               {/* ━━ BÖLÜMLER ━━ */}
               {campusDetailTab === 'units' && (
                 <div className="csd-section-list">
-                  {selectedSubCampus.academicUnits && selectedSubCampus.academicUnits.length > 0 ? (
-                    selectedSubCampus.academicUnits.map((unit, idx) => (
+                  {isFetchingCampusPrograms ? (
+                    <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                      <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Veriler Çekiliyor</h4>
+                      <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
+                        Bu üniversitenin bölüm ve program verileri Supabase'den yükleniyor...
+                      </p>
+                      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    </div>
+                  ) : campusPrograms && campusPrograms.length > 0 ? (
+                    Object.entries(
+                      campusPrograms.reduce((acc, p) => {
+                        const f = p.faculty || 'Diğer / Fakülte Belirtilmemiş';
+                        if (!acc[f]) acc[f] = [];
+                        acc[f].push(p);
+                        return acc;
+                      }, {})
+                    ).map(([faculty, programs], idx) => (
                       <div key={idx} className="csd-accordion-item">
                         <button
                           className="csd-accordion-trigger"
                           onClick={() => setExpandedUnits(prev => ({ ...prev, [idx]: !prev[idx] }))}
                         >
-                          <span className={`csd-unit-badge ${unit.type === 'MYO' ? 'csd-unit-badge--blue' : unit.type === 'Fakülte' ? 'csd-unit-badge--pink' : 'csd-unit-badge--gray'}`}>
-                            {unit.type}
+                          <span className={`csd-unit-badge ${faculty.toLowerCase().includes('myo') || faculty.toLowerCase().includes('meslek') ? 'csd-unit-badge--blue' : faculty.toLowerCase().includes('fakülte') ? 'csd-unit-badge--pink' : 'csd-unit-badge--gray'}`}>
+                            {faculty.toLowerCase().includes('myo') || faculty.toLowerCase().includes('meslek') ? 'MYO' : faculty.toLowerCase().includes('fakülte') ? 'Fakülte' : 'Birim'}
                           </span>
-                          <span className="csd-accordion-name">{unit.name}</span>
+                          <span className="csd-accordion-name" style={{ flex: 1, textAlign: 'left', marginLeft: '8px', fontWeight: '600' }}>{faculty}</span>
+                          <span style={{ fontSize: '12px', color: '#64748b', marginRight: '8px' }}>{programs.length} bölüm</span>
                           <span className={`csd-accordion-arrow ${expandedUnits[idx] ? 'csd-accordion-arrow--open' : ''}`}>▼</span>
                         </button>
                         {expandedUnits[idx] && (
-                          <div className="csd-accordion-body">
-                            {(() => {
-                              const myo = unit.type === 'MYO' ? universities.find(u => {
-                                if (u.type !== 'MYO') return false;
-                                let coreName = normalize(selectedSubCampus?.name || '').replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
-                                if (!coreName) coreName = normalize(selectedSubCampus?.name || '').split(' ')[0];
-                                const normalizedMyo = normalize(u.name);
-                                const normalizedUnit = normalize(unit.name);
-                                return (normalizedMyo.includes(coreName) || coreName.includes(normalizedMyo)) && normalizedMyo.includes(normalizedUnit);
-                              }) : null;
-                              
-                              if (myo) {
-                                return (
-                                  <div style={{ marginBottom: '10px' }}>
-                                    <button 
-                                      onClick={() => {
-                                        setMapFocus({ latitude: Number(myo.latitude), longitude: Number(myo.longitude), zoom: 15 });
-                                        setSelectedSubCampus(myo);
-                                        setCampusDetailTab('info');
-                                      }}
-                                      style={{ background: '#eff6ff', color: '#3b82f6', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 12px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                                    >
-                                      📍 Konum: {myo.name}
-                                    </button>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            })()}
-                            {unit.programs && unit.programs.length > 0 ? (
-                              <div className="csd-program-list">
-                                {unit.programs.map((prog, pidx) => (
-                                  <span key={pidx} className="csd-program-chip">
-                                    <span className={`csd-degree-badge ${prog.degree === 'Önlisans' ? 'csd-degree-badge--blue' : 'csd-degree-badge--orange'}`}>
-                                      {prog.degree}
-                                    </span>
-                                    {prog.name}
-                                  </span>
-                                ))}
+                          <div className="csd-accordion-body" style={{ padding: '12px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {programs.map((p, pIdx) => (
+                              <div key={pIdx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '10px 12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                                <span style={{ fontSize: '13.5px', color: '#1e293b', fontWeight: '500', lineHeight: '1.4', flex: 1, paddingRight: '12px' }}>{p.name}</span>
+                                <span style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '16px', background: p.degree_level === 'Lisans' ? '#eff6ff' : '#f0fdf4', color: p.degree_level === 'Lisans' ? '#3b82f6' : '#16a34a', fontWeight: '600', flexShrink: 0, border: `1px solid ${p.degree_level === 'Lisans' ? '#bfdbfe' : '#bbf7d0'}` }}>
+                                  {p.degree_level || 'Bilinmiyor'}
+                                </span>
                               </div>
-                            ) : <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Bölüm bilgisi yok.</p>}
+                            ))}
                           </div>
                         )}
                       </div>
                     ))
                   ) : (
                     <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>🚧</div>
-                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Veriler Güncelleniyor</h4>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
+                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Bölüm Bulunamadı</h4>
                       <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
-                        Bu üniversitenin bölüm ve program verileri şu anda güncellenmektedir. Çok yakında eklenecektir!
+                        Bu üniversiteye ait bölüm veya program verisi bulunamadı.
                       </p>
                     </div>
                   )}
