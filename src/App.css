@@ -6409,10 +6409,7 @@ input[type="text"], input[type="search"] {
 
 /* 1. Header Kapsayıcı (Sabit ve Tek Parça) */
 .header-unified {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
+  position: relative !important;
   z-index: 2000 !important;
   background: rgba(255, 255, 255, 0.94) !important;
   backdrop-filter: blur(12px) !important;
