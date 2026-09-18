@@ -2462,17 +2462,12 @@ const activeFilterCount = [
 ].filter(Boolean).length;
   const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
-    <div className="app">
+    <div className="app" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
 
-      {/* ========================================
-          HEADER
-      ======================================== */}
-
-      
       {/* ========================================
           UNIFIED MOBILE & DESKTOP HEADER
       ======================================== */}
-      <header className="header-unified" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
+      <header className="header-unified" style={{ flexShrink: 0, position: 'relative', zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
         
         {/* Satır 1: Başlık ve Kullanıcı Profil */}
         <div className="logo-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -2558,7 +2553,7 @@ const activeFilterCount = [
       {/* ========================================
           MAP
       ======================================== */}
-      <main className="map-area-unified" style={{ position: 'absolute', inset: 0, width: '100vw', height: '100dvh', zIndex: 10 }}>
+      <main className="map-area-unified" style={{ flex: 1, position: 'relative', width: '100%', overflow: 'hidden', zIndex: 10 }}>
         <MapContainer
           center={[
             39.0,
