@@ -288,11 +288,22 @@ function App() {
   const fetchCampusPrograms = async () => {
     if (!selectedSubCampus) return;
     setIsFetchingCampusPrograms(true);
-    const uniId = selectedSubCampus.universityId || selectedSubCampus.id;
+    
+    // JSON dosyasındaki ID ile Supabase'deki ID uyuşmayabilir (Örn: Yozgat Bozok JSON'da 1023, Supabase'de 937).
+    // Bu yüzden doğru ID'yi isim eşleştirmesi ile 'universities' statinden buluyoruz.
+    let correctUniId = selectedSubCampus.universityId || selectedSubCampus.id;
+    if (universities && universities.length > 0) {
+      const targetName = normalize(selectedSubCampus.originalUniName || selectedSubCampus.universityName || selectedSubCampus.name);
+      const exactUni = universities.find(u => normalize(u.name) === targetName);
+      if (exactUni) {
+        correctUniId = exactUni.id;
+      }
+    }
+
     const { data, error } = await supabase
       .from('programs')
       .select('*')
-      .eq('university_id', uniId);
+      .eq('university_id', correctUniId);
     
     if (data) {
       setCampusPrograms(data);
