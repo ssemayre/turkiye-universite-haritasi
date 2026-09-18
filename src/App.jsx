@@ -2606,7 +2606,7 @@ const activeFilterCount = [
               <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
                 <span className="campus-tooltip">{selectedCampus.name}</span>
               </Tooltip>
-              <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
+              <Popup autoPan={true} autoPanPaddingTopLeft={[20, 150]} autoPanPaddingBottomRight={[20, 20]} minWidth={240} maxWidth={300}>
                 <div className="campus-popup">
                   <div className="detail-label">{selectedCampus.isMain ? "ANA YERLEŞKE" : "YERLEŞKE"}</div>
                   <h3>{selectedCampus.name}</h3>
@@ -2636,7 +2636,7 @@ const activeFilterCount = [
                     <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
                        <span className="university-tooltip"><strong>{university.city}</strong><br/>{university.name}</span>
                     </Tooltip>
-                    <Popup autoPan={true} autoPanPadding={[20, 20]} minWidth={240} maxWidth={300}>
+                    <Popup autoPan={true} autoPanPaddingTopLeft={[20, 150]} autoPanPaddingBottomRight={[20, 20]} minWidth={240} maxWidth={300}>
                        <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
                          <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
                            {university.type === 'Ana Kampüs' ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
@@ -3547,9 +3547,14 @@ const activeFilterCount = [
                         {expandedUnits[idx] && (
                           <div className="csd-accordion-body">
                             {(() => {
-                              const match = selectedSubCampus?.name?.match(/^(.*?\bÜniversitesi\b)/i);
-                              const uniName = match ? match[1] : (selectedSubCampus?.name?.split(' ')[0] || '');
-                              const myo = unit.type === 'MYO' ? universities.find(u => u.type === 'MYO' && normalize(u.name).includes(normalize(uniName)) && normalize(u.name).includes(normalize(unit.name))) : null;
+                              const myo = unit.type === 'MYO' ? universities.find(u => {
+                                if (u.type !== 'MYO') return false;
+                                let coreName = normalize(selectedSubCampus?.name || '').replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
+                                if (!coreName) coreName = normalize(selectedSubCampus?.name || '').split(' ')[0];
+                                const normalizedMyo = normalize(u.name);
+                                const normalizedUnit = normalize(unit.name);
+                                return (normalizedMyo.includes(coreName) || coreName.includes(normalizedMyo)) && normalizedMyo.includes(normalizedUnit);
+                              }) : null;
                               
                               if (myo) {
                                 return (
@@ -3601,16 +3606,32 @@ const activeFilterCount = [
               {campusDetailTab === 'campuses' && (
                 <div className="csd-section-list">
                   {(() => {
-                    const match = selectedSubCampus.name.match(/^(.*?\bÜniversitesi\b)/i);
-                    const uniName = match ? match[1] : selectedSubCampus.name.split(' ')[0];
-                    const relatedMyos = universities.filter(u => u.type === 'MYO' && normalize(u.name).includes(normalize(uniName)));
+                    // Extract core name (e.g., "KOCAELİ" from "KOCAELİ ÜNİVERSİTESİ")
+                    let coreName = normalize(selectedSubCampus.name);
+                    coreName = coreName.replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
+                    
+                    // Fallback to first word if coreName is empty
+                    if (!coreName) coreName = normalize(selectedSubCampus.name).split(' ')[0];
+                    
+                    const relatedMyos = universities.filter(u => {
+                      if (u.type !== 'MYO' || u.id === selectedSubCampus.id) return false;
+                      const normalizedMyo = normalize(u.name);
+                      return normalizedMyo.includes(coreName) || coreName.includes(normalizedMyo);
+                    });
                     
                     return (
                       <>
                         <div className="csd-card">
                           <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Meslek Yüksekokulları (MYO)</h3>
                           {relatedMyos.length === 0 ? (
-                            <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Bu üniversiteye ait kayıtlı MYO bulunamadı.</p>
+                            <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                              </svg>
+                              <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>MYO Bulunamadı</h4>
+                              <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Bu üniversiteye ait kayıtlı Meslek Yüksekokulu bulunmuyor.</p>
+                            </div>
                           ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                               {relatedMyos.map(myo => (
@@ -3701,8 +3722,12 @@ const activeFilterCount = [
                   )}
 
                   {realReviews.length === 0 ? (
-                    <div className="csd-empty" style={{ textAlign: 'center', padding: '30px 10px', color: '#94a3b8' }}>
-                      İlk değerlendiren siz olun!
+                    <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                      </svg>
+                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Henüz Değerlendirme Yok</h4>
+                      <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>İlk değerlendiren siz olun ve diğer öğrencilere rehberlik edin!</p>
                     </div>
                   ) : (
                     realReviews.map(review => {
@@ -3789,8 +3814,14 @@ const activeFilterCount = [
                   )}
 
                   {realQuestions.length === 0 ? (
-                    <div className="csd-empty" style={{ textAlign: 'center', padding: '30px 10px', color: '#94a3b8' }}>
-                      Henüz hiç soru sorulmamış. İlk soruyu sen sor!
+                    <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                      </svg>
+                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Henüz Soru Sorulmamış</h4>
+                      <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Bu üniversite hakkında merak ettiklerinizi sorun, cevaplayalım!</p>
                     </div>
                   ) : (
                     realQuestions.map(qa => {
