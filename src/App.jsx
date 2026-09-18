@@ -293,8 +293,8 @@ function App() {
     // Bu yüzden doğru ID'yi isim eşleştirmesi ile 'universities' statinden buluyoruz.
     let correctUniId = selectedSubCampus.universityId || selectedSubCampus.id;
     if (universities && universities.length > 0) {
-      const targetName = normalize(selectedSubCampus.originalUniName || selectedSubCampus.universityName || selectedSubCampus.name);
-      const exactUni = universities.find(u => normalize(u.name) === targetName);
+      const targetName = normalize(selectedSubCampus.originalUniName || selectedSubCampus.universityName || selectedSubCampus.name).split('(')[0].trim();
+      const exactUni = universities.find(u => normalize(u.name).includes(targetName));
       if (exactUni) {
         correctUniId = exactUni.id;
       }
