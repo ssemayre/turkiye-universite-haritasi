@@ -260,6 +260,8 @@ function App() {
   // --- BÖLÜMLER (PROGRAMS) YENİ YAPI ---
   const [campusPrograms, setCampusPrograms] = useState([]);
   const [isFetchingCampusPrograms, setIsFetchingCampusPrograms] = useState(false);
+  const [programSearchQuery, setProgramSearchQuery] = useState('');
+  const [expandedProgramId, setExpandedProgramId] = useState(null);
 
   // --- YENİ YORUM YAPISI ---
   const [realReviews, setRealReviews] = useState([]);
@@ -272,6 +274,8 @@ function App() {
     setCampusDetailTab('info');
     setExpandedUnits({});
     setCampusPrograms([]); // Reset programs when campus changes
+    setProgramSearchQuery('');
+    setExpandedProgramId(null);
   }, [selectedSubCampus?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Programs Fetch
@@ -3550,60 +3554,120 @@ const activeFilterCount = [
 
               {/* ━━ BÖLÜMLER ━━ */}
               {campusDetailTab === 'units' && (
-                <div className="csd-section-list">
-                  {isFetchingCampusPrograms ? (
-                    <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                      <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Veriler Çekiliyor</h4>
-                      <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
-                        Bu üniversitenin bölüm ve program verileri Supabase'den yükleniyor...
-                      </p>
-                      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                    </div>
-                  ) : campusPrograms && campusPrograms.length > 0 ? (
-                    Object.entries(
-                      campusPrograms.reduce((acc, p) => {
-                        const f = p.faculty || 'Diğer / Fakülte Belirtilmemiş';
-                        if (!acc[f]) acc[f] = [];
-                        acc[f].push(p);
-                        return acc;
-                      }, {})
-                    ).map(([faculty, programs], idx) => (
-                      <div key={idx} className="csd-accordion-item">
-                        <button
-                          className="csd-accordion-trigger"
-                          onClick={() => setExpandedUnits(prev => ({ ...prev, [idx]: !prev[idx] }))}
-                        >
-                          <span className={`csd-unit-badge ${faculty.toLowerCase().includes('myo') || faculty.toLowerCase().includes('meslek') ? 'csd-unit-badge--blue' : faculty.toLowerCase().includes('fakülte') ? 'csd-unit-badge--pink' : 'csd-unit-badge--gray'}`}>
-                            {faculty.toLowerCase().includes('myo') || faculty.toLowerCase().includes('meslek') ? 'MYO' : faculty.toLowerCase().includes('fakülte') ? 'Fakülte' : 'Birim'}
-                          </span>
-                          <span className="csd-accordion-name" style={{ flex: 1, textAlign: 'left', marginLeft: '8px', fontWeight: '600' }}>{faculty}</span>
-                          <span style={{ fontSize: '12px', color: '#64748b', marginRight: '8px' }}>{programs.length} bölüm</span>
-                          <span className={`csd-accordion-arrow ${expandedUnits[idx] ? 'csd-accordion-arrow--open' : ''}`}>▼</span>
-                        </button>
-                        {expandedUnits[idx] && (
-                          <div className="csd-accordion-body" style={{ padding: '12px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {programs.map((p, pIdx) => (
-                              <div key={pIdx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '10px 12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
-                                <span style={{ fontSize: '13.5px', color: '#1e293b', fontWeight: '500', lineHeight: '1.4', flex: 1, paddingRight: '12px' }}>{p.name}</span>
-                                <span style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '16px', background: p.degree_level === 'Lisans' ? '#eff6ff' : '#f0fdf4', color: p.degree_level === 'Lisans' ? '#3b82f6' : '#16a34a', fontWeight: '600', flexShrink: 0, border: `1px solid ${p.degree_level === 'Lisans' ? '#bfdbfe' : '#bbf7d0'}` }}>
-                                  {p.degree_level || 'Bilinmiyor'}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                <div className="csd-section-list" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                  
+                  {/* Sticky Search Bar */}
+                  <div style={{ position: 'sticky', top: 0, zIndex: 10, background: '#fff', padding: '12px 16px', borderBottom: '1px solid #e2e8f0' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Bu üniversitede program ara..." 
+                      value={programSearchQuery}
+                      onChange={(e) => setProgramSearchQuery(e.target.value)}
+                      style={{ width: '100%', padding: '10px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none', background: '#f8fafc', color: '#1e293b' }}
+                    />
+                  </div>
+
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {isFetchingCampusPrograms ? (
+                      <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Veriler Çekiliyor</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
+                          Bölüm ve program verileri yükleniyor...
+                        </p>
+                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                       </div>
-                    ))
-                  ) : (
-                    <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
-                      <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Bölüm Bulunamadı</h4>
-                      <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
-                        Bu üniversiteye ait bölüm veya program verisi bulunamadı.
-                      </p>
-                    </div>
-                  )}
+                    ) : campusPrograms && campusPrograms.length > 0 ? (
+                      (() => {
+                        const filtered = campusPrograms.filter(p => (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR')));
+                        if (filtered.length === 0) {
+                          return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
+                        }
+                        return filtered.map((p, idx) => {
+                          const isExpanded = expandedProgramId === idx;
+                          return (
+                            <div key={idx} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}>
+                              
+                              {/* CLOSED VIEW (HEADER) */}
+                              <div 
+                                onClick={() => setExpandedProgramId(isExpanded ? null : idx)}
+                                style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isExpanded ? '#f8fafc' : '#fff' }}
+                              >
+                                <span style={{ fontWeight: '700', color: '#0f172a', fontSize: '14px', lineHeight: '1.4', paddingRight: '12px' }}>
+                                  {p.name}
+                                </span>
+                                <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: '#cbd5e1' }} onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}>
+                                  ⭐
+                                </button>
+                              </div>
+
+                              {/* EXPANDED VIEW (DETAILS) */}
+                              {isExpanded && (
+                                <div style={{ padding: '0 16px 16px 16px', borderTop: '1px solid #f1f5f9' }}>
+                                  <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <span style={{ fontSize: '12px', fontWeight: '600', padding: '4px 8px', borderRadius: '6px', background: p.degree_level === 'Lisans' ? '#eff6ff' : '#f0fdf4', color: p.degree_level === 'Lisans' ? '#3b82f6' : '#16a34a' }}>
+                                        {p.degree_level || 'Bilinmiyor'}
+                                      </span>
+                                      <span style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>
+                                        {p.faculty || 'Fakülte belirtilmemiş'}
+                                      </span>
+                                    </div>
+                                    <button 
+                                      onClick={() => {
+                                        let coreName = normalize(selectedSubCampus?.name || '').replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
+                                        if (!coreName) coreName = normalize(selectedSubCampus?.name || '').split(' ')[0];
+                                        const normalizedFaculty = normalize(p.faculty || '');
+                                        const campus = universities.find(u => {
+                                          const normalizedCampus = normalize(u.name);
+                                          return (normalizedCampus.includes(coreName) || coreName.includes(normalizedCampus)) && normalizedCampus.includes(normalizedFaculty);
+                                        });
+                                        if (campus && campus.latitude && campus.longitude) {
+                                          setMapFocus({ latitude: Number(campus.latitude), longitude: Number(campus.longitude), zoom: 16 });
+                                        } else if (selectedSubCampus && selectedSubCampus.latitude && selectedSubCampus.longitude) {
+                                          setMapFocus({ latitude: Number(selectedSubCampus.latitude), longitude: Number(selectedSubCampus.longitude), zoom: 15 });
+                                        }
+                                      }}
+                                      style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 10px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                    >
+                                      📍 Haritada Göster
+                                    </button>
+                                  </div>
+
+                                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
+                                    <div>
+                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Puan Türü</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.score_type || 'Yükleniyor...'}</div>
+                                    </div>
+                                    <div>
+                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Kontenjan</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.quota ? `${p.quota} Kişi` : 'Yükleniyor...'}</div>
+                                    </div>
+                                    <div>
+                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Taban Puan</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.base_score || 'Yükleniyor...'}</div>
+                                    </div>
+                                    <div>
+                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Başarı Sırası</div>
+                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.success_rank || 'Yükleniyor...'}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        });
+                      })()
+                    ) : (
+                      <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
+                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Bölüm Bulunamadı</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
+                          Bu üniversiteye ait bölüm veya program verisi bulunamadı.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
