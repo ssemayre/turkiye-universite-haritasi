@@ -1906,18 +1906,23 @@ function App() {
     }, [search, baseFilteredUniversities, searchProgramsLoaded, generalFilteredPrograms, universityMap]);
 
   const activeRelatedMyos = useMemo(() => {
-    if (!selectedSubCampus || campusDetailTab !== 'campuses') return [];
+    if (!selectedSubCampus || campusDetailTab !== 'campuses' || !campusPrograms) return [];
     
-    let coreName = normalize(selectedSubCampus.originalUniName || selectedSubCampus.universityName || selectedSubCampus.name).split('(')[0].trim();
-    coreName = coreName.replace(/universitesi/g, '').replace(/uni\./g, '').replace(/uni/g, '').trim();
-    if (!coreName) coreName = normalize(selectedSubCampus.name).split(' ')[0];
-    
-    return universities.filter(u => {
-      if (u.type !== 'MYO' || u.id === selectedSubCampus.id) return false;
-      const normalizedMyo = normalize(u.name);
-      return (normalizedMyo.includes(coreName) || coreName.includes(normalizedMyo)) && Number.isFinite(Number(u.lat));
+    // 1. Extract unique campus_ids from the fetched programs of the selected university
+    const uniqueCampusIds = new Set();
+    campusPrograms.forEach(p => {
+      if (p.campus_id) {
+        uniqueCampusIds.add(String(p.campus_id));
+      }
     });
-  }, [selectedSubCampus, campusDetailTab, universities]);
+
+    // 2. Filter global universities list to match these unique campus_ids
+    return universities.filter(u => 
+      uniqueCampusIds.has(String(u.id)) && 
+      u.id !== selectedSubCampus.id && 
+      Number.isFinite(Number(u.lat))
+    );
+  }, [selectedSubCampus, campusDetailTab, universities, campusPrograms]);
 
   const displayedUniversities = useMemo(() => {
     const base = filteredUniversities;
