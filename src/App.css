@@ -6606,20 +6606,19 @@ input[type="text"], input[type="search"] {
   max-width: 100vw;
   height: 100dvh;
   background: #fff;
-  box-shadow: -4px 0 32px rgba(0,0,0,0.18);
+  box-shadow: -15px 0 50px rgba(0,0,0,0.25), -5px 0 15px rgba(0,0,0,0.1);
+  border-radius: 32px 0 0 32px;
   z-index: 1200;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Mobil scroll �ak��mas�n� �nle */
+  /* Mobil scroll çakışmasını önle */
   overscroll-behavior: contain;
   touch-action: pan-y;
 }
 
-/* �� BA�LIK �� */
+/* ── BAŞLIK ── */
 .csd-header {
-  padding: 52px 20px 12px;
-  border-bottom: 1px solid #f1f5f9;
   flex-shrink: 0;
 }
 .csd-badges {

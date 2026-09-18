@@ -3440,19 +3440,31 @@ const activeFilterCount = [
             onTouchMove={e => e.stopPropagation()}
             onWheel={e => e.stopPropagation()}
           >
-            {/* ── KAPAT ── */}
-            <button className="close-button" onClick={() => setSelectedSubCampus(null)}>✕</button>
-
-            {/* ── BAŞLIK ── */}
-            <div className="csd-header">
-              <div className="csd-badges">
-                <span className="csd-badge csd-badge--purple">Üniversite Yerleşkesi</span>
-                <span className={`csd-badge ${selectedSubCampus.isMain ? 'csd-badge--amber' : 'csd-badge--green'}`}>
-                  {selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}
-                </span>
+            {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
+            <div className="csd-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '24px 20px 20px 24px', background: 'linear-gradient(to bottom, #ffffff, #f8fafc)', borderBottom: '1px solid #e2e8f0', zIndex: 10 }}>
+              <div style={{ paddingRight: '16px' }}>
+                <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', margin: '0 0 6px 0', lineHeight: '1.25', letterSpacing: '-0.02em' }}>
+                  {selectedSubCampus.name}
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748b' }}>
+                    {selectedSubCampus.universityName}
+                  </span>
+                  <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#cbd5e1' }}></span>
+                  <span style={{ fontSize: '12px', fontWeight: '700', padding: '2px 8px', borderRadius: '12px', background: selectedSubCampus.isMain ? '#fef3c7' : '#dcfce3', color: selectedSubCampus.isMain ? '#d97706' : '#16a34a' }}>
+                    {selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}
+                  </span>
+                </div>
               </div>
-              <h2 className="csd-title">{selectedSubCampus.name}</h2>
-              <p className="csd-subtitle">{selectedSubCampus.universityName}</p>
+              
+              <button 
+                onClick={() => setSelectedSubCampus(null)}
+                style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', fontSize: '16px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = '#fca5a5'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+              >
+                ✕
+              </button>
             </div>
 
             {/* ── TAB BAR ── */}
