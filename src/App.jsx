@@ -280,10 +280,10 @@ function App() {
 
   // Programs Fetch
   useEffect(() => {
-    if (selectedSubCampus && campusDetailTab === 'units') {
+    if (selectedSubCampus) {
       fetchCampusPrograms();
     }
-  }, [selectedSubCampus?.id, campusDetailTab]);
+  }, [selectedSubCampus?.id]);
 
   const fetchCampusPrograms = async () => {
     if (!selectedSubCampus) return;
@@ -3754,10 +3754,11 @@ const activeFilterCount = [
                                         if (p.campus_id) {
                                           target = universities.find(u => String(u.id) === String(p.campus_id));
                                         }
-                                        if (!target || !target.lat) {
+                                        // Sadece yerleşke bulunamazsa veya koordinatı sıfır/undefined ise ana kampüse düş
+                                        if (!target || (!target.lat && !target.latitude)) {
                                           target = universities.find(u => String(u.id) === String(p.university_id));
                                         }
-                                        if (!target || !target.lat) {
+                                        if (!target || (!target.lat && !target.latitude)) {
                                           target = selectedSubCampus;
                                         }
                                         
@@ -3766,12 +3767,12 @@ const activeFilterCount = [
                                         
                                         if (lat && lng) {
                                           setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
-                                          // Ensure the popup opens when we arrive
+                                          // Sadece popup'ı aç, selected state'ini (sağ paneli) ezme!
                                           if (target && target.id) {
                                             setTimeout(() => {
                                               const marker = markerRefs.current[target.id];
                                               if (marker) marker.openPopup();
-                                            }, 400); // 400ms allows flyTo animation to begin
+                                            }, 400); 
                                           }
                                         }
                                       }}
@@ -3822,8 +3823,13 @@ const activeFilterCount = [
               {campusDetailTab === 'campuses' && (
                 <div className="csd-section-list">
                   <div className="csd-card">
-                    <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Meslek Yüksekokulları (MYO)</h3>
-                    {activeRelatedMyos.length === 0 ? (
+                    <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Alt Yerleşkeler / MYO'lar</h3>
+                    {isFetchingCampusPrograms ? (
+                      <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        <h4 style={{ margin: '0 0 8px 0', color: '#3b82f6', fontSize: '15px' }}>Yükleniyor...</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Yerleşke bilgileri sorgulanıyor.</p>
+                      </div>
+                    ) : activeRelatedMyos.length === 0 ? (
                       <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
                           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
