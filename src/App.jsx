@@ -2702,28 +2702,27 @@ const activeFilterCount = [
                   spiderfyOnMaxZoom={false}
                   showCoverageOnHover={false}
                   zoomToBoundsOnClick={true}
-                  eventHandlers={{
-                    click: (e) => {
-                      const cluster = e.layer;
-                      const childMarkers = cluster.getAllChildMarkers();
-                      const map = cluster._map || (childMarkers[0] && childMarkers[0]._map);
-                      if (!map) return;
-                      
-                      const currentZoom = map.getZoom();
-                      const maxZoom = map.getMaxZoom() || 18;
-                      const bounds = cluster.getBounds();
-                      const isPointCluster = bounds.getNorthEast().equals(bounds.getSouthWest());
+                  onClick={(e) => {
+                    const cluster = e.layer;
+                    const childMarkers = cluster.getAllChildMarkers();
+                    const map = cluster._map || (childMarkers[0] && childMarkers[0]._map);
+                    if (!map) return;
+                    
+                    const currentZoom = map.getZoom();
+                    const maxZoom = map.getMaxZoom() || 18;
+                    const bounds = cluster.getBounds();
+                    const isPointCluster = bounds.getNorthEast().equals(bounds.getSouthWest());
 
-                      if (currentZoom >= maxZoom || isPointCluster) {
-                        const uniIds = childMarkers.map(m => m.universityId).filter(Boolean);
-                        if (uniIds.length > 0) {
-                          setTimeout(() => {
-                            setClusterPopupData({
-                              latlng: [e.latlng.lat, e.latlng.lng],
-                              universityIds: uniIds
-                            });
-                          }, 50);
-                        }
+                    if (currentZoom >= maxZoom || isPointCluster) {
+                      // Kütüphanenin varsayılan davranışını durdur
+                      L.DomEvent.stopPropagation(e.originalEvent || e);
+                      
+                      const uniIds = childMarkers.map(m => m.universityId).filter(Boolean);
+                      if (uniIds.length > 0) {
+                        setClusterPopupData({
+                          latlng: [e.latlng.lat, e.latlng.lng],
+                          universityIds: uniIds
+                        });
                       }
                     }
                   }}
