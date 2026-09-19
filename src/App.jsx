@@ -1108,9 +1108,15 @@ function App() {
 
   const baseFilteredUniversities =
     useMemo(() => {
-      return mapUniversities.filter(
+      const filtered = mapUniversities.filter(
         (university) => {
-          if (!showMyo && university.type === 'MYO') return false;
+          // 1. İsim bazlı Ana Kampüs filtrelemesi
+          if (!showMyo) {
+            const upperName = (university.name || '').toLocaleUpperCase('tr-TR');
+            if (!upperName.includes('ÜNİVERSİTESİ')) {
+              return false;
+            }
+          }
 
           const cityMatch =
             cityFilter === "Tümü" ||
@@ -1130,6 +1136,13 @@ function App() {
           );
         }
       );
+
+      // 3. Fallback: Eğer filtreleme sonucu boş dönerse, harita boş kalmasın diye tümünü göster
+      if (filtered.length === 0 && mapUniversities.length > 0) {
+        return mapUniversities;
+      }
+
+      return filtered;
     }, [
       mapUniversities,
       cityFilter,
