@@ -985,6 +985,7 @@ function App() {
 
   const markerRefs = useRef({});
   const [activeCampusFilterId, setActiveCampusFilterId] = useState(null);
+  const [clusterPopupData, setClusterPopupData] = useState(null);
 
   useEffect(() => {
     setActiveCampusFilterId(null);
@@ -2694,16 +2695,47 @@ const activeFilterCount = [
               </Popup>
             </Marker>
           ) : (
-              <MarkerClusterGroup
-                chunkedLoading={true}
-                maxClusterRadius={70}
-                spiderfyOnMaxZoom={false}
-                showCoverageOnHover={false}
-                zoomToBoundsOnClick={true}
-              >
+              <>
+                <MarkerClusterGroup
+                  chunkedLoading={true}
+                  maxClusterRadius={70}
+                  spiderfyOnMaxZoom={false}
+                  showCoverageOnHover={false}
+                  zoomToBoundsOnClick={true}
+                  eventHandlers={{
+                    click: (e) => {
+                      const cluster = e.layer;
+                      const childMarkers = cluster.getAllChildMarkers();
+                      const map = cluster._map || (childMarkers[0] && childMarkers[0]._map);
+                      if (!map) return;
+                      
+                      const currentZoom = map.getZoom();
+                      const maxZoom = map.getMaxZoom() || 18;
+                      const bounds = cluster.getBounds();
+                      const isPointCluster = bounds.getNorthEast().equals(bounds.getSouthWest());
+
+                      if (currentZoom >= maxZoom || isPointCluster) {
+                        const uniIds = childMarkers.map(m => m.universityId).filter(Boolean);
+                        if (uniIds.length > 0) {
+                          setTimeout(() => {
+                            setClusterPopupData({
+                              latlng: [e.latlng.lat, e.latlng.lng],
+                              universityIds: uniIds
+                            });
+                          }, 50);
+                        }
+                      }
+                    }
+                  }}
+                >
                 {displayedUniversities.map(university => (
                    <Marker 
-                      ref={(r) => { if (r) markerRefs.current[university.id] = r; }}
+                      ref={(r) => { 
+                        if (r) { 
+                          markerRefs.current[university.id] = r; 
+                          r.universityId = university.id; 
+                        } 
+                      }}
                       key={university.id} 
                       position={[Number(university.latitude || university.lat), Number(university.longitude || university.lng)]} 
                     icon={university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon} 
@@ -2731,6 +2763,39 @@ const activeFilterCount = [
                  </Marker>
               ))}
             </MarkerClusterGroup>
+            {clusterPopupData && (
+              <Popup 
+                position={clusterPopupData.latlng} 
+                onClose={() => setClusterPopupData(null)}
+                minWidth={250}
+                autoPan={true}
+                autoPanPaddingTopLeft={[0, 250]}
+              >
+                <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
+                  <h3 style={{ marginBottom: '10px', fontSize: '14px', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', color: '#0f172a' }}>Bu Konumdaki Yerleşkeler</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {clusterPopupData.universityIds.map(id => {
+                      const u = displayedUniversities.find(un => un.id === id);
+                      if (!u) return null;
+                      return (
+                        <button 
+                          key={id}
+                          onClick={() => {
+                            setClusterPopupData(null);
+                            setSelectedSubCampus(u);
+                          }}
+                          style={{ padding: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', width: '100%' }}
+                        >
+                          <strong style={{ display: 'block', fontSize: '13px', color: '#1e293b', marginBottom: '2px', lineHeight: '1.2' }}>{u.name}</strong>
+                          <small style={{ color: '#64748b', fontSize: '11px', fontWeight: '500' }}>{u.type === 'Ana Kampüs' ? '📍 Ana Kampüs' : '🏢 Alt Yerleşke'}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </Popup>
+            )}
+            </>
           )}
 
         
