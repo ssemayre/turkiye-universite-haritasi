@@ -2694,14 +2694,13 @@ const activeFilterCount = [
               </Popup>
             </Marker>
           ) : (
-            <MarkerClusterGroup
-              chunkedLoading={true}
-              maxClusterRadius={70}
-              spiderfyOnMaxZoom={true}
-              showCoverageOnHover={false}
-              zoomToBoundsOnClick={true}
-              disableClusteringAtZoom={13}
-            >
+              <MarkerClusterGroup
+                chunkedLoading={true}
+                maxClusterRadius={70}
+                spiderfyOnMaxZoom={false}
+                showCoverageOnHover={false}
+                zoomToBoundsOnClick={true}
+              >
                 {displayedUniversities.map(university => (
                    <Marker 
                       ref={(r) => { if (r) markerRefs.current[university.id] = r; }}
@@ -2736,14 +2735,13 @@ const activeFilterCount = [
 
         
           {showKyk && (
-            <MarkerClusterGroup
-              chunkedLoading={true}
-              maxClusterRadius={50}
-              spiderfyOnMaxZoom={true}
-              showCoverageOnHover={false}
-              zoomToBoundsOnClick={true}
-              disableClusteringAtZoom={13}
-            >
+              <MarkerClusterGroup
+                chunkedLoading={true}
+                maxClusterRadius={50}
+                spiderfyOnMaxZoom={false}
+                showCoverageOnHover={false}
+                zoomToBoundsOnClick={true}
+              >
               {kykData
                 .filter(kyk => kykGenderFilter === "Tümü" || kyk.gender === kykGenderFilter)
                 .map(kyk => (
