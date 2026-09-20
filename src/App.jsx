@@ -1303,51 +1303,7 @@ function App() {
       baseFilteredUniversities,
     ]);
 
-  // ==================================================
-  // SEARCH INDEX AUTO LOAD
-  // ==================================================
 
-  useEffect(() => {
-    const query =
-      normalize(search);
-
-    if (
-      query.length < 2 ||
-      searchProgramsLoaded
-    ) {
-      return;
-    }
-
-    const universityExists =
-      baseFilteredUniversities.some(
-        (university) => {
-          const name =
-            normalize(
-              university.name
-            );
-
-          const city =
-            normalize(
-              university.city
-            );
-
-          return (
-            name.includes(query) ||
-            city.includes(query)
-          );
-        }
-      );
-
-    // Üniversite bulunsa da bulunmasa da YKS program (ve kampüs) verilerini arkaplanda çekmeye başla
-    if (search.length >= 2) {
-      loadSearchPrograms();
-    }
-  }, [
-    search,
-    baseFilteredUniversities,
-    searchProgramsLoaded,
-    loadSearchPrograms,
-  ]);
   // ==================================================
   // ÜNİVERSİTE İÇİNDE PROGRAMLAR
   // ==================================================
@@ -2589,13 +2545,52 @@ const activeFilterCount = [
 
         {/* Satır 2: Arama */}
         <div className="search-row">
-          <input
-            type="text"
-            placeholder="🔎 Üniversite, bölüm veya şehir ara..."
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-            style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid #cbd5e1', padding: '0 16px', background: '#f1f5f9', color: '#334155', outline: 'none', fontSize: '16px' }}
-          />
+          <div style={{ position: 'relative', flex: 1 }}>
+            <input
+              type="text"
+              placeholder="🔍 Üniversite, bölüm veya şehir ara..."
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid #cbd5e1', padding: '0 16px', background: '#f1f5f9', color: '#334155', outline: 'none', fontSize: '16px' }}
+            />
+            {searchInput.trim().length > 1 && (
+              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 1000, maxHeight: '300px', overflowY: 'auto', marginTop: '8px' }}>
+                {loadingSupabaseSearch ? (
+                  <div style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>Arama sonuçları yükleniyor...</div>
+                ) : visibleSearchResults.length > 0 ? (
+                  visibleSearchResults.map((result, i) => (
+                    <div 
+                      key={i}
+                      onClick={() => {
+                        setSearchInput("");
+                        setSearch("");
+                        if (result.type === "university") {
+                           setSelectedSubCampus(result.university);
+                           setMapFocus({ latitude: Number(result.university.lat || result.university.latitude), longitude: Number(result.university.lng || result.university.longitude), zoom: 11 });
+                        } else {
+                           setSelectedSubCampus(result.university);
+                           const tLat = result.program.latitude || result.university.lat || result.university.latitude;
+                           const tLng = result.program.longitude || result.university.lng || result.university.longitude;
+                           setMapFocus({ latitude: Number(tLat), longitude: Number(tLng), zoom: 14 });
+                           setActiveCampusFilterId(result.program.campus_id || null);
+                        }
+                      }}
+                      style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+                    >
+                      <strong style={{ fontSize: '14px', color: '#1e293b' }}>
+                        {result.type === 'university' ? result.university.name : result.program.name}
+                      </strong>
+                      <span style={{ fontSize: '12px', color: '#64748b' }}>
+                        {result.type === 'university' ? result.university.city : result.university.name}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>Sonuç bulunamadı.</div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Satır 3: Hızlı Keşfet ve Filtreler */}
