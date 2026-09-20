@@ -710,6 +710,49 @@ function App() {
 
   const [favoritesLoaded, setFavoritesLoaded] =
     useState(false);
+    
+  // --- PROFIL / AUTH STATES ---
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState(null);
+  
+  const [userProfileData, setUserProfileData] = useState({ targetRank: "", targetScore: "" });
+
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    setAuthError(null);
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({ email: authEmail, password: authPassword });
+        if (error) throw error;
+        alert("Kayıt başarılı! Lütfen e-postanızı doğrulayın.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password: authPassword });
+        if (error) throw error;
+      }
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    const savedProfile = localStorage.getItem("yok-atlas-user-profile");
+    if (savedProfile) {
+      try { setUserProfileData(JSON.parse(savedProfile)); } catch(e){}
+    }
+  }, []);
+  
+  const updateProfileData = (field, value) => {
+    const newData = { ...userProfileData, [field]: value };
+    setUserProfileData(newData);
+    localStorage.setItem("yok-atlas-user-profile", JSON.stringify(newData));
+  };
+  // ----------------------------
 
   const [comparisonPrograms, setComparisonPrograms] =
     useState([]);
@@ -2275,12 +2318,15 @@ function App() {
         String(program.code)
       );
 
-  const addToFavorites = (program) => {
+  const addToFavorites = async (program) => {
     const normalized = normalizeProgram(program);
 
     setFavorites((current) => {
       const exists = current.some((item) => String(item.code) === String(normalized.code));
       if (exists) {
+        if (user) {
+          supabase.from('favorites').delete().match({ user_id: user.id, program_id: normalized.code }).then();
+        }
         return current.filter((item) => String(item.code) !== String(normalized.code));
       }
 
@@ -2289,6 +2335,9 @@ function App() {
         return current;
       }
 
+      if (user) {
+        supabase.from('favorites').insert({ user_id: user.id, program_id: normalized.code, program_data: normalized }).then();
+      }
       return [...current, normalized];
     });
   };
@@ -2501,6 +2550,21 @@ function App() {
       setFavoritesLoaded(true);
     }
   }, []);
+  
+  useEffect(() => {
+    if (user && favoritesLoaded) {
+      const fetchSupabaseFavorites = async () => {
+        const { data, error } = await supabase.from('favorites').select('program_data').eq('user_id', user.id);
+        if (!error && data) {
+          // Merge local favorites with supabase or just override? Better to override with DB
+          if (data.length > 0) {
+             setFavorites(data.map(d => d.program_data));
+          }
+        }
+      };
+      fetchSupabaseFavorites();
+    }
+  }, [user, favoritesLoaded]);
 
   useEffect(() => {
     if (!favoritesLoaded) {
@@ -4369,293 +4433,157 @@ const activeFilterCount = [
       )}
 
       {/* ========================================
-          TERCİH LİSTESİ
+          PROFIL VE TERCİH LİSTESİ
       ======================================== */}
-
       {preferenceOpen && (
-
-        <aside className="preference-drawer">
-            
-
-          <div className="preference-header">
-
+        <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="preference-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
             <div>
-
-              <div className="detail-label">
-                TERCİH LİSTEM
-              </div>
-
-              <h2>
-                {
-                  favorites.length
-                } / 24 tercih
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
+                👤 Profilim
               </h2>
-
             </div>
-
-            <button
-              className="close-button"
-              onClick={() =>
-                setPreferenceOpen(
-                  false
-                )
-              }
-            >
-              ✕
-            </button>
-
+            <button className="close-button" onClick={() => setPreferenceOpen(false)}>✕</button>
           </div>
-
-          {favorites.length ===
-          0 ? (
-
-            <div className="empty-favorites">
-
-              <div className="empty-icon">
-                ⭐
+          
+          <div style={{ flex: 1, overflowY: 'auto', paddingRight: '4px' }}>
+            {!user ? (
+              // --- AUTH FORM (LOGGED OUT) ---
+              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>
+                  {isSignUp ? "Yeni Hesap Oluştur" : "Hesabınıza Giriş Yapın"}
+                </h3>
+                <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '20px' }}>
+                  {isSignUp ? "Profil oluşturarak tercihlerinizi buluta kaydedin." : "Tercihlerinize erişmek için giriş yapın."}
+                </p>
+                
+                <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <input 
+                    type="email" 
+                    placeholder="E-posta adresiniz" 
+                    value={authEmail} 
+                    onChange={(e) => setAuthEmail(e.target.value)} 
+                    style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '15px' }} 
+                    required 
+                  />
+                  <input 
+                    type="password" 
+                    placeholder="Şifreniz" 
+                    value={authPassword} 
+                    onChange={(e) => setAuthPassword(e.target.value)} 
+                    style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '15px' }} 
+                    required 
+                  />
+                  {authError && <div style={{ color: '#ef4444', fontSize: '13px' }}>{authError}</div>}
+                  <button type="submit" disabled={authLoading} style={{ background: '#3b82f6', color: '#fff', padding: '12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '15px', border: 'none', cursor: 'pointer' }}>
+                    {authLoading ? "Bekleniyor..." : (isSignUp ? "Kayıt Ol" : "Giriş Yap")}
+                  </button>
+                </form>
+                <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '14px', color: '#64748b' }}>
+                  {isSignUp ? "Zaten hesabınız var mı?" : "Hesabınız yok mu?"}
+                  <button type="button" onClick={() => setIsSignUp(!isSignUp)} style={{ background: 'none', border: 'none', color: '#3b82f6', fontWeight: 'bold', marginLeft: '4px', cursor: 'pointer' }}>
+                    {isSignUp ? "Giriş Yap" : "Kayıt Ol"}
+                  </button>
+                </div>
               </div>
+            ) : (
+              // --- PROFILE DASHBOARD (LOGGED IN) ---
+              <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', padding: '24px', borderRadius: '16px', border: '1px solid #bfdbfe', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1e3a8a', margin: '0 0 4px 0' }}>
+                      Merhaba, {user.user_metadata?.full_name || user.email?.split('@')[0]} 👋
+                    </h3>
+                    <p style={{ fontSize: '14px', color: '#3b82f6', margin: 0 }}>Türkiye Üniversite Haritası'na hoş geldin.</p>
+                  </div>
+                  <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} style={{ background: '#fff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '6px 12px', color: '#ef4444', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>
+                    Çıkış Yap
+                  </button>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#1e40af', marginBottom: '6px' }}>Hedef Sıralamam</label>
+                    <input 
+                      type="number" 
+                      placeholder="Örn: 50000" 
+                      value={userProfileData.targetRank} 
+                      onChange={(e) => updateProfileData('targetRank', e.target.value)} 
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid #93c5fd', fontSize: '14px', outline: 'none', color: '#1e293b' }} 
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#1e40af', marginBottom: '6px' }}>Hedef Puanım</label>
+                    <input 
+                      type="number" 
+                      placeholder="Örn: 450" 
+                      value={userProfileData.targetScore} 
+                      onChange={(e) => updateProfileData('targetScore', e.target.value)} 
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid #93c5fd', fontSize: '14px', outline: 'none', color: '#1e293b' }} 
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
-              <h3>
-                Henüz program eklenmedi
-              </h3>
-
-              <p>
-                Beğendiğin programların
-                yanındaki + butonuna
-                basarak tercih listene
-                ekleyebilirsin.
-              </p>
-
+            {/* --- FAVORITES LIST --- */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#334155', margin: 0 }}>⭐ Tercih Listem ({favorites.length}/24)</h3>
+              {favorites.length > 0 && (
+                <button onClick={() => { setFavorites([]); setComparisonPrograms([]); }} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  Temizle
+                </button>
+              )}
             </div>
 
-          ) : (
-
-            <>
-
-              <div className="preference-toolbar">
-
-                <span>
-                  Sürükleyip bırakarak veya
-                  ↑ ↓ ile sıralayabilirsin.
-                </span>
-
-                {comparisonPrograms.length >=
-                  2 && (
-
-                  <button
-                    className="compare-open-button"
-                    onClick={() =>
-                      setComparisonOpen(
-                        true
-                      )
-                    }
-                  >
-                    ⇄ Karşılaştır
-                  </button>
-
-                )}
-
+            {favorites.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 16px', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🎯</div>
+                <h4 style={{ fontSize: '15px', color: '#475569', margin: '0 0 8px 0' }}>Henüz tercih eklenmedi</h4>
+                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>Haritadan veya sağ panelden bölümlerin yanındaki yıldıza tıklayarak listenizi oluşturabilirsiniz.</p>
               </div>
-
-              <div className="preference-list">
-
-                {favorites.map(
-                  (
-                    program,
-                    index
-                  ) => (
-
-                    <div
-                      key={
-                        program.code
-                      }
-                      className={
-                        draggedPreferenceCode === String(program.code)
-                          ? "preference-item dragging"
-                          : "preference-item"
-                      }
-                      draggable
-                      onDragStart={(event) => {
-                        setDraggedPreferenceCode(String(program.code));
-                        event.dataTransfer.effectAllowed = "move";
-                      }}
-                      onDragOver={(event) => {
-                        event.preventDefault();
-                        event.dataTransfer.dropEffect = "move";
-                      }}
-                      onDrop={(event) => {
-                        event.preventDefault();
-                        movePreference(
-                          draggedPreferenceCode,
-                          String(program.code)
-                        );
-                        setDraggedPreferenceCode(null);
-                      }}
-                      onDragEnd={() =>
-                        setDraggedPreferenceCode(null)
-                      }
-                    >
-
-                      <div className="preference-order">
-                        {
-                          index + 1
-                        }
-                      </div>
-
-                      <span
-                        className="drag-handle"
-                        title="Sürükleyerek sırala"
-                        aria-hidden="true"
-                      >
-                        ⠿
-                      </span>
-
-                      <button
-                        className="preference-main"
-
-                        onClick={() => {
-                          const university =
-                            universityMap.get(
-                              program.universityId
-                            );
-
-                          if (
-                            university
-                          ) {
-                            openProgram(
-                              program,
-                              university
-                            );
-
-                            setPreferenceOpen(
-                              false
-                            );
-                          }
-                        }}
-                      >
-
-                        <strong>
-                          {
-                            program.name ||
-                            program.programName ||
-                            program.birimAdi ||
-                            "Program"
-                          }
-                        </strong>
-
-                        <span>
-                          {
-                            program.universityName ||
-                            program.university ||
-                            "-"
-                          }
-                        </span>
-
-                        <small>
-                          {
-                            program.scoreType ||
-                            program.puanTuru ||
-                            "-"
-                          }{" "}
-                          • TBS:{" "}
-                          {
-                            formatNumber(
-                              program.successRank ??
-                              program.basariSirasi
-                            )
-                          }
-                        </small>
-
-                      </button>
-
-                      <div className="preference-actions">
-
-                        <button
-                          className="order-button"
-                          disabled={
-                            index ===
-                            0
-                          }
-                          onClick={() =>
-                            movePreferenceUp(
-                              index
-                            )
-                          }
-                        >
-                          ↑
-                        </button>
-
-                        <button
-                          className="order-button"
-                          disabled={
-                            index ===
-                            favorites.length -
-                              1
-                          }
-                          onClick={() =>
-                            movePreferenceDown(
-                              index
-                            )
-                          }
-                        >
-                          ↓
-                        </button>
-
-                        <button
-                          className={
-                            isInComparison(
-                              program
-                            )
-                              ? "compare-mini selected"
-                              : "compare-mini"
-                          }
-                          onClick={() =>
-                            toggleComparison(
-                              program
-                            )
-                          }
-                        >
-                          ⇄
-                        </button>
-
-                        <button
-                          className="remove-mini"
-                          onClick={() =>
-                            removeFromFavorites(
-                              program.code
-                            )
-                          }
-                        >
-                          ✕
-                        </button>
-
-                      </div>
-
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '24px' }}>
+                {favorites.map((program, index) => (
+                  <div key={program.code} style={{ display: 'flex', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                    <div style={{ background: '#f1f5f9', color: '#64748b', fontWeight: 'bold', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #e2e8f0', fontSize: '14px' }}>
+                      {index + 1}
                     </div>
-
-                  )
-                )}
-
+                    <button 
+                      style={{ flex: 1, padding: '12px', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
+                      onClick={() => {
+                        const university = universityMap.get(program.universityId);
+                        if (university) {
+                          openProgram(program, university);
+                          setPreferenceOpen(false);
+                        }
+                      }}
+                    >
+                      <strong style={{ display: 'block', fontSize: '14px', color: '#0f172a', marginBottom: '4px', lineHeight: '1.3' }}>
+                        {program.name || program.programName || program.birimAdi || "Program"}
+                      </strong>
+                      <span style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>
+                        {program.universityName || program.university || "-"}
+                      </span>
+                      <div style={{ display: 'inline-block', background: '#eff6ff', color: '#3b82f6', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>
+                        {program.scoreType || program.puanTuru || "-"} • TBS: {formatNumber(program.successRank ?? program.basariSirasi)}
+                      </div>
+                    </button>
+                    <button 
+                      onClick={() => addToFavorites(program)}
+                      style={{ width: '40px', background: '#fff', border: 'none', borderLeft: '1px solid #e2e8f0', color: '#ef4444', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#fee2e2'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
-
-              <button
-                className="clear-list-button"
-                onClick={() => {
-                  setFavorites([]);
-                  setComparisonPrograms([]);
-                }}
-              >
-                Tercih listesini temizle
-              </button>
-
-            </>
-
-          )}
-
+            )}
+          </div>
         </aside>
-
       )}
-
       {/* ========================================
           COMPARISON
       ======================================== */}
@@ -5122,8 +5050,8 @@ const activeFilterCount = [
           <span>Keşfet</span>
         </button>
         <button type="button" onClick={() => toggleFloatingPanel("favorites")}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>⭐</span>
-          <span>Tercihler</span>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>👤</span>
+          <span>Profilim</span>
         </button>
         <button type="button" onClick={() => setFiltersOpen(true)}>
           <span style={{fontSize: '20px', marginBottom: '2px'}}>⚙</span>
