@@ -401,7 +401,7 @@ function App() {
   const fetchQuestions = async () => {
     const { data, error } = await supabase
       .from('questions')
-      .select('*, profiles(full_name, avatar_url, university_name, department_name), answers(*)')
+      .select('*, profiles(full_name, avatar_url, university_name, department_name), answers(*, profiles(full_name, avatar_url, university_name, department_name))')
       .eq('university_id', selectedSubCampus.id)
       .order('created_at', { ascending: false });
       
@@ -461,7 +461,7 @@ function App() {
       question_id: questionId,
       user_id: user.id,
       content: answerContent
-    }).select('*').single();
+    }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
 
     setIsSubmittingAnswer(false);
     
@@ -471,9 +471,19 @@ function App() {
       setReplyingToQuestionId(null);
       setAnswerContent('');
       
+      const newAnswer = data;
+      if (newAnswer && !newAnswer.profiles) {
+        newAnswer.profiles = {
+          full_name: userProfileData.full_name || user.user_metadata?.full_name,
+          avatar_url: userProfileData.avatar_url || user.user_metadata?.avatar_url,
+          university_name: userProfileData.university_name,
+          department_name: userProfileData.department_name
+        };
+      }
+      
       setRealQuestions(prev => prev.map(q => {
          if (q.id === questionId) {
-             return { ...q, answers: [...(q.answers || []), data] };
+             return { ...q, answers: [...(q.answers || []), newAnswer] };
          }
          return q;
       }));
@@ -4376,14 +4386,25 @@ const activeFilterCount = [
                                   style={{ color: aVote === -1 ? '#ef4444' : '#94a3b8' }}
                                 >▼</button>
                               </div>
-                              <div className="csd-answer-body">
-                                <div className="csd-answer-author">
-                                  <span>👤</span>
-                                  <strong>Kayıtlı Öğrenci</strong>
-                                  <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '6px' }}>{new Date(ans.created_at).toLocaleDateString('tr-TR')}</span>
+                                <div className="csd-answer-body">
+                                  <div className="csd-answer-author" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                                      {ans.profiles?.avatar_url ? (
+                                        <img src={ans.profiles.avatar_url} alt="Avatar" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
+                                      ) : (
+                                        <span style={{ background: '#3b82f6', color: 'white', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', flexShrink: 0 }}>👤</span>
+                                      )}
+                                      <strong style={{ color: '#0f172a' }}>{ans.profiles?.full_name || 'Kayıtlı Öğrenci'}</strong>
+                                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(ans.created_at).toLocaleDateString('tr-TR')}</span>
+                                    </div>
+                                    {(ans.profiles?.university_name || ans.profiles?.department_name) && (
+                                      <span style={{ fontSize: '10px', color: '#3b82f6', background: '#eff6ff', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', width: 'fit-content', marginLeft: '26px' }}>
+                                        {ans.profiles?.university_name} {ans.profiles?.department_name && `- ${ans.profiles?.department_name}`}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="csd-answer-text" style={{ margin: '0 0 0 26px' }}>{ans.content}</p>
                                 </div>
-                                <p className="csd-answer-text">{ans.content}</p>
-                              </div>
                             </div>
                           )})}
                           
