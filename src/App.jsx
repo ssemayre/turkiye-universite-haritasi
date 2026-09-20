@@ -401,7 +401,7 @@ function App() {
   const fetchQuestions = async () => {
     const { data, error } = await supabase
       .from('questions')
-      .select('*, answers(*)')
+      .select('*, profiles(full_name, avatar_url, university_name, department_name), answers(*)')
       .eq('university_id', selectedSubCampus.id)
       .order('created_at', { ascending: false });
       
@@ -425,7 +425,7 @@ function App() {
       university_id: selectedSubCampus.id,
       user_id: user.id,
       content: questionContent
-    }).select('*').single();
+    }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
 
     setIsSubmittingQuestion(false);
     
@@ -434,7 +434,19 @@ function App() {
     } else {
       setIsQuestionFormOpen(false);
       setQuestionContent('');
-      setRealQuestions([{...data, answers: []}, ...realQuestions]);
+
+      // Optimistic UI fallback
+      const newQuestion = data;
+      if (newQuestion && !newQuestion.profiles) {
+        newQuestion.profiles = {
+          full_name: userProfileData.full_name || user.user_metadata?.full_name,
+          avatar_url: userProfileData.avatar_url || user.user_metadata?.avatar_url,
+          university_name: userProfileData.university_name,
+          department_name: userProfileData.department_name
+        };
+      }
+
+      setRealQuestions([{...newQuestion, answers: []}, ...realQuestions]);
     }
   };
 
@@ -4324,10 +4336,22 @@ const activeFilterCount = [
                             >▼</button>
                           </div>
                           <div className="csd-qa-question-body">
-                            <p className="csd-qa-question-text">{qa.content}</p>
-                            <div className="csd-qa-meta">
-                              <span className="csd-qa-author">👤 Kayıtlı Öğrenci</span>
-                              <span className="csd-qa-date">{new Date(qa.created_at).toLocaleDateString('tr-TR')}</span>
+                            <p className="csd-qa-question-text" style={{ margin: '0 0 10px 0' }}>{qa.content}</p>
+                            <div className="csd-qa-meta" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                                {qa.profiles?.avatar_url ? (
+                                  <img src={qa.profiles.avatar_url} alt="Avatar" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+                                ) : (
+                                  <span style={{ background: '#3b82f6', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', flexShrink: 0 }}>👤</span>
+                                )}
+                                <span className="csd-qa-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{qa.profiles?.full_name || 'Kayıtlı Öğrenci'}</span>
+                                <span className="csd-qa-date" style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(qa.created_at).toLocaleDateString('tr-TR')}</span>
+                              </div>
+                              {(qa.profiles?.university_name || qa.profiles?.department_name) && (
+                                <span style={{ fontSize: '11px', color: '#3b82f6', background: '#eff6ff', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', width: 'fit-content', marginLeft: '32px' }}>
+                                  {qa.profiles?.university_name} {qa.profiles?.department_name && `- ${qa.profiles?.department_name}`}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
