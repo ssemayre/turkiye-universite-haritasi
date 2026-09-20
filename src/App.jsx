@@ -281,53 +281,7 @@ function App() {
   const [reviewContent, setReviewContent] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-  // --- KAMPÜS FEED YAPISI ---
-  const [campusPosts, setCampusPosts] = useState([]);
-  const [newPostContent, setNewPostContent] = useState('');
-  const [isSubmittingPost, setIsSubmittingPost] = useState(false);
 
-  const fetchCampusPosts = async () => {
-    if (!userProfileData.university_name) return;
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, profiles(full_name, avatar_url, university_name, department_name)')
-      .eq('university_name', userProfileData.university_name)
-      .order('created_at', { ascending: false });
-    if (data) setCampusPosts(data);
-  };
-
-  useEffect(() => {
-    if (browseOpen && userProfileData.university_name) {
-      fetchCampusPosts();
-    }
-  }, [browseOpen, userProfileData.university_name]);
-
-  const submitCampusPost = async () => {
-    if (!newPostContent.trim()) return;
-    setIsSubmittingPost(true);
-    const { data, error } = await supabase.from('posts').insert({
-      user_id: user.id,
-      university_name: userProfileData.university_name,
-      content: newPostContent
-    }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
-    
-    setIsSubmittingPost(false);
-    if (error) {
-      alert('Gönderi paylaşılırken hata oluştu: ' + error.message);
-    } else {
-      setNewPostContent('');
-      const newPost = data;
-      if (newPost && !newPost.profiles) {
-        newPost.profiles = {
-          full_name: userProfileData.full_name || user.user_metadata?.full_name,
-          avatar_url: userProfileData.avatar_url || user.user_metadata?.avatar_url,
-          university_name: userProfileData.university_name,
-          department_name: userProfileData.department_name
-        };
-      }
-      setCampusPosts([newPost, ...campusPosts]);
-    }
-  };
 
   useEffect(() => {
     setCampusDetailTab('info');
@@ -2779,6 +2733,54 @@ const activeFilterCount = [
   minRank !== "",
   maxRank !== "",
 ].filter(Boolean).length;
+  // --- KAMPÜS FEED YAPISI ---
+  const [campusPosts, setCampusPosts] = useState([]);
+  const [newPostContent, setNewPostContent] = useState('');
+  const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+
+  const fetchCampusPosts = async () => {
+    if (!userProfileData.university_name) return;
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, profiles(full_name, avatar_url, university_name, department_name)')
+      .eq('university_name', userProfileData.university_name)
+      .order('created_at', { ascending: false });
+    if (data) setCampusPosts(data);
+  };
+
+  useEffect(() => {
+    if (browseOpen && userProfileData.university_name) {
+      fetchCampusPosts();
+    }
+  }, [browseOpen, userProfileData.university_name]);
+
+  const submitCampusPost = async () => {
+    if (!newPostContent.trim()) return;
+    setIsSubmittingPost(true);
+    const { data, error } = await supabase.from('posts').insert({
+      user_id: user.id,
+      university_name: userProfileData.university_name,
+      content: newPostContent
+    }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
+    
+    setIsSubmittingPost(false);
+    if (error) {
+      alert('Gönderi paylaşılırken hata oluştu: ' + error.message);
+    } else {
+      setNewPostContent('');
+      const newPost = data;
+      if (newPost && !newPost.profiles) {
+        newPost.profiles = {
+          full_name: userProfileData.full_name || user.user_metadata?.full_name,
+          avatar_url: userProfileData.avatar_url || user.user_metadata?.avatar_url,
+          university_name: userProfileData.university_name,
+          department_name: userProfileData.department_name
+        };
+      }
+      setCampusPosts([newPost, ...campusPosts]);
+    }
+  };
+
   const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
     <div className="app" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
