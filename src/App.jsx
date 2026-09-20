@@ -3082,7 +3082,7 @@ const activeFilterCount = [
       {/* ========================================
           UNIFIED MOBILE & DESKTOP HEADER
       ======================================== */}
-      <header className="header-unified z-40" style={{ flexShrink: 0, position: 'relative', background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
+      <header className="header-unified" style={{ flexShrink: 0, position: 'relative', zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
         
         {/* Satır 1: Başlık ve Kullanıcı Profil */}
         <div className="logo-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -3839,7 +3839,7 @@ const activeFilterCount = [
           !selectedProgram && (
 
           <aside
-            className="university-panel fixed bottom-0 md:bottom-auto left-0 right-0 md:left-4 md:top-24 bg-white rounded-t-2xl md:rounded-2xl shadow-xl !z-50 !max-h-[80vh] !overflow-y-auto"
+            className="university-panel"
             style={{
               "--university-sheet-top": `${
                 universitySheetTop ??
@@ -5348,10 +5348,10 @@ const activeFilterCount = [
       )}
 
       {messagesOpen && (
-        <aside className="fixed inset-0 z-50 flex flex-col bg-white">
+        <aside className="preference-drawer h-[100dvh]" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000, padding: 0 }}>
           {activeChatUser ? (
-              <div className="flex-1 flex flex-col h-full">
-                <div className="p-4 border-b border-slate-200 bg-white">
+              <div className="flex-1" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -5367,7 +5367,7 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4 bg-slate-50 flex flex-col gap-3">
+                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {chatMessages.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
                   ) : (
@@ -5387,11 +5387,11 @@ const activeFilterCount = [
                   )}
                   <div ref={chatEndRef} />
                 </div>
-                <div className="p-4 border-t border-slate-200 bg-white flex gap-2 shrink-0">
+                <div style={{ padding: '12px 16px', borderTop: '1px solid #e2e8f0', background: '#fff', display: 'flex', gap: '8px' }}>
                   <input
                     value={newMessageContent}
                     onChange={e => setNewMessageContent(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                    onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
                     placeholder="Mesaj yaz..."
                     style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', outline: 'none' }}
                   />
