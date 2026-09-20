@@ -4176,6 +4176,90 @@ const activeFilterCount = [
       </main>
 
       {/* ========================================
+          FİLTRELER MODALI
+      ======================================== */}
+      {filtersOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', animation: 'fadeIn 0.2s ease-out' }} onClick={() => setFiltersOpen(false)}>
+          <div style={{ background: '#fff', width: '100%', maxHeight: '85vh', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)', pointerEvents: 'auto', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '24px' }}>⚙️</span> Filtreler
+              </h2>
+              <button onClick={() => setFiltersOpen(false)} style={{ background: '#f1f5f9', border: 'none', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '16px', color: '#64748b', transition: 'background 0.2s' }}>
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              {/* Kurum Tipi */}
+              <div>
+                <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Üniversite Tipi</h3>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button 
+                    onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}
+                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: globalFilters.type === 'devlet' ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.type === 'devlet' ? '#eff6ff' : '#fff', color: globalFilters.type === 'devlet' ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    🏛️ Devlet
+                  </button>
+                  <button 
+                    onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}
+                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: globalFilters.type === 'vakif' ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.type === 'vakif' ? '#eff6ff' : '#fff', color: globalFilters.type === 'vakif' ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    🏢 Vakıf
+                  </button>
+                </div>
+              </div>
+
+              {/* Eğitim Düzeyi */}
+              <div>
+                <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Eğitim Düzeyi</h3>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button 
+                    onClick={() => setGlobalFilters(prev => ({ ...prev, level: prev.level === 'lisans' ? 'all' : 'lisans' }))}
+                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: globalFilters.level === 'lisans' ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.level === 'lisans' ? '#eff6ff' : '#fff', color: globalFilters.level === 'lisans' ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    🎓 Lisans
+                  </button>
+                  <button 
+                    onClick={() => setGlobalFilters(prev => ({ ...prev, level: prev.level === 'onlisans' ? 'all' : 'onlisans' }))}
+                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: globalFilters.level === 'onlisans' ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.level === 'onlisans' ? '#eff6ff' : '#fff', color: globalFilters.level === 'onlisans' ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    📘 Önlisans
+                  </button>
+                </div>
+              </div>
+
+              {/* Harita Görünümleri */}
+              <div>
+                 <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Harita Görünümleri</h3>
+                 <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                    <button 
+                      onClick={() => setShowMyo(!showMyo)}
+                      style={{ padding: '16px', borderRadius: '16px', border: showMyo ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: showMyo ? '#eff6ff' : '#fff', color: showMyo ? '#1d4ed8' : '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>🏢 Tüm MYO'ları Haritada Göster</span>
+                      <span style={{ fontSize: '13px', background: showMyo ? '#3b82f6' : '#e2e8f0', color: showMyo ? '#fff' : '#64748b', padding: '4px 10px', borderRadius: '12px' }}>{showMyo ? 'AÇIK' : 'KAPALI'}</span>
+                    </button>
+                    <button 
+                      onClick={() => setShowKyk(!showKyk)}
+                      style={{ padding: '16px', borderRadius: '16px', border: showKyk ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: showKyk ? '#eff6ff' : '#fff', color: showKyk ? '#1d4ed8' : '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>🏠 KYK Yurtlarını Haritada Göster</span>
+                      <span style={{ fontSize: '13px', background: showKyk ? '#3b82f6' : '#e2e8f0', color: showKyk ? '#fff' : '#64748b', padding: '4px 10px', borderRadius: '12px' }}>{showKyk ? 'AÇIK' : 'KAPALI'}</span>
+                    </button>
+                 </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '32px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
+              <button 
+                onClick={() => setFiltersOpen(false)}
+                style={{ width: '100%', padding: '16px', background: '#0f172a', color: '#fff', fontSize: '16px', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', border: 'none', boxShadow: '0 4px 6px -1px rgba(15, 23, 42, 0.2)', transition: 'transform 0.1s' }}
+                onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
+                onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+                Sonuçları Uygula ve Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================
           TERCİH LİSTESİ
       ======================================== */}
 
