@@ -281,6 +281,54 @@ function App() {
   const [reviewContent, setReviewContent] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
+  // --- KAMPÜS FEED YAPISI ---
+  const [campusPosts, setCampusPosts] = useState([]);
+  const [newPostContent, setNewPostContent] = useState('');
+  const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+
+  const fetchCampusPosts = async () => {
+    if (!userProfileData.university_name) return;
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, profiles(full_name, avatar_url, university_name, department_name)')
+      .eq('university_name', userProfileData.university_name)
+      .order('created_at', { ascending: false });
+    if (data) setCampusPosts(data);
+  };
+
+  useEffect(() => {
+    if (browseOpen && userProfileData.university_name) {
+      fetchCampusPosts();
+    }
+  }, [browseOpen, userProfileData.university_name]);
+
+  const submitCampusPost = async () => {
+    if (!newPostContent.trim()) return;
+    setIsSubmittingPost(true);
+    const { data, error } = await supabase.from('posts').insert({
+      user_id: user.id,
+      university_name: userProfileData.university_name,
+      content: newPostContent
+    }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
+    
+    setIsSubmittingPost(false);
+    if (error) {
+      alert('Gönderi paylaşılırken hata oluştu: ' + error.message);
+    } else {
+      setNewPostContent('');
+      const newPost = data;
+      if (newPost && !newPost.profiles) {
+        newPost.profiles = {
+          full_name: userProfileData.full_name || user.user_metadata?.full_name,
+          avatar_url: userProfileData.avatar_url || user.user_metadata?.avatar_url,
+          university_name: userProfileData.university_name,
+          department_name: userProfileData.department_name
+        };
+      }
+      setCampusPosts([newPost, ...campusPosts]);
+    }
+  };
+
   useEffect(() => {
     setCampusDetailTab('info');
     setExpandedUnits({});
@@ -3071,35 +3119,100 @@ const activeFilterCount = [
 </MapContainer>
         </div>
         {browseOpen && (
-          <aside className="browse-panel">
-            
-            <div className="browse-panel-header">
+          <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
               <div>
-                <div className="detail-label">ÜNİVERSİTELER</div>
-                <h2>Üniversiteleri keşfet</h2>
+                <div className="detail-label" style={{ color: '#3b82f6' }}>KAMPÜS AKIŞI</div>
+                <h2 style={{ margin: 0, fontSize: '20px', color: '#0f172a' }}>
+                  {userProfileData.university_name || 'Kampüs'}
+                </h2>
               </div>
-              <button className="close-button" onClick={() => setBrowseOpen(false)}>✕</button>
+              <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
             </div>
-            <p className="browse-intro">Şehrini seç, haritadaki üniversitelere hızlıca göz at ve detaylarını aç.</p>
-            <div className="browse-grid">
-              {browseUniversities.map((university) => (
-                <button
-                  key={university.id}
-                  className="browse-card"
-                  type="button"
-                  onClick={() => {
-                    openUniversity(university);
-                    setBrowseOpen(false);
-                  }}
-                >
-                  <span className="browse-card-icon">🎓</span>
-                  <span>
-                    <strong>{university.name}</strong>
-                    <small>{university.city} · {university.type || "Üniversite"}</small>
-                  </span>
-                  <b>→</b>
-                </button>
-              ))}
+
+            <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+              {!user ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                  <div style={{ fontSize: '40px', marginBottom: '16px' }}>🔒</div>
+                  <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Giriş Yapmalısınız</h3>
+                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüsünüzdeki gönderileri görmek ve paylaşım yapmak için lütfen giriş yapın.</p>
+                  <button onClick={openAuthModal} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Giriş Yap</button>
+                </div>
+              ) : !userProfileData.university_name ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                  <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎓</div>
+                  <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Üniversitenizi Belirleyin</h3>
+                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
+                  <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
+                </div>
+              ) : (
+                <>
+                  <div className="campus-composer" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
+                        <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                      ) : (
+                        <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
+                      )}
+                      <textarea
+                        value={newPostContent}
+                        onChange={(e) => setNewPostContent(e.target.value)}
+                        placeholder="Kampüste neler oluyor?"
+                        style={{ flex: 1, border: 'none', background: 'transparent', resize: 'none', fontSize: '15px', color: '#334155', minHeight: '60px', padding: '8px 0', outline: 'none' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                      <button onClick={submitCampusPost} disabled={isSubmittingPost || !newPostContent.trim()} style={{ background: newPostContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '14px', transition: 'background 0.2s' }}>
+                        {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="campus-feed" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {campusPosts.length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b' }}>
+                        <div style={{ fontSize: '32px', marginBottom: '8px' }}>🌱</div>
+                        <p>Henüz kimse bir şey paylaşmadı.<br/>İlk paylaşan sen ol!</p>
+                      </div>
+                    ) : (
+                      campusPosts.map(post => (
+                        <div key={post.id} className="campus-post-card" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
+                            {post.profiles?.avatar_url ? (
+                              <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                            ) : (
+                              <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
+                            )}
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                <strong style={{ color: '#0f172a', fontSize: '15px' }}>{post.profiles?.full_name || 'İsimsiz'}</strong>
+                                <span style={{ color: '#94a3b8', fontSize: '12px' }}>
+                                  {(() => {
+                                    const diff = Date.now() - new Date(post.created_at).getTime();
+                                    const minutes = Math.floor(diff / 60000);
+                                    if (minutes < 1) return 'Az önce';
+                                    if (minutes < 60) return `${minutes}d`;
+                                    const hours = Math.floor(minutes / 60);
+                                    if (hours < 24) return `${hours}s`;
+                                    return `${Math.floor(hours / 24)}g`;
+                                  })()}
+                                </span>
+                              </div>
+                              <span style={{ fontSize: '12px', color: '#64748b' }}>{post.profiles?.department_name || post.university_name}</span>
+                            </div>
+                          </div>
+                          <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
+                          <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                            <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', padding: '4px 8px', borderRadius: '6px' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                              <span style={{ fontSize: '16px' }}>♡</span> {post.likes_count || 0}
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </aside>
         )}
