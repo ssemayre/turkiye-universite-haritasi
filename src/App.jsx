@@ -4236,7 +4236,7 @@ const activeFilterCount = [
                             )}
                             <div className="csd-review-meta" style={{ flex: 1, minWidth: 0, paddingRight: '8px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                                <span className="csd-review-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{review.profiles?.full_name || 'Kayıtlı Öğrenci'}</span>
+                                <span className="csd-review-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{review.profiles?.full_name }</span>
                                 <span className="csd-review-date" style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
                               </div>
                               {(review.profiles?.university_name || review.profiles?.department_name) && (
@@ -4354,7 +4354,7 @@ const activeFilterCount = [
                                 ) : (
                                   <span style={{ background: '#3b82f6', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', flexShrink: 0 }}>👤</span>
                                 )}
-                                <span className="csd-qa-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{qa.profiles?.full_name || 'Kayıtlı Öğrenci'}</span>
+                                <span className="csd-qa-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{qa.profiles?.full_name }</span>
                                 <span className="csd-qa-date" style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(qa.created_at).toLocaleDateString('tr-TR')}</span>
                               </div>
                               {(qa.profiles?.university_name || qa.profiles?.department_name) && (
@@ -4394,7 +4394,7 @@ const activeFilterCount = [
                                       ) : (
                                         <span style={{ background: '#3b82f6', color: 'white', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', flexShrink: 0 }}>👤</span>
                                       )}
-                                      <strong style={{ color: '#0f172a' }}>{ans.profiles?.full_name || 'Kayıtlı Öğrenci'}</strong>
+                                      <strong style={{ color: '#0f172a' }}>{ans.profiles?.full_name }</strong>
                                       <span style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(ans.created_at).toLocaleDateString('tr-TR')}</span>
                                     </div>
                                     {(ans.profiles?.university_name || ans.profiles?.department_name) && (
@@ -5314,4 +5314,5 @@ const activeFilterCount = [
 }
 
 export default App;
+
 
