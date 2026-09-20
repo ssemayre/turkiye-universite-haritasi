@@ -3135,7 +3135,7 @@ const activeFilterCount = [
             {searchInput.trim().length > 1 && (
               <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 1000, maxHeight: '300px', overflowY: 'auto', marginTop: '8px' }}>
                 {loadingSupabaseSearch ? (
-                  <div style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>Arama sonuçları yükleniyor...</div>
+                  <div style={{ textAlign: 'center', color: '#64748b' }}>Arama sonuçları yükleniyor...</div>
                 ) : visibleSearchResults.length > 0 ? (
                   visibleSearchResults.map((result, i) => (
                     <div 
@@ -3165,7 +3165,7 @@ const activeFilterCount = [
                     </div>
                   ))
                 ) : (
-                  <div style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>Sonuç bulunamadı.</div>
+                  <div style={{ textAlign: 'center', color: '#64748b' }}>Sonuç bulunamadı.</div>
                 )}
               </div>
             )}
@@ -3435,7 +3435,7 @@ const activeFilterCount = [
           <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
             {activeChatUser ? (
               <>
-                <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -3451,7 +3451,7 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {chatMessages.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
                   ) : (
@@ -3484,7 +3484,7 @@ const activeFilterCount = [
               </>
             ) : viewingProfile ? (
               <>
-                <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button onClick={() => setViewingProfile(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
                     <div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '14px' }}>PROFİL</div>
@@ -3543,7 +3543,7 @@ const activeFilterCount = [
               </>
             ) : selectedClub ? (
               <>
-                <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button onClick={() => setSelectedClub(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
                     <div>
@@ -3552,8 +3552,8 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
-                  <div style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+                  <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
                     <p style={{ margin: 0, color: '#334155', fontSize: '15px', lineHeight: '1.6' }}>{selectedClub.description}</p>
                   </div>
                   
@@ -3569,7 +3569,7 @@ const activeFilterCount = [
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {clubEvents.map(ev => (
-                        <div key={ev.id} style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #3b82f6' }}>
+                        <div key={ev.id} style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #3b82f6' }}>
                           <h4 style={{ margin: '0 0 8px 0', color: '#0f172a', fontSize: '15px' }}>{ev.name}</h4>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '8px', fontSize: '12px', color: '#64748b' }}>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>🕒 {new Date(ev.event_date).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}</span>
@@ -3586,7 +3586,7 @@ const activeFilterCount = [
               </>
             ) : (
               <>
-                <div className="browse-panel-header" style={{ padding: '16px 16px 0 16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div>
                       <div className="detail-label" style={{ color: '#3b82f6' }}>KAMPÜS</div>
@@ -3606,7 +3606,7 @@ const activeFilterCount = [
                   )}
                 </div>
 
-                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
                   {!user ? (
                     <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                       <div style={{ fontSize: '40px', marginBottom: '16px' }}>🔒</div>
@@ -3624,7 +3624,7 @@ const activeFilterCount = [
                   ) : campusTab === 'feed' ? (
                     <>
                       {dailyMenu && (
-                        <div style={{ background: '#ecfdf5', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'flex-start', gap: '12px', border: '1px solid #d1fae5', marginBottom: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                        <div style={{ background: '#ecfdf5', borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px', border: '1px solid #d1fae5', marginBottom: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                           <span style={{ fontSize: '24px', flexShrink: 0 }}>🍽️</span>
                           <div>
                             <h4 style={{ margin: '0 0 4px 0', color: '#065f46', fontSize: '15px' }}>Günün Menüsü</h4>
@@ -3632,7 +3632,7 @@ const activeFilterCount = [
                           </div>
                         </div>
                       )}
-                      <div className="campus-composer" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                      <div className="campus-composer" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                         <div style={{ display: 'flex', gap: '12px' }}>
                           {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
                             <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
@@ -3661,7 +3661,7 @@ const activeFilterCount = [
                           </div>
                         ) : (
                           campusPosts.map(post => (
-                            <div key={post.id} className="campus-post-card" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                            <div key={post.id} className="campus-post-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
                                 <div style={{ cursor: 'pointer' }} onClick={() => setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
                                   {post.profiles?.avatar_url ? (
@@ -3709,7 +3709,7 @@ const activeFilterCount = [
                         </div>
                       ) : (
                         campusClubs.map(club => (
-                          <div key={club.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                          <div key={club.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                             <div>
                               <h4 style={{ margin: '0 0 4px 0', color: '#0f172a', fontSize: '16px' }}>{club.name}</h4>
                               <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{club.description}</p>
@@ -3733,7 +3733,7 @@ const activeFilterCount = [
                           </div>
                       ) : (
                           campusListings.map(listing => (
-                            <div key={listing.id} style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
+                            <div key={listing.id} style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setViewingProfile({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name })}>
                                    {listing.profiles?.avatar_url ? (
@@ -3763,7 +3763,7 @@ const activeFilterCount = [
 
             {isListingModalOpen && (
                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-                  <div style={{ background: '#fff', width: '100%', maxWidth: '400px', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+                  <div style={{ background: '#fff', width: '100%', maxWidth: '400px', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3 style={{ margin: 0, color: '#0f172a' }}>İlan Ver</h3>
                         <button onClick={() => setIsListingModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>×</button>
@@ -3870,9 +3870,9 @@ const activeFilterCount = [
             <div className="university-scrollable-content">
 
 
-            <div className="university-panel-header">
+            <div className="university-panel-header p-2 md:p-4">
               <div className="detail-label">ÜNİVERSİTE</div>
-              <h2>{selectedUniversity.name}</h2>
+              <h2 className="text-lg md:text-2xl" style={{ margin: '4px 0 5px', lineHeight: 1.12 }}>{selectedUniversity.name}</h2>
               <p>{selectedUniversity.city} • {selectedUniversity.type}</p>
             </div>
 
@@ -3934,7 +3934,7 @@ const activeFilterCount = [
                       <span>{visibleUniversityPrograms.length}</span>
                     </div>
 
-                    <div className="university-action-bar">
+                    <div className="university-action-bar overflow-x-auto whitespace-nowrap scrollbar-hide" style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', paddingBottom: '4px' }}>
                       <button
                         type="button"
                         className="university-action-button preference"
@@ -4465,7 +4465,7 @@ const activeFilterCount = [
   
   <div className="kyk-info-box">
     {/* Distance card */}
-    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '16px', borderRadius: '12px', marginBottom: '15px' }}>
+    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '15px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
         <span style={{ fontSize: '18px' }}>🎓</span>
         <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>En Yakın Kampüs</h4>
@@ -4512,7 +4512,7 @@ const activeFilterCount = [
 
     {/* Address card */}
     {(selectedKyk.address || (selectedKyk.district && selectedKyk.city)) ? (
-      <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+      <div style={{ background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
           <span style={{ fontSize: '18px' }}>🗺️</span>
           <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
@@ -4540,7 +4540,7 @@ const activeFilterCount = [
             onWheel={e => e.stopPropagation()}
           >
             {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
-            <div className="csd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '16px', flexShrink: 0, borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+            <div className="csd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0, borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
               <div>
                 <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#0f172a', margin: '0 0 4px 0', lineHeight: '1.2' }}>
                   {selectedSubCampus.name}
@@ -4638,7 +4638,7 @@ const activeFilterCount = [
                   </div>
 
                   {/* Scrollable List Area */}
-                  <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {isFetchingCampusPrograms ? (
                       <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
                         <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -4700,7 +4700,7 @@ const activeFilterCount = [
                               {/* CLOSED VIEW (HEADER) */}
                               <div 
                                 onClick={() => setExpandedProgramId(isExpanded ? null : idx)}
-                                style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isExpanded ? '#f8fafc' : '#fff' }}
+                                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isExpanded ? '#f8fafc' : '#fff' }}
                               >
                                 <span style={{ fontWeight: '700', color: '#0f172a', fontSize: '14px', lineHeight: '1.4', paddingRight: '12px' }}>
                                   {p.name}
@@ -5155,7 +5155,7 @@ const activeFilterCount = [
       ======================================== */}
       {filtersOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', animation: 'fadeIn 0.2s ease-out' }} onClick={() => setFiltersOpen(false)}>
-          <div style={{ background: '#fff', width: '100%', maxHeight: '85vh', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)', pointerEvents: 'auto', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+          <div className="p-2 md:p-4" style={{ background: '#fff', width: '100%', maxHeight: '85vh', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', display: 'flex', flexDirection: 'column', gap: '24px', animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)', pointerEvents: 'auto', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '24px' }}>⚙️</span> Filtreler
@@ -5270,13 +5270,13 @@ const activeFilterCount = [
                  <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
                     <button 
                       onClick={() => setShowMyo(!showMyo)}
-                      style={{ padding: '16px', borderRadius: '16px', border: showMyo ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: showMyo ? '#eff6ff' : '#fff', color: showMyo ? '#1d4ed8' : '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s' }}>
+                      style={{ borderRadius: '16px', border: showMyo ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: showMyo ? '#eff6ff' : '#fff', color: showMyo ? '#1d4ed8' : '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>🏢 Tüm MYO'ları Haritada Göster</span>
                       <span style={{ fontSize: '13px', background: showMyo ? '#3b82f6' : '#e2e8f0', color: showMyo ? '#fff' : '#64748b', padding: '4px 10px', borderRadius: '12px' }}>{showMyo ? 'AÇIK' : 'KAPALI'}</span>
                     </button>
                     <button 
                       onClick={() => setShowKyk(!showKyk)}
-                      style={{ padding: '16px', borderRadius: '16px', border: showKyk ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: showKyk ? '#eff6ff' : '#fff', color: showKyk ? '#1d4ed8' : '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s' }}>
+                      style={{ borderRadius: '16px', border: showKyk ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: showKyk ? '#eff6ff' : '#fff', color: showKyk ? '#1d4ed8' : '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>🏠 KYK Yurtlarını Haritada Göster</span>
                       <span style={{ fontSize: '13px', background: showKyk ? '#3b82f6' : '#e2e8f0', color: showKyk ? '#fff' : '#64748b', padding: '4px 10px', borderRadius: '12px' }}>{showKyk ? 'AÇIK' : 'KAPALI'}</span>
                     </button>
@@ -5287,7 +5287,7 @@ const activeFilterCount = [
             <div style={{ marginTop: '32px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
               <button 
                 onClick={() => setFiltersOpen(false)}
-                style={{ width: '100%', padding: '16px', background: '#0f172a', color: '#fff', fontSize: '16px', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', border: 'none', boxShadow: '0 4px 6px -1px rgba(15, 23, 42, 0.2)', transition: 'transform 0.1s' }}
+                style={{ width: '100%', background: '#0f172a', color: '#fff', fontSize: '16px', fontWeight: 'bold', borderRadius: '16px', cursor: 'pointer', border: 'none', boxShadow: '0 4px 6px -1px rgba(15, 23, 42, 0.2)', transition: 'transform 0.1s' }}
                 onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
                 onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
@@ -5309,7 +5309,7 @@ const activeFilterCount = [
       ======================================== */}
       {notificationsOpen && (
         <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000 }}>
-          <div className="preference-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+          <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
             <div>
               <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
                 🔔 Bildirimler
@@ -5325,7 +5325,7 @@ const activeFilterCount = [
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {notifications.map((notif, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderBottom: '1px solid #e2e8f0', background: notif.is_read ? 'transparent' : '#f0f9ff' }}>
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #e2e8f0', background: notif.is_read ? 'transparent' : '#f0f9ff' }}>
                     {notif.actorProfile?.avatar_url ? (
                       <img src={notif.actorProfile.avatar_url} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
                     ) : (
@@ -5348,10 +5348,10 @@ const activeFilterCount = [
       )}
 
       {messagesOpen && (
-        <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000 }}>
+        <aside className="preference-drawer h-[100dvh]" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000, padding: 0 }}>
           {activeChatUser ? (
-              <>
-                <div className="preference-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+              <div className="flex-1" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -5367,7 +5367,7 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {chatMessages.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
                   ) : (
@@ -5397,10 +5397,10 @@ const activeFilterCount = [
                   />
                   <button onClick={sendMessage} disabled={!newMessageContent.trim()} style={{ background: newMessageContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '20px', fontWeight: 'bold', cursor: newMessageContent.trim() ? 'pointer' : 'not-allowed' }}>Gönder</button>
                 </div>
-              </>
+              </div>
           ) : (
             <>
-              <div className="preference-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+              <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
                 <div>
                   <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
                     💬 Mesajlar
@@ -5417,7 +5417,7 @@ const activeFilterCount = [
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {inbox.map((conv, idx) => (
-                      <div key={idx} onClick={() => setActiveChatUser(conv.otherUser)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderBottom: '1px solid #e2e8f0', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                      <div key={idx} onClick={() => setActiveChatUser(conv.otherUser)} style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #e2e8f0', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                         {conv.otherUser.avatar_url ? (
                           <img src={conv.otherUser.avatar_url} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
                         ) : (
@@ -5444,7 +5444,7 @@ const activeFilterCount = [
 
       {preferenceOpen && (
         <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div className="preference-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+          <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
             <div>
               <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
                 👤 Profilim
