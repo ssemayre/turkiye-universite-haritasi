@@ -334,7 +334,7 @@ function App() {
   const fetchReviews = async () => {
     const { data, error } = await supabase
       .from('comments')
-      .select('*')
+      .select('*, profiles(full_name, avatar_url, university_name, department_name)')
       .eq('university_id', selectedSubCampus.id)
       .order('created_at', { ascending: false });
     if (data) setRealReviews(data);
@@ -356,7 +356,7 @@ function App() {
       user_id: user.id,
       rating: reviewRating,
       content: reviewContent
-    }).select('*').single();
+    }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
 
     setIsSubmittingReview(false);
     
@@ -366,7 +366,19 @@ function App() {
       setIsReviewFormOpen(false);
       setReviewRating(0);
       setReviewContent('');
-      setRealReviews([data, ...realReviews]);
+
+      // Optimistic UI fallback if join didn't return profile
+      const newReview = data;
+      if (newReview && !newReview.profiles) {
+        newReview.profiles = {
+          full_name: userProfileData.full_name || user.user_metadata?.full_name,
+          avatar_url: userProfileData.avatar_url || user.user_metadata?.avatar_url,
+          university_name: userProfileData.university_name,
+          department_name: userProfileData.department_name
+        };
+      }
+      
+      setRealReviews([newReview, ...realReviews]);
     }
   };
 
@@ -4192,20 +4204,31 @@ const activeFilterCount = [
                       const uVote = userVotes[vKey] || 0;
                       return (
                       <div key={review.id} className="csd-review-card">
-                        <div className="csd-review-top">
-                          <span className="csd-review-avatar" style={{ background: '#3b82f6', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>
-                            👤
-                          </span>
-                          <div className="csd-review-meta">
-                            <span className="csd-review-author">Kayıtlı Öğrenci</span>
-                            <span className="csd-review-date">{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
+                          <div className="csd-review-top" style={{ alignItems: 'flex-start' }}>
+                            {review.profiles?.avatar_url ? (
+                              <img src={review.profiles.avatar_url} alt="Avatar" className="csd-review-avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                            ) : (
+                              <span className="csd-review-avatar" style={{ background: '#3b82f6', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', flexShrink: 0 }}>
+                                👤
+                              </span>
+                            )}
+                            <div className="csd-review-meta" style={{ flex: 1, minWidth: 0, paddingRight: '8px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                                <span className="csd-review-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{review.profiles?.full_name || 'Kayıtlı Öğrenci'}</span>
+                                <span className="csd-review-date" style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
+                              </div>
+                              {(review.profiles?.university_name || review.profiles?.department_name) && (
+                                <span style={{ fontSize: '11px', color: '#3b82f6', background: '#eff6ff', padding: '2px 6px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>
+                                  {review.profiles?.university_name} {review.profiles?.department_name && `- ${review.profiles?.department_name}`}
+                                </span>
+                              )}
+                            </div>
+                            <div className="csd-review-stars">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <span key={i} style={{ color: i < review.rating ? '#f59e0b' : '#e2e8f0', fontSize: '15px' }}>★  </span>
+                              ))}
+                            </div>
                           </div>
-                          <div className="csd-review-stars">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <span key={i} style={{ color: i < review.rating ? '#f59e0b' : '#e2e8f0', fontSize: '15px' }}>★ </span>
-                            ))}
-                          </div>
-                        </div>
                         <p className="csd-review-text">{review.content}</p>
                         <div className="csd-review-actions" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                           <button
