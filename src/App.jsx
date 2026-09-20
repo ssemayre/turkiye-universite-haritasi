@@ -725,9 +725,11 @@ function App() {
     bio: "",
     education_status: "Lise",
     university_name: "",
-    department_name: ""
+    department_name: "",
+    avatar_url: ""
   });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [deptSuggestions, setDeptSuggestions] = useState([]);
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
@@ -769,7 +771,8 @@ function App() {
             university_name: data.university_name || prev.university_name,
             department_name: data.department_name || prev.department_name,
             targetRank: data.target_rank || prev.targetRank,
-            targetScore: data.target_score || prev.targetScore
+            targetScore: data.target_score || prev.targetScore,
+            avatar_url: data.avatar_url || prev.avatar_url
           }));
         }
       };
@@ -781,6 +784,48 @@ function App() {
     const newData = { ...userProfileData, [field]: value };
     setUserProfileData(newData);
     localStorage.setItem("yok-atlas-user-profile", JSON.stringify(newData));
+
+    // If searching department
+    if (field === 'department_name' && value.length > 2) {
+      const fetchDepts = async () => {
+        const { data } = await supabase.from('programs').select('name').ilike('name', `%${value}%`).limit(15);
+        if (data) {
+          setDeptSuggestions([...new Set(data.map(d => d.name))]);
+        }
+      };
+      fetchDepts();
+    } else if (field === 'department_name' && value.length <= 2) {
+      setDeptSuggestions([]);
+    }
+  };
+
+  const uploadAvatar = async (event) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0) return;
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+      
+      setAuthLoading(true);
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+        
+      updateProfileData('avatar_url', publicUrlData.publicUrl);
+    } catch (error) {
+      console.error("Avatar yükleme hatası:", error);
+      alert("Profil fotoğrafı yüklenirken hata oluştu.");
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   const saveProfileToDb = async () => {
@@ -796,13 +841,16 @@ function App() {
         department_name: userProfileData.department_name,
         target_rank: userProfileData.targetRank,
         target_score: userProfileData.targetScore,
+        avatar_url: userProfileData.avatar_url,
         updated_at: new Date()
+      }, {
+        onConflict: 'id'
       });
       if (error) throw error;
       setIsEditingProfile(false);
     } catch (err) {
       console.error("Profil güncellenirken hata:", err);
-      alert("Profil güncellenirken bir hata oluştu.");
+      alert("Profil güncellenirken bir hata oluştu: " + err.message);
     } finally {
       setAuthLoading(false);
     }
@@ -4549,7 +4597,7 @@ const activeFilterCount = [
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '64px', height: '64px', borderRadius: '50%', border: '2px solid #e2e8f0', objectFit: 'cover' }} />
+                        <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '64px', height: '64px', borderRadius: '50%', border: '2px solid #e2e8f0', objectFit: 'cover' }} />
                         <div>
                           <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#0f172a' }}>{userProfileData.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}</h3>
                           <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>{user.email}</p>
@@ -4586,7 +4634,14 @@ const activeFilterCount = [
                 ) : (
                   // EDIT MODE
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>Profili Düzenle</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>Profili Düzenle</h3>
+                      <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '6px 12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+                        <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: 'bold' }}>Fotoğraf Yükle</span>
+                        <input type="file" accept="image/*" onChange={uploadAvatar} style={{ display: 'none' }} />
+                      </label>
+                    </div>
                     
                     <div>
                       <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Ad Soyad</label>
@@ -4612,11 +4667,17 @@ const activeFilterCount = [
                       <div style={{ display: 'flex', gap: '12px' }}>
                         <div style={{ flex: 1 }}>
                           <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Üniversite Adı</label>
-                          <input type="text" value={userProfileData.university_name} onChange={(e) => updateProfileData('university_name', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: ODTÜ" />
+                          <input type="text" list="university-suggestions" value={userProfileData.university_name} onChange={(e) => updateProfileData('university_name', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: ODTÜ" />
+                          <datalist id="university-suggestions">
+                            {universities.map(u => <option key={u.id} value={u.name} />)}
+                          </datalist>
                         </div>
                         <div style={{ flex: 1 }}>
                           <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Bölüm Adı</label>
-                          <input type="text" value={userProfileData.department_name} onChange={(e) => updateProfileData('department_name', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: Bilgisayar Müh." />
+                          <input type="text" list="department-suggestions" value={userProfileData.department_name} onChange={(e) => updateProfileData('department_name', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: Bilgisayar Müh." />
+                          <datalist id="department-suggestions">
+                            {deptSuggestions.map((d, i) => <option key={i} value={d} />)}
+                          </datalist>
                         </div>
                       </div>
                     )}
