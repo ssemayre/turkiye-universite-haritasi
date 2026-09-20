@@ -718,7 +718,16 @@ function App() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
   
-  const [userProfileData, setUserProfileData] = useState({ targetRank: "", targetScore: "" });
+  const [userProfileData, setUserProfileData] = useState({ 
+    targetRank: "", 
+    targetScore: "",
+    full_name: "",
+    bio: "",
+    education_status: "Lise",
+    university_name: "",
+    department_name: ""
+  });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
@@ -743,14 +752,60 @@ function App() {
   useEffect(() => {
     const savedProfile = localStorage.getItem("yok-atlas-user-profile");
     if (savedProfile) {
-      try { setUserProfileData(JSON.parse(savedProfile)); } catch(e){}
+      try { setUserProfileData(prev => ({ ...prev, ...JSON.parse(savedProfile) })); } catch(e){}
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchProfile = async () => {
+        const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        if (data) {
+          setUserProfileData(prev => ({ 
+            ...prev, 
+            full_name: data.full_name || prev.full_name,
+            bio: data.bio || prev.bio,
+            education_status: data.education_status || prev.education_status,
+            university_name: data.university_name || prev.university_name,
+            department_name: data.department_name || prev.department_name,
+            targetRank: data.target_rank || prev.targetRank,
+            targetScore: data.target_score || prev.targetScore
+          }));
+        }
+      };
+      fetchProfile();
+    }
+  }, [user]);
   
   const updateProfileData = (field, value) => {
     const newData = { ...userProfileData, [field]: value };
     setUserProfileData(newData);
     localStorage.setItem("yok-atlas-user-profile", JSON.stringify(newData));
+  };
+
+  const saveProfileToDb = async () => {
+    if (!user) return;
+    setAuthLoading(true);
+    try {
+      const { error } = await supabase.from('profiles').upsert({
+        id: user.id,
+        full_name: userProfileData.full_name,
+        bio: userProfileData.bio,
+        education_status: userProfileData.education_status,
+        university_name: userProfileData.university_name,
+        department_name: userProfileData.department_name,
+        target_rank: userProfileData.targetRank,
+        target_score: userProfileData.targetScore,
+        updated_at: new Date()
+      });
+      if (error) throw error;
+      setIsEditingProfile(false);
+    } catch (err) {
+      console.error("Profil güncellenirken hata:", err);
+      alert("Profil güncellenirken bir hata oluştu.");
+    } finally {
+      setAuthLoading(false);
+    }
   };
   // ----------------------------
 
@@ -4488,41 +4543,107 @@ const activeFilterCount = [
               </div>
             ) : (
               // --- PROFILE DASHBOARD (LOGGED IN) ---
-              <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', padding: '24px', borderRadius: '16px', border: '1px solid #bfdbfe', marginBottom: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                  <div>
-                    <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1e3a8a', margin: '0 0 4px 0' }}>
-                      Merhaba, {user.user_metadata?.full_name || user.email?.split('@')[0]} 👋
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#3b82f6', margin: 0 }}>Türkiye Üniversite Haritası'na hoş geldin.</p>
+              <div style={{ padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px', background: '#fff', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                {!isEditingProfile ? (
+                  // DISPLAY MODE
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '64px', height: '64px', borderRadius: '50%', border: '2px solid #e2e8f0', objectFit: 'cover' }} />
+                        <div>
+                          <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#0f172a' }}>{userProfileData.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}</h3>
+                          <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>{user.email}</p>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => setIsEditingProfile(true)} style={{ background: '#f1f5f9', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: '#475569', transition: 'background 0.2s' }}>Düzenle</button>
+                        <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} style={{ background: '#fee2e2', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: '#ef4444', transition: 'background 0.2s' }}>Çıkış</button>
+                      </div>
+                    </div>
+
+                    {userProfileData.bio && (
+                      <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '12px', fontSize: '13px', color: '#334155', lineHeight: '1.6', borderLeft: '4px solid #3b82f6' }}>
+                        {userProfileData.bio}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      <span style={{ background: '#e0e7ff', color: '#4338ca', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🎓 {userProfileData.education_status || 'Belirtilmedi'}</span>
+                      {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && userProfileData.university_name && (
+                        <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🏛️ {userProfileData.university_name}</span>
+                      )}
+                      {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && userProfileData.department_name && (
+                        <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>📘 {userProfileData.department_name}</span>
+                      )}
+                      {userProfileData.education_status === 'Lise' && userProfileData.targetRank && (
+                        <span style={{ background: '#fce7f3', color: '#be185d', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🎯 Hedef Sıra: {userProfileData.targetRank}</span>
+                      )}
+                      {userProfileData.education_status === 'Lise' && userProfileData.targetScore && (
+                        <span style={{ background: '#fce7f3', color: '#be185d', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>⭐ Puan: {userProfileData.targetScore}</span>
+                      )}
+                    </div>
                   </div>
-                  <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} style={{ background: '#fff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '6px 12px', color: '#ef4444', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    Çıkış Yap
-                  </button>
-                </div>
-                
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#1e40af', marginBottom: '6px' }}>Hedef Sıralamam</label>
-                    <input 
-                      type="number" 
-                      placeholder="Örn: 50000" 
-                      value={userProfileData.targetRank} 
-                      onChange={(e) => updateProfileData('targetRank', e.target.value)} 
-                      style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid #93c5fd', fontSize: '14px', outline: 'none', color: '#1e293b' }} 
-                    />
+                ) : (
+                  // EDIT MODE
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>Profili Düzenle</h3>
+                    
+                    <div>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Ad Soyad</label>
+                      <input type="text" value={userProfileData.full_name} onChange={(e) => updateProfileData('full_name', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Adınız Soyadınız" />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Hakkımda / İlgi Alanlarım</label>
+                      <textarea value={userProfileData.bio} onChange={(e) => updateProfileData('bio', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', minHeight: '80px', resize: 'vertical', outline: 'none' }} placeholder="Kendinizi ve ilgi alanlarınızı kısaca anlatın..."></textarea>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Eğitim Durumu</label>
+                      <select value={userProfileData.education_status} onChange={(e) => updateProfileData('education_status', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', background: '#fff', outline: 'none' }}>
+                        <option value="Lise">Lise (Hazırlanıyor)</option>
+                        <option value="Okuyor">Üniversite Okuyor</option>
+                        <option value="Mezun">Üniversite Mezunu</option>
+                        <option value="Çalışıyor">Çalışıyor</option>
+                      </select>
+                    </div>
+
+                    {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && (
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Üniversite Adı</label>
+                          <input type="text" value={userProfileData.university_name} onChange={(e) => updateProfileData('university_name', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: ODTÜ" />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Bölüm Adı</label>
+                          <input type="text" value={userProfileData.department_name} onChange={(e) => updateProfileData('department_name', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: Bilgisayar Müh." />
+                        </div>
+                      </div>
+                    )}
+
+                    {userProfileData.education_status === 'Lise' && (
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Hedef Sıralama</label>
+                          <input type="number" value={userProfileData.targetRank} onChange={(e) => updateProfileData('targetRank', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: 50000" />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Hedef Puan</label>
+                          <input type="number" value={userProfileData.targetScore} onChange={(e) => updateProfileData('targetScore', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none' }} placeholder="Örn: 450" />
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                      <button onClick={saveProfileToDb} disabled={authLoading} style={{ flex: 1, background: '#3b82f6', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px', transition: 'background 0.2s' }}>
+                        {authLoading ? 'Kaydediliyor...' : 'Kaydet'}
+                      </button>
+                      <button onClick={() => setIsEditingProfile(false)} style={{ flex: 1, background: '#f1f5f9', color: '#475569', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px', transition: 'background 0.2s' }}>
+                        İptal
+                      </button>
+                    </div>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#1e40af', marginBottom: '6px' }}>Hedef Puanım</label>
-                    <input 
-                      type="number" 
-                      placeholder="Örn: 450" 
-                      value={userProfileData.targetScore} 
-                      onChange={(e) => updateProfileData('targetScore', e.target.value)} 
-                      style={{ width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid #93c5fd', fontSize: '14px', outline: 'none', color: '#1e293b' }} 
-                    />
-                  </div>
-                </div>
+                )}
               </div>
             )}
 
