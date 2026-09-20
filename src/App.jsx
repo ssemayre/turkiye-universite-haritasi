@@ -627,7 +627,13 @@ function App() {
 
   const [showMyo, setShowMyo] = useState(false);
 
-  const [globalFilters, setGlobalFilters] = useState({ type: 'all', level: 'all' });
+  const [globalFilters, setGlobalFilters] = useState({ 
+    type: 'all', 
+    level: 'all',
+    scoreType: 'all',
+    scholarship: 'all',
+    keyword: ''
+  });
 
   const [typeFilter, setTypeFilter] =
     useState("Tümü");
@@ -3736,18 +3742,45 @@ const activeFilterCount = [
                       </div>
                     ) : campusPrograms && campusPrograms.length > 0 ? (
                         (() => {
-                          const filtered = campusPrograms.filter(p => {
-                            // TİP UYUŞMAZLIĞINI (String vs Number) AŞMAK İÇİN STRING'E ÇEVİREREK KONTROL EDİYORUZ
-                            if (activeCampusFilterId && String(p.campus_id) !== String(activeCampusFilterId)) return false;
-                            
-                            if (globalFilters.level !== 'all') {
-                              const level = (p.degree_level || p.programName || p.name || "").toLocaleLowerCase('tr-TR');
-                              if (globalFilters.level === 'lisans' && (!level.includes('lisans') || level.includes('önlisans') || level.includes('onlisans'))) return false;
-                              if (globalFilters.level === 'onlisans' && !level.includes('önlisans') && !level.includes('onlisans')) return false;
-                            }
+                            const filtered = campusPrograms.filter(p => {
+                              // Kampüs eşleşmesi
+                              if (activeCampusFilterId && String(p.campus_id) !== String(activeCampusFilterId)) return false;
+                              
+                              // Eğitim Düzeyi (Lisans/Önlisans)
+                              if (globalFilters.level !== 'all') {
+                                const level = (p.degree_level || p.programName || p.name || "").toLocaleLowerCase('tr-TR');
+                                if (globalFilters.level === 'lisans' && (!level.includes('lisans') || level.includes('önlisans') || level.includes('onlisans'))) return false;
+                                if (globalFilters.level === 'onlisans' && !level.includes('önlisans') && !level.includes('onlisans')) return false;
+                              }
 
-                            return (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
-                          });
+                              // Puan Türü
+                              if (globalFilters.scoreType !== 'all') {
+                                const scoreT = (p.score_type || p.scoreType || "").toUpperCase();
+                                if (scoreT !== globalFilters.scoreType) return false;
+                              }
+
+                              // Burs Durumu
+                              if (globalFilters.type === 'vakif' && globalFilters.scholarship !== 'all') {
+                                const progName = (p.name || "").toLocaleLowerCase('tr-TR');
+                                const burs = globalFilters.scholarship.toLocaleLowerCase('tr-TR');
+                                if (!progName.includes(burs) && !(burs === 'ücretli' && progName.includes('ucretli'))) return false;
+                              }
+
+                              // Başarı Sırası (Min/Max Rank)
+                              const rank = parseInt(p.success_rank_2023 || p.successRank, 10);
+                              if (!isNaN(rank)) {
+                                if (minRank !== "" && rank < parseInt(minRank, 10)) return false;
+                                if (maxRank !== "" && rank > parseInt(maxRank, 10)) return false;
+                              }
+
+                              // Bölüm Arama Keyword (Modal'dan)
+                              if (globalFilters.keyword.trim().length > 0) {
+                                if (!(p.name || '').toLocaleLowerCase('tr-TR').includes(globalFilters.keyword.trim().toLocaleLowerCase('tr-TR'))) return false;
+                              }
+
+                              // Sağ Panel İçi Arama
+                              return (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
+                            });
                           if (filtered.length === 0) {
                           return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
                         }
@@ -4191,12 +4224,24 @@ const activeFilterCount = [
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              {/* Program Adı / Keyword */}
+              <div>
+                <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bölüm Ara</h3>
+                <input
+                  type="text"
+                  placeholder="Sadece Belirli Bir Bölümü Haritada Göster..."
+                  value={globalFilters.keyword}
+                  onChange={(e) => setGlobalFilters(prev => ({ ...prev, keyword: e.target.value }))}
+                  style={{ width: '100%', padding: '14px', borderRadius: '16px', border: '2px solid #e2e8f0', outline: 'none', fontSize: '15px', color: '#1e293b' }}
+                />
+              </div>
+
               {/* Kurum Tipi */}
               <div>
                 <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Üniversite Tipi</h3>
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <button 
-                    onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}
+                    onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet', scholarship: prev.type === 'devlet' ? prev.scholarship : 'all' }))}
                     style={{ flex: 1, padding: '14px', borderRadius: '16px', border: globalFilters.type === 'devlet' ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.type === 'devlet' ? '#eff6ff' : '#fff', color: globalFilters.type === 'devlet' ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}>
                     🏛️ Devlet
                   </button>
@@ -4205,6 +4250,21 @@ const activeFilterCount = [
                     style={{ flex: 1, padding: '14px', borderRadius: '16px', border: globalFilters.type === 'vakif' ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.type === 'vakif' ? '#eff6ff' : '#fff', color: globalFilters.type === 'vakif' ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}>
                     🏢 Vakıf
                   </button>
+                </div>
+              </div>
+
+              {/* Burs Durumu (Dinamik - Sadece Vakıf) */}
+              <div style={{ overflow: 'hidden', transition: 'all 0.3s ease-in-out', maxHeight: globalFilters.type === 'vakif' ? '200px' : '0', opacity: globalFilters.type === 'vakif' ? 1 : 0, marginTop: globalFilters.type === 'vakif' ? '0' : '-28px', pointerEvents: globalFilters.type === 'vakif' ? 'auto' : 'none' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Burs Durumu</h3>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {['Tam Burslu', '%50 İndirimli', 'Ücretli'].map((burs) => (
+                    <button 
+                      key={burs}
+                      onClick={() => setGlobalFilters(prev => ({ ...prev, scholarship: prev.scholarship === burs ? 'all' : burs }))}
+                      style={{ flex: 1, minWidth: '100px', padding: '12px 4px', borderRadius: '16px', border: globalFilters.scholarship === burs ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.scholarship === burs ? '#eff6ff' : '#fff', color: globalFilters.scholarship === burs ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px' }}>
+                      {burs}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -4222,6 +4282,43 @@ const activeFilterCount = [
                     style={{ flex: 1, padding: '14px', borderRadius: '16px', border: globalFilters.level === 'onlisans' ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.level === 'onlisans' ? '#eff6ff' : '#fff', color: globalFilters.level === 'onlisans' ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}>
                     📘 Önlisans
                   </button>
+                </div>
+              </div>
+
+              {/* Puan Türü */}
+              <div>
+                <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Puan Türü</h3>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {['SAY', 'EA', 'SÖZ', 'DİL', 'TYT'].map((pTuru) => (
+                    <button 
+                      key={pTuru}
+                      onClick={() => setGlobalFilters(prev => ({ ...prev, scoreType: prev.scoreType === pTuru ? 'all' : pTuru }))}
+                      style={{ flex: 1, minWidth: '45px', padding: '12px 4px', borderRadius: '16px', border: globalFilters.scoreType === pTuru ? '2px solid #3b82f6' : '2px solid #e2e8f0', background: globalFilters.scoreType === pTuru ? '#eff6ff' : '#fff', color: globalFilters.scoreType === pTuru ? '#1d4ed8' : '#64748b', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px' }}>
+                      {pTuru}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Başarı Sırası / Range Slider */}
+              <div>
+                <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Başarı Sırası Aralığı</h3>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <input 
+                    type="number" 
+                    placeholder="Min Sıra (Örn: 1000)" 
+                    value={minRank} 
+                    onChange={(e) => setMinRank(e.target.value)} 
+                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: '2px solid #e2e8f0', outline: 'none', fontSize: '14px', width: '100%', color: '#1e293b' }} 
+                  />
+                  <span style={{ color: '#94a3b8', fontWeight: 'bold' }}>-</span>
+                  <input 
+                    type="number" 
+                    placeholder="Max Sıra (Örn: 50000)" 
+                    value={maxRank} 
+                    onChange={(e) => setMaxRank(e.target.value)} 
+                    style={{ flex: 1, padding: '14px', borderRadius: '16px', border: '2px solid #e2e8f0', outline: 'none', fontSize: '14px', width: '100%', color: '#1e293b' }} 
+                  />
                 </div>
               </div>
 
