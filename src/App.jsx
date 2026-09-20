@@ -838,6 +838,30 @@ function App() {
         }
       };
       fetchNotifications();
+
+      const notifChannel = supabase
+        .channel('realtime-notifications')
+        .on('postgres_changes', { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'notifications', 
+          filter: `user_id=eq.${user.id}` 
+        }, async (payload) => {
+          const { data: actorProfile } = await supabase.from('profiles').select('*').eq('id', payload.new.actor_id).maybeSingle();
+          const newNotif = { 
+            ...payload.new, 
+            actorProfile: actorProfile || { full_name: 'Bir kullanıcı' } 
+          };
+          setNotifications(prev => {
+            if (prev.find(n => n.id === newNotif.id)) return prev;
+            return [newNotif, ...prev];
+          });
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(notifChannel);
+      };
     }
   }, [user]);
   
