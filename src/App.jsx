@@ -991,6 +991,13 @@ function App() {
   useEffect(() => {
     setActiveCampusFilterId(null);
     setActiveCampusMarker(null);
+    if (selectedSubCampus) {
+      setMapFocus({
+        latitude: Number(selectedSubCampus.lat || selectedSubCampus.latitude),
+        longitude: Number(selectedSubCampus.lng || selectedSubCampus.longitude),
+        zoom: 11
+      });
+    }
   }, [selectedSubCampus?.id]);
 
   const mapUniversities = useMemo(() => {
@@ -1777,7 +1784,7 @@ function App() {
 
     // 0) Doğrudan campus_id eklenmişse (HIZLI EŞLEŞTİRME SİSTEMİ):
     if (program?.campus_id) {
-       const exactCampus = campuses.find(c => c.id === program.campus_id);
+       const exactCampus = campuses.find(c => String(c.id) === String(program.campus_id));
        if (exactCampus) return { ...exactCampus, universityId: university.id, universityName: university.name };
     }
 
@@ -1922,7 +1929,7 @@ function App() {
     }, [search, baseFilteredUniversities, searchProgramsLoaded, generalFilteredPrograms, universityMap]);
 
   const activeRelatedMyos = useMemo(() => {
-    if (!selectedSubCampus || campusDetailTab !== 'campuses' || !campusPrograms) return [];
+    if (!selectedSubCampus || !campusPrograms) return [];
     
     // 1. Extract unique campus_ids from the fetched programs of the selected university
     const uniqueCampusIds = new Set();
@@ -1936,11 +1943,31 @@ function App() {
     return universities.filter(u => 
       uniqueCampusIds.has(String(u.id)) && 
       u.id !== selectedSubCampus.id && 
-      Number.isFinite(Number(u.lat))
+      (Number.isFinite(Number(u.lat)) || Number.isFinite(Number(u.latitude)))
     );
-  }, [selectedSubCampus, campusDetailTab, universities, campusPrograms]);
+  }, [selectedSubCampus, universities, campusPrograms]);
 
   const displayedUniversities = useMemo(() => {
+    // Odak Modu: Bir üniversite seçiliyse haritada sadece o ve MYO'ları kalsın
+    if (selectedSubCampus) {
+      const correctUniId = selectedSubCampus.universityId || selectedSubCampus.id;
+      const actualMainCampus = universities.find(u => u.id === correctUniId) || selectedSubCampus;
+      
+      const focusList = [actualMainCampus];
+      
+      if (selectedSubCampus.id !== actualMainCampus.id) {
+        focusList.push(selectedSubCampus);
+      }
+      
+      for (const myo of activeRelatedMyos) {
+        if (myo.id !== actualMainCampus.id && myo.id !== selectedSubCampus.id) {
+          focusList.push(myo);
+        }
+      }
+      return focusList;
+    }
+
+    // Normal Mod: Tüm üniversiteler
     const base = filteredUniversities;
     const final = [...base];
     for (const myo of activeRelatedMyos) {
@@ -1949,7 +1976,7 @@ function App() {
       }
     }
     return final;
-  }, [filteredUniversities, activeRelatedMyos]);
+  }, [selectedSubCampus, filteredUniversities, activeRelatedMyos, universities]);
 
   const visibleSearchResults = useMemo(
     () => searchResults.slice(0, searchResultLimit),
@@ -3736,14 +3763,15 @@ const activeFilterCount = [
                         <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                         <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Veriler Çekiliyor</h4>
                         <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
-                          Bölüm ve program verileri yükleniyor...
+                          Bölüm and program verileri yükleniyor...
                         </p>
                         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                       </div>
                     ) : campusPrograms && campusPrograms.length > 0 ? (
                         (() => {
                           const filtered = campusPrograms.filter(p => {
-                            if (activeCampusFilterId && p.campus_id !== activeCampusFilterId) return false;
+                            // TİP UYUŞMAZLIĞINI (String vs Number) AŞMAK İÇİN STRING'E ÇEVİREREK KONTROL EDİYORUZ
+                            if (activeCampusFilterId && String(p.campus_id) !== String(activeCampusFilterId)) return false;
                             return (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
                           });
                           if (filtered.length === 0) {
