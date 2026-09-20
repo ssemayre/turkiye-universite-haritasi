@@ -2750,6 +2750,83 @@ const activeFilterCount = [
   const [listingPrice, setListingPrice] = useState('');
   const [isSubmittingListing, setIsSubmittingListing] = useState(false);
 
+  const [viewingProfile, setViewingProfile] = useState(null);
+  const [profileContent, setProfileContent] = useState({ posts: [], listings: [] });
+  
+  const [activeChatUser, setActiveChatUser] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [newMessageContent, setNewMessageContent] = useState('');
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    if (viewingProfile) {
+      const fetchProfileContent = async () => {
+        const { data: posts } = await supabase.from('posts').select('*, profiles(full_name, avatar_url)').eq('user_id', viewingProfile.id).order('created_at', { ascending: false });
+        const { data: listings } = await supabase.from('listings').select('*, profiles(full_name, avatar_url)').eq('user_id', viewingProfile.id).order('created_at', { ascending: false });
+        setProfileContent({ posts: posts || [], listings: listings || [] });
+      };
+      fetchProfileContent();
+    }
+  }, [viewingProfile]);
+
+  useEffect(() => {
+    if (activeChatUser) {
+      const fetchMessages = async () => {
+        const { data } = await supabase
+          .from('messages')
+          .select('*')
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${activeChatUser.id}),and(sender_id.eq.${activeChatUser.id},receiver_id.eq.${user.id})`)
+          .order('created_at', { ascending: true });
+        if (data) setChatMessages(data);
+      };
+      fetchMessages();
+
+      const channel = supabase
+        .channel('realtime-messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+          const newMsg = payload.new;
+          if (
+            (newMsg.sender_id === activeChatUser.id && newMsg.receiver_id === user.id) ||
+            (newMsg.sender_id === user.id && newMsg.receiver_id === activeChatUser.id)
+          ) {
+            setChatMessages(prev => {
+              if (prev.find(m => m.id === newMsg.id)) return prev;
+              return [...prev, newMsg];
+            });
+          }
+        })
+        .subscribe();
+
+      return () => { supabase.removeChannel(channel); };
+    }
+  }, [activeChatUser, user]);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages]);
+
+  const sendMessage = async () => {
+    if (!newMessageContent.trim() || !activeChatUser) return;
+    const tempMsg = {
+      id: crypto.randomUUID(),
+      sender_id: user.id,
+      receiver_id: activeChatUser.id,
+      content: newMessageContent.trim(),
+      created_at: new Date().toISOString()
+    };
+    setChatMessages(prev => [...prev, tempMsg]);
+    const contentToSend = newMessageContent.trim();
+    setNewMessageContent('');
+    
+    await supabase.from('messages').insert({
+      sender_id: user.id,
+      receiver_id: activeChatUser.id,
+      content: contentToSend
+    });
+  };
+
   useEffect(() => {
     if (selectedClub) {
       const getEvents = async () => {
@@ -3203,7 +3280,115 @@ const activeFilterCount = [
         </div>
         {browseOpen && (
           <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-            {selectedClub ? (
+            {activeChatUser ? (
+              <>
+                <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {activeChatUser.avatar_url ? (
+                        <img src={activeChatUser.avatar_url} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+                      ) : (
+                        <span style={{ background: '#3b82f6', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>👤</span>
+                      )}
+                      <div>
+                        <h2 style={{ margin: 0, fontSize: '16px', color: '#0f172a' }}>{activeChatUser.full_name || 'İsimsiz'}</h2>
+                        <div style={{ fontSize: '12px', color: '#64748b' }}>Sohbet</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {chatMessages.length === 0 ? (
+                    <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
+                  ) : (
+                    chatMessages.map(msg => {
+                      const isMe = msg.sender_id === user.id;
+                      return (
+                        <div key={msg.id} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
+                          <div style={{ background: isMe ? '#3b82f6' : '#e2e8f0', color: isMe ? '#fff' : '#0f172a', padding: '10px 14px', borderRadius: '16px', borderBottomRightRadius: isMe ? '4px' : '16px', borderBottomLeftRadius: !isMe ? '4px' : '16px', fontSize: '14px', lineHeight: '1.4' }}>
+                            {msg.content}
+                          </div>
+                          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', textAlign: isMe ? 'right' : 'left' }}>
+                            {new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      )
+                    })
+                  )}
+                  <div ref={chatEndRef} />
+                </div>
+                <div style={{ padding: '12px 16px', borderTop: '1px solid #e2e8f0', background: '#fff', display: 'flex', gap: '8px' }}>
+                  <input
+                    value={newMessageContent}
+                    onChange={e => setNewMessageContent(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
+                    placeholder="Mesaj yaz..."
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', outline: 'none' }}
+                  />
+                  <button onClick={sendMessage} disabled={!newMessageContent.trim()} style={{ background: newMessageContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '20px', fontWeight: 'bold', cursor: newMessageContent.trim() ? 'pointer' : 'not-allowed' }}>Gönder</button>
+                </div>
+              </>
+            ) : viewingProfile ? (
+              <>
+                <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button onClick={() => setViewingProfile(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
+                    <div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '14px' }}>PROFİL</div>
+                  </div>
+                </div>
+                <div style={{ padding: '24px 16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    {viewingProfile.avatar_url ? (
+                      <img src={viewingProfile.avatar_url} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px' }} />
+                    ) : (
+                      <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 'bold', margin: '0 auto 12px' }}>👤</div>
+                    )}
+                    <h2 style={{ margin: '0 0 4px 0', fontSize: '20px', color: '#0f172a' }}>{viewingProfile.full_name || 'İsimsiz'}</h2>
+                    <p style={{ margin: '0 0 16px 0', color: '#64748b', fontSize: '14px' }}>{viewingProfile.department_name || viewingProfile.university_name}</p>
+                    {user && user.id !== viewingProfile.id && (
+                      <button onClick={() => setActiveChatUser(viewingProfile)} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 4px rgba(59,130,246,0.3)' }}>💬 Mesaj Gönder</button>
+                    )}
+                  </div>
+                  
+                  <div style={{ marginBottom: '24px' }}>
+                    <h3 style={{ fontSize: '16px', color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>Gönderileri</h3>
+                    {profileContent.posts.length === 0 ? (
+                      <div style={{ color: '#64748b', fontSize: '14px', textAlign: 'center' }}>Henüz gönderi paylaşmamış.</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {profileContent.posts.map(post => (
+                          <div key={post.id} style={{ background: '#fff', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#334155' }}>{post.content}</p>
+                            <span style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(post.created_at).toLocaleDateString('tr-TR')}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 style={{ fontSize: '16px', color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>İlanları</h3>
+                    {profileContent.listings.length === 0 ? (
+                      <div style={{ color: '#64748b', fontSize: '14px', textAlign: 'center' }}>Henüz ilan vermemiş.</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {profileContent.listings.map(listing => (
+                          <div key={listing.id} style={{ background: '#fff', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                              <h4 style={{ margin: 0, fontSize: '14px', color: '#0f172a' }}>{listing.title}</h4>
+                              <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#475569' }}>{listing.category}</span>
+                            </div>
+                            <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>{listing.description}</p>
+                            {listing.price && <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}>{listing.price} ₺</div>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : selectedClub ? (
               <>
                 <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -3316,14 +3501,16 @@ const activeFilterCount = [
                           campusPosts.map(post => (
                             <div key={post.id} className="campus-post-card" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
-                                {post.profiles?.avatar_url ? (
-                                  <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                                ) : (
-                                  <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
-                                )}
+                                <div style={{ cursor: 'pointer' }} onClick={() => setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
+                                  {post.profiles?.avatar_url ? (
+                                    <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                                  ) : (
+                                    <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
+                                  )}
+                                </div>
                                 <div style={{ flex: 1 }}>
                                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                                    <strong style={{ color: '#0f172a', fontSize: '15px' }}>{post.profiles?.full_name || 'İsimsiz'}</strong>
+                                    <strong onClick={() => setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })} style={{ color: '#0f172a', fontSize: '15px', cursor: 'pointer' }}>{post.profiles?.full_name || 'İsimsiz'}</strong>
                                     <span style={{ color: '#94a3b8', fontSize: '12px' }}>
                                       {(() => {
                                         const diff = Date.now() - new Date(post.created_at).getTime();
@@ -3386,7 +3573,7 @@ const activeFilterCount = [
                           campusListings.map(listing => (
                             <div key={listing.id} style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setViewingProfile({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name })}>
                                    {listing.profiles?.avatar_url ? (
                                       <img src={listing.profiles.avatar_url} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
                                    ) : (
