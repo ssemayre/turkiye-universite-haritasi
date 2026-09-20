@@ -2847,8 +2847,9 @@ const activeFilterCount = [
 
   const sendMessage = async () => {
     if (!newMessageContent.trim() || !activeChatUser) return;
+    const tempId = crypto.randomUUID();
     const tempMsg = {
-      id: crypto.randomUUID(),
+      id: tempId,
       sender_id: user.id,
       receiver_id: activeChatUser.id,
       content: newMessageContent.trim(),
@@ -2859,6 +2860,7 @@ const activeFilterCount = [
     setNewMessageContent('');
     
     await supabase.from('messages').insert({
+      id: tempId,
       sender_id: user.id,
       receiver_id: activeChatUser.id,
       content: contentToSend
