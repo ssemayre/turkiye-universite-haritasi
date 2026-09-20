@@ -986,10 +986,12 @@ function App() {
   const markerRefs = useRef({});
   const [activeCampusFilterId, setActiveCampusFilterId] = useState(null);
   const [clusterPopupData, setClusterPopupData] = useState(null);
+  const [activeCampusMarker, setActiveCampusMarker] = useState(null);
 
   useEffect(() => {
     setActiveCampusFilterId(null);
-  }, [selectedSubCampus]);
+    setActiveCampusMarker(null);
+  }, [selectedSubCampus?.id]);
 
   const mapUniversities = useMemo(() => {
     return universities.filter(
@@ -2823,6 +2825,36 @@ const activeFilterCount = [
             </MarkerClusterGroup>
           )}
 
+            {activeCampusMarker && (
+              <Marker 
+                key={`active-campus-${activeCampusMarker.id}`}
+                position={[Number(activeCampusMarker.lat || activeCampusMarker.latitude), Number(activeCampusMarker.lng || activeCampusMarker.longitude)]}
+                icon={activeCampusMarker.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon}
+                ref={(r) => { if (r) markerRefs.current[activeCampusMarker.id] = r; }}
+                eventHandlers={{ click: () => setSelectedSubCampus(activeCampusMarker) }}
+              >
+                <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
+                   <span className="university-tooltip"><strong>{activeCampusMarker.city}</strong><br/>{activeCampusMarker.name}</span>
+                </Tooltip>
+                <Popup autoPan={true} autoPanPaddingTopLeft={[0, 250]} autoPanPaddingBottomRight={[0, 20]} minWidth={240} maxWidth={300}>
+                   <div className="campus-popup" style={{ textAlign: 'center', padding: '5px' }}>
+                     <div className="detail-label" style={{ fontSize: '10px', color: '#6366f1', fontWeight: 'bold' }}>
+                       {activeCampusMarker.type === 'Ana Kampüs' ? "ANA YERLEŞKE" : "ALT YERLEŞKE"}
+                     </div>
+                     <h3 style={{ margin: '5px 0', fontSize: '14px' }}>{activeCampusMarker.name}</h3>
+                     <p style={{ margin: '0', fontSize: '12px', color: '#64748b' }}>{activeCampusMarker.city}</p>
+                     <button 
+                       style={{ marginTop: '10px', background: '#2563eb', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                       className="open-university-button"
+                       onClick={(e) => { e.stopPropagation(); setSelectedSubCampus(activeCampusMarker); }}
+                     >
+                       Detayları Gör
+                     </button>
+                   </div>
+                </Popup>
+              </Marker>
+            )}
+
 </MapContainer>
         </div>
         {browseOpen && (
@@ -3766,6 +3798,7 @@ const activeFilterCount = [
                                         const lng = target?.lng || target?.longitude;
                                         
                                         if (lat && lng) {
+                                          setActiveCampusMarker(target);
                                           setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
                                           // Sadece popup'ı aç, selected state'ini (sağ paneli) ezme!
                                           if (target && target.id) {
@@ -3845,9 +3878,15 @@ const activeFilterCount = [
                             key={myo.id}
                             style={{ textAlign: 'left', padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                             onClick={() => {
+                              setActiveCampusMarker(myo);
                               setMapFocus({ latitude: Number(myo.lat || myo.latitude), longitude: Number(myo.lng || myo.longitude), zoom: 15 });
                               setActiveCampusFilterId(myo.id);
                               setCampusDetailTab('units');
+                              // Ayrıca seçilen MYO pininin popup'ını aç
+                              setTimeout(() => {
+                                const marker = markerRefs.current[myo.id];
+                                if (marker) marker.openPopup();
+                              }, 400);
                             }}
                           >
                             <span style={{ fontWeight: '500', color: '#1e293b', fontSize: '14px' }}>{myo.name}</span>
