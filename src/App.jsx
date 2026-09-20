@@ -3451,7 +3451,7 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {chatMessages.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
                   ) : (
@@ -3471,7 +3471,7 @@ const activeFilterCount = [
                   )}
                   <div ref={chatEndRef} />
                 </div>
-                <div style={{ padding: '12px 16px', borderTop: '1px solid #e2e8f0', background: '#fff', display: 'flex', gap: '8px' }}>
+                <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid #eaeaea', backgroundColor: '#fff', display: 'flex', gap: '8px' }}>
                   <input
                     value={newMessageContent}
                     onChange={e => setNewMessageContent(e.target.value)}
@@ -5348,7 +5348,7 @@ const activeFilterCount = [
       )}
 
       {messagesOpen && (
-        <aside className="preference-drawer" style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000, padding: 0 }}>
+        <aside style={{ position: 'fixed', bottom: 0, left: 0, right: 0, top: '15%', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', zIndex: 9999, borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', boxShadow: '0 -4px 10px rgba(0,0,0,0.1)' }}>
           {activeChatUser ? (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
@@ -5367,7 +5367,7 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px' }}>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {chatMessages.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
                   ) : (
@@ -5387,7 +5387,7 @@ const activeFilterCount = [
                   )}
                   <div ref={chatEndRef} />
                 </div>
-                <div style={{ flexShrink: 0, padding: '12px 16px', paddingBottom: '20px', borderTop: '1px solid #e2e8f0', background: '#fff', display: 'flex', gap: '8px' }}>
+                <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid #eaeaea', backgroundColor: '#fff', display: 'flex', gap: '8px' }}>
                   <input
                     value={newMessageContent}
                     onChange={e => setNewMessageContent(e.target.value)}
