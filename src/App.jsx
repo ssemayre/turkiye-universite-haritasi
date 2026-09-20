@@ -735,6 +735,8 @@ function App() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [inbox, setInbox] = useState([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   const [browseOpen, setBrowseOpen] =
     useState(false);
@@ -814,6 +816,28 @@ function App() {
         }
       };
       fetchProfile();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchNotifications = async () => {
+        const { data: notifs } = await supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20);
+        if (notifs) {
+          const actorIds = [...new Set(notifs.map(n => n.actor_id))];
+          if (actorIds.length > 0) {
+            const { data: profs } = await supabase.from('profiles').select('*').in('id', actorIds);
+            const merged = notifs.map(n => ({
+              ...n,
+              actorProfile: profs?.find(p => p.id === n.actor_id) || { full_name: 'Bir kullanıcı' }
+            }));
+            setNotifications(merged);
+          } else {
+            setNotifications(notifs);
+          }
+        }
+      };
+      fetchNotifications();
     }
   }, [user]);
   
@@ -1052,6 +1076,7 @@ function App() {
     setAboutOpen(false);
     setBrowseOpen(false);
     setMessagesOpen(false);
+    setNotificationsOpen(false);
 
     if (panel === "filters") setFiltersOpen(!isOpen);
     else if (panel === "favorites") setPreferenceOpen(!isOpen);
@@ -1063,6 +1088,7 @@ function App() {
     setAboutOpen(false);
     setBrowseOpen(false);
     setMessagesOpen(false);
+    setNotificationsOpen(false);
     setSelectedProgram(null);
     setSelectedUniversity(null);
   };
@@ -1071,6 +1097,8 @@ function App() {
     setFiltersOpen(false);
     setPreferenceOpen(false);
     setBrowseOpen(false);
+    setMessagesOpen(false);
+    setNotificationsOpen(false);
     setAboutOpen((open) => !open);
   };
 
@@ -1079,6 +1107,7 @@ function App() {
     setPreferenceOpen(false);
     setAboutOpen(false);
     setMessagesOpen(false);
+    setNotificationsOpen(false);
     setBrowseOpen(true);
   };
 
@@ -1087,7 +1116,25 @@ function App() {
     setPreferenceOpen(false);
     setAboutOpen(false);
     setBrowseOpen(false);
+    setNotificationsOpen(false);
     setMessagesOpen(true);
+  };
+
+  const markNotificationsAsRead = async () => {
+    const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+    if (unreadIds.length === 0) return;
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    await supabase.from('notifications').update({ is_read: true }).in('id', unreadIds);
+  };
+
+  const openNotifications = () => {
+    setFiltersOpen(false);
+    setPreferenceOpen(false);
+    setAboutOpen(false);
+    setBrowseOpen(false);
+    setMessagesOpen(false);
+    setNotificationsOpen(true);
+    markNotificationsAsRead();
   };
 
   const comparisonSummary =
@@ -2866,6 +2913,13 @@ const activeFilterCount = [
       receiver_id: activeChatUser.id,
       content: contentToSend
     });
+    
+    await supabase.from('notifications').insert({
+      user_id: activeChatUser.id,
+      actor_id: user.id,
+      type: 'message',
+      content: 'sana yeni bir mesaj gönderdi.'
+    });
   };
 
   useEffect(() => {
@@ -3014,9 +3068,21 @@ const activeFilterCount = [
           
             <div className="user-profile-section" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               {user && (
-                <button onClick={openMessages} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} title="Mesajlar">
-                  💬
-                </button>
+                <>
+                  <div style={{ position: 'relative' }}>
+                    <button onClick={openNotifications} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} title="Bildirimler">
+                      🔔
+                    </button>
+                    {notifications.filter(n => !n.is_read).length > 0 && (
+                      <span style={{ position: 'absolute', top: '-2px', right: '-2px', background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 'bold', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {notifications.filter(n => !n.is_read).length}
+                      </span>
+                    )}
+                  </div>
+                  <button onClick={openMessages} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} title="Mesajlar">
+                    💬
+                  </button>
+                </>
               )}
               {user ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '4px 12px 4px 4px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', color: '#475569' }}>
@@ -5214,6 +5280,49 @@ const activeFilterCount = [
       {/* ========================================
           MESSAGES DRAWER
       ======================================== */}
+      {/* ========================================
+          NOTIFICATIONS DRAWER
+      ======================================== */}
+      {notificationsOpen && (
+        <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000 }}>
+          <div className="preference-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+            <div>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
+                🔔 Bildirimler
+              </h2>
+            </div>
+            <button className="close-button" onClick={() => setNotificationsOpen(false)}>×</button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {!user ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>Bildirimleri görmek için giriş yapmalısınız.</div>
+            ) : notifications.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>Henüz hiçbir bildiriminiz yok.</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {notifications.map((notif, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderBottom: '1px solid #e2e8f0', background: notif.is_read ? 'transparent' : '#f0f9ff' }}>
+                    {notif.actorProfile?.avatar_url ? (
+                      <img src={notif.actorProfile.avatar_url} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 'bold' }}>👤</div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: 0, fontSize: '14px', color: '#0f172a', lineHeight: '1.4' }}>
+                        <span style={{ fontWeight: 'bold' }}>{notif.actorProfile?.full_name || 'Bir kullanıcı'}</span> {notif.content}
+                      </p>
+                      <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                        {new Date(notif.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </aside>
+      )}
+
       {messagesOpen && (
         <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000 }}>
           {activeChatUser ? (
@@ -6001,6 +6110,15 @@ const activeFilterCount = [
         <button type="button" onClick={openBrowse}>
           <span style={{fontSize: '20px', marginBottom: '2px'}}>🌍</span>
           <span>Kampüs</span>
+        </button>
+        <button type="button" onClick={openNotifications} style={{ position: 'relative' }}>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>🔔</span>
+          <span>Bildirimler</span>
+          {notifications.filter(n => !n.is_read).length > 0 && (
+            <span style={{ position: 'absolute', top: '4px', right: '14px', background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 'bold', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {notifications.filter(n => !n.is_read).length}
+            </span>
+          )}
         </button>
         <button type="button" onClick={openMessages}>
           <span style={{fontSize: '20px', marginBottom: '2px'}}>💬</span>
