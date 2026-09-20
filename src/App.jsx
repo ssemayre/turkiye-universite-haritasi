@@ -2741,6 +2741,14 @@ const activeFilterCount = [
   const [campusClubs, setCampusClubs] = useState([]);
   const [selectedClub, setSelectedClub] = useState(null);
   const [clubEvents, setClubEvents] = useState([]);
+  
+  const [campusListings, setCampusListings] = useState([]);
+  const [isListingModalOpen, setIsListingModalOpen] = useState(false);
+  const [listingCategory, setListingCategory] = useState('İkinci El');
+  const [listingTitle, setListingTitle] = useState('');
+  const [listingDescription, setListingDescription] = useState('');
+  const [listingPrice, setListingPrice] = useState('');
+  const [isSubmittingListing, setIsSubmittingListing] = useState(false);
 
   useEffect(() => {
     if (selectedClub) {
@@ -2757,6 +2765,16 @@ const activeFilterCount = [
       setClubEvents([]);
     }
   }, [selectedClub]);
+
+  const fetchCampusListings = async () => {
+    if (!userProfileData.university_name) return;
+    const { data, error } = await supabase
+      .from('listings')
+      .select('*, profiles(full_name, avatar_url)')
+      .eq('university_name', userProfileData.university_name)
+      .order('created_at', { ascending: false });
+    if (data) setCampusListings(data);
+  };
 
   const fetchCampusPosts = async () => {
     if (!userProfileData.university_name) return;
@@ -2781,8 +2799,41 @@ const activeFilterCount = [
     if (browseOpen && userProfileData.university_name) {
       fetchCampusPosts();
       fetchCampusClubs();
+      fetchCampusListings();
     }
   }, [browseOpen, userProfileData.university_name]);
+
+  const submitListing = async () => {
+    if (!listingTitle.trim() || !listingDescription.trim()) return;
+    setIsSubmittingListing(true);
+    const { data, error } = await supabase.from('listings').insert({
+      user_id: user.id,
+      university_name: userProfileData.university_name,
+      category: listingCategory,
+      title: listingTitle,
+      description: listingDescription,
+      price: listingPrice ? parseFloat(listingPrice) : null
+    }).select('*, profiles(full_name, avatar_url)').single();
+
+    setIsSubmittingListing(false);
+    if (error) {
+      alert('İlan eklenirken hata oluştu: ' + error.message);
+    } else {
+      const newListing = data;
+      if (newListing && !newListing.profiles) {
+        newListing.profiles = {
+          full_name: userProfileData.full_name || user.user_metadata?.full_name,
+          avatar_url: userProfileData.avatar_url || user.user_metadata?.avatar_url
+        };
+      }
+      setCampusListings([newListing, ...campusListings]);
+      setIsListingModalOpen(false);
+      setListingTitle('');
+      setListingDescription('');
+      setListingPrice('');
+      setListingCategory('İkinci El');
+    }
+  };
 
   const submitCampusPost = async () => {
     if (!newPostContent.trim()) return;
@@ -3212,6 +3263,7 @@ const activeFilterCount = [
                     <div style={{ display: 'flex' }}>
                       <button onClick={() => setCampusTab('feed')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
                       <button onClick={() => setCampusTab('clubs')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'clubs' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'clubs' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Kulüpler</button>
+                      <button onClick={() => setCampusTab('listings')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'listings' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'listings' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Pano</button>
                     </div>
                   )}
                 </div>
@@ -3298,7 +3350,7 @@ const activeFilterCount = [
                         )}
                       </div>
                     </>
-                  ) : (
+                  ) : campusTab === 'clubs' ? (
                     <div className="campus-clubs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       {campusClubs.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
@@ -3318,9 +3370,82 @@ const activeFilterCount = [
                         ))
                       )}
                     </div>
-                  )}
+                  ) : campusTab === 'listings' ? (
+                    <div className="campus-listings" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+                         <button onClick={() => setIsListingModalOpen(true)} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>+ İlan Ver</button>
+                      </div>
+
+                      {campusListings.length === 0 ? (
+                          <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                            <div style={{ fontSize: '40px', marginBottom: '16px' }}>📢</div>
+                            <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Kampüs panosu şu an boş.</h3>
+                            <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>İlk ilanı sen ver!</p>
+                          </div>
+                      ) : (
+                          campusListings.map(listing => (
+                            <div key={listing.id} style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
+                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                   {listing.profiles?.avatar_url ? (
+                                      <img src={listing.profiles.avatar_url} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+                                   ) : (
+                                      <span style={{ background: '#3b82f6', color: '#fff', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>👤</span>
+                                   )}
+                                   <span style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{listing.profiles?.full_name || 'İsimsiz'}</span>
+                                 </div>
+                                 <span style={{ background: listing.category === 'İkinci El' ? '#dcfce7' : listing.category === 'Ev/Oda' ? '#dbeafe' : '#fef3c7', color: listing.category === 'İkinci El' ? '#166534' : listing.category === 'Ev/Oda' ? '#1e40af' : '#b45309', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold' }}>{listing.category}</span>
+                               </div>
+                               <h4 style={{ margin: '0 0 6px 0', color: '#0f172a', fontSize: '16px' }}>{listing.title}</h4>
+                               <p style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>{listing.description}</p>
+                               {listing.price !== null && listing.price !== undefined && (
+                                 <div style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981', fontSize: '16px' }}>
+                                    {listing.price} ₺
+                                 </div>
+                               )}
+                            </div>
+                          ))
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               </>
+            )}
+
+            {isListingModalOpen && (
+               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+                  <div style={{ background: '#fff', width: '100%', maxWidth: '400px', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ margin: 0, color: '#0f172a' }}>İlan Ver</h3>
+                        <button onClick={() => setIsListingModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>×</button>
+                     </div>
+                     
+                     <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Kategori</label>
+                        <select value={listingCategory} onChange={(e) => setListingCategory(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}>
+                           <option value="İkinci El">İkinci El Eşya</option>
+                           <option value="Ev/Oda">Ev Arkadaşı / Kiralık Oda</option>
+                           <option value="Ders/Not">Özel Ders / Ders Notu</option>
+                           <option value="Diğer">Diğer</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Başlık</label>
+                        <input value={listingTitle} onChange={(e) => setListingTitle(e.target.value)} placeholder="Örn: 2. El Temiz Çalışma Masası" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
+                     </div>
+                     <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Açıklama</label>
+                        <textarea value={listingDescription} onChange={(e) => setListingDescription(e.target.value)} placeholder="İlan detayları..." rows={4} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', resize: 'none' }} />
+                     </div>
+                     <div>
+                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Fiyat (₺) - Opsiyonel</label>
+                        <input type="number" value={listingPrice} onChange={(e) => setListingPrice(e.target.value)} placeholder="Örn: 500" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
+                     </div>
+                     <button onClick={submitListing} disabled={isSubmittingListing || !listingTitle.trim() || !listingDescription.trim()} style={{ background: listingTitle.trim() && listingDescription.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', padding: '12px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: listingTitle.trim() && listingDescription.trim() ? 'pointer' : 'not-allowed' }}>
+                        {isSubmittingListing ? 'Ekleniyor...' : 'İlanı Yayınla'}
+                     </button>
+                  </div>
+               </div>
             )}
           </aside>
         )}
