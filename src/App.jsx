@@ -5348,9 +5348,9 @@ const activeFilterCount = [
       )}
 
       {messagesOpen && (
-        <aside className="preference-drawer h-[100dvh]" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000, padding: 0 }}>
+        <aside className="preference-drawer" style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000, padding: 0 }}>
           {activeChatUser ? (
-              <div className="flex-1" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
@@ -5367,7 +5367,7 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px' }}>
                   {chatMessages.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
                   ) : (
@@ -5387,7 +5387,7 @@ const activeFilterCount = [
                   )}
                   <div ref={chatEndRef} />
                 </div>
-                <div style={{ padding: '12px 16px', borderTop: '1px solid #e2e8f0', background: '#fff', display: 'flex', gap: '8px' }}>
+                <div style={{ flexShrink: 0, padding: '12px 16px', paddingBottom: '20px', borderTop: '1px solid #e2e8f0', background: '#fff', display: 'flex', gap: '8px' }}>
                   <input
                     value={newMessageContent}
                     onChange={e => setNewMessageContent(e.target.value)}
