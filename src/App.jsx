@@ -2737,6 +2737,8 @@ const activeFilterCount = [
   const [campusPosts, setCampusPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
   const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+  const [campusTab, setCampusTab] = useState('feed');
+  const [campusClubs, setCampusClubs] = useState([]);
 
   const fetchCampusPosts = async () => {
     if (!userProfileData.university_name) return;
@@ -2748,9 +2750,19 @@ const activeFilterCount = [
     if (data) setCampusPosts(data);
   };
 
+  const fetchCampusClubs = async () => {
+    if (!userProfileData.university_name) return;
+    const { data, error } = await supabase
+      .from('clubs')
+      .select('*')
+      .eq('university_name', userProfileData.university_name);
+    if (data) setCampusClubs(data);
+  };
+
   useEffect(() => {
     if (browseOpen && userProfileData.university_name) {
       fetchCampusPosts();
+      fetchCampusClubs();
     }
   }, [browseOpen, userProfileData.university_name]);
 
@@ -3122,14 +3134,23 @@ const activeFilterCount = [
         </div>
         {browseOpen && (
           <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
-              <div>
-                <div className="detail-label" style={{ color: '#3b82f6' }}>KAMPÜS AKIŞI</div>
-                <h2 style={{ margin: 0, fontSize: '20px', color: '#0f172a' }}>
-                  {userProfileData.university_name || 'Kampüs'}
-                </h2>
+            <div className="browse-panel-header" style={{ padding: '16px 16px 0 16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div>
+                  <div className="detail-label" style={{ color: '#3b82f6' }}>KAMPÜS</div>
+                  <h2 style={{ margin: 0, fontSize: '20px', color: '#0f172a' }}>
+                    {userProfileData.university_name || 'Kampüs'}
+                  </h2>
+                </div>
+                <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
               </div>
-              <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
+              
+              {user && userProfileData.university_name && (
+                <div style={{ display: 'flex' }}>
+                  <button onClick={() => setCampusTab('feed')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
+                  <button onClick={() => setCampusTab('clubs')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'clubs' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'clubs' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Kulüpler</button>
+                </div>
+              )}
             </div>
 
             <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
@@ -3147,7 +3168,7 @@ const activeFilterCount = [
                   <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
                   <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
                 </div>
-              ) : (
+              ) : campusTab === 'feed' ? (
                 <>
                   <div className="campus-composer" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', gap: '12px' }}>
@@ -3214,6 +3235,26 @@ const activeFilterCount = [
                     )}
                   </div>
                 </>
+              ) : (
+                <div className="campus-clubs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {campusClubs.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                      <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏆</div>
+                      <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Kulüpler Çok Yakında</h3>
+                      <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Üniversitene ait kulüpler çok yakında burada olacak.</p>
+                    </div>
+                  ) : (
+                    campusClubs.map(club => (
+                      <div key={club.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                        <div>
+                          <h4 style={{ margin: '0 0 4px 0', color: '#0f172a', fontSize: '16px' }}>{club.name}</h4>
+                          <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{club.description}</p>
+                        </div>
+                        <button style={{ background: '#eff6ff', color: '#3b82f6', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'} onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}>İncele</button>
+                      </div>
+                    ))
+                  )}
+                </div>
               )}
             </div>
           </aside>
