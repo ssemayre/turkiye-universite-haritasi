@@ -229,6 +229,17 @@ function MapController({ selectedUniversity, focusTarget }) {
 import { useAuth } from './AuthContext';
 import { supabase } from './supabaseClient';
 
+function MapResizer({ isPanelOpen }) {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [map, isPanelOpen]);
+  return null;
+}
+
 function App() {
   const { user, openAuthModal, signOut } = useAuth();
   
@@ -2654,16 +2665,17 @@ const activeFilterCount = [
       <main className="map-area-unified" style={{ flex: 1, display: 'flex', flexDirection: 'row', position: 'relative', width: '100%', overflow: 'hidden', zIndex: 10 }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <MapContainer
-          center={[
-            39.0,
-            35.0,
-          ]}
-          zoom={7}
-          className="map"
-        >
+            center={[
+              39.0,
+              35.0,
+            ]}
+            zoom={7}
+            className="map"
+          >
+            <MapResizer isPanelOpen={isAnyModalOpen} />
 
-          <TileLayer
-            attribution="&copy; OpenStreetMap contributors"
+            <TileLayer
+              attribution="&copy; OpenStreetMap contributors"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
