@@ -627,6 +627,8 @@ function App() {
 
   const [showMyo, setShowMyo] = useState(false);
 
+  const [globalFilters, setGlobalFilters] = useState({ type: 'all', level: 'all' });
+
   const [typeFilter, setTypeFilter] =
     useState("Tümü");
 
@@ -686,10 +688,10 @@ function App() {
   const [comparisonOpen, setComparisonOpen] =
     useState(false);
 
-  const [preferences, setPreferences] =
+  const [favorites, setFavorites] =
     useState([]);
 
-  const [preferencesLoaded, setPreferencesLoaded] =
+  const [favoritesLoaded, setFavoritesLoaded] =
     useState(false);
 
   const [comparisonPrograms, setComparisonPrograms] =
@@ -1070,47 +1072,41 @@ function App() {
   // LOAD SEARCH INDEX
   // ==================================================
 
-  const loadSearchPrograms =
-    useCallback(async () => {
-      if (
-        searchProgramsLoaded ||
-        loadingSearchPrograms
-      ) {
+  const [supabaseSearchPrograms, setSupabaseSearchPrograms] = useState([]);
+  const [loadingSupabaseSearch, setLoadingSupabaseSearch] = useState(false);
+
+  useEffect(() => {
+    const fetchSupabasePrograms = async () => {
+      const query = search.trim();
+      if (query.length < 3) {
+        setSupabaseSearchPrograms([]);
         return;
       }
-
-      setLoadingSearchPrograms(true);
-
+      
+      setLoadingSupabaseSearch(true);
       try {
-        const response =
-          await fetch(
-            "/programs-search.json"
-          );
-
-        if (!response.ok) {
-          throw new Error(
-            `HTTP ${response.status}`
-          );
+        const { data, error } = await supabase
+          .from('programs')
+          .select('*')
+          .ilike('name', `%${query}%`)
+          .limit(40);
+          
+        if (data && !error) {
+          setSupabaseSearchPrograms(data);
         }
-
-        const data =
-          await response.json();
-
-        setSearchPrograms(data);
-
-        setSearchProgramsLoaded(true);
-      } catch (error) {
-        console.error(
-          "Program arama indeksi yüklenemedi:",
-          error
-        );
+      } catch (err) {
+        console.error("Supabase search error:", err);
       } finally {
-        setLoadingSearchPrograms(false);
+        setLoadingSupabaseSearch(false);
       }
-    }, [
-      searchProgramsLoaded,
-      loadingSearchPrograms,
-    ]);
+    };
+
+    const timer = setTimeout(() => {
+      fetchSupabasePrograms();
+    }, 400); // debounce
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // ==================================================
   // BASE UNIVERSITY FILTER
@@ -1135,10 +1131,9 @@ function App() {
               cityFilter
             );
 
-          const typeMatch =
-            typeFilter === "Tümü" ||
-            university.type ===
-              typeFilter;
+          const typeMatch = globalFilters.type === 'all' || 
+            (globalFilters.type === 'vakif' && (university.name || '').toLocaleLowerCase('tr-TR').includes('vakıf')) ||
+            (globalFilters.type === 'devlet' && !(university.name || '').toLocaleLowerCase('tr-TR').includes('vakıf'));
 
           return (
             cityMatch &&
@@ -1194,10 +1189,9 @@ function App() {
               cityFilter
             );
 
-          const typeMatch =
-            typeFilter === "Tümü" ||
-            university.type ===
-              typeFilter;
+          const typeMatch = globalFilters.type === 'all' || 
+            (globalFilters.type === 'vakif' && (university.name || '').toLocaleLowerCase('tr-TR').includes('vakıf')) ||
+            (globalFilters.type === 'devlet' && !(university.name || '').toLocaleLowerCase('tr-TR').includes('vakıf'));
 
           const duration =
             numberValue(
@@ -1897,18 +1891,15 @@ function App() {
         }
       }
 
-      if (searchProgramsLoaded) {
-        for (const program of generalFilteredPrograms) {
-          // Önce ID ile, bulamazsa program.universityName ile üniversiteyi bul
-          const university = universityMap.get(String(program.universityId)) || universityMap.get(normalize(program.universityName));
+      if (supabaseSearchPrograms && supabaseSearchPrograms.length > 0) {
+        for (const program of supabaseSearchPrograms) {
+          const university = universityMap.get(String(program.university_id));
           if (!university) {
             continue;
           }
-          const hit = match(joined(program.name, program.faculty, program.universityName, university.city));
-          if (!hit.matched) continue;
           const programName = normalize(program.name);
-          const universityName = normalize(program.universityName);
-          let score = hit.score;
+          const universityName = normalize(university.name);
+          let score = 90;
           if (programName === query) score += 70;
           else if (programName.startsWith(query)) score += 42;
           else if (programName.includes(query)) score += 26;
@@ -2295,60 +2286,41 @@ function App() {
     useMemo(
       () =>
         new Set(
-          preferences.map(
+          favorites.map(
             (program) =>
               String(
                 program.code
               )
           )
         ),
-      [preferences]
+      [favorites]
     );
 
-  const isInPreferences =
+  const isInFavorites =
     (program) =>
       preferenceCodes.has(
         String(program.code)
       );
 
-  const addToPreferences =
-    (program) => {
-      const normalized =
-        normalizeProgram(
-          program
-        );
+  const addToFavorites = (program) => {
+    const normalized = normalizeProgram(program);
 
-      setPreferences(
-        (current) => {
-          if (
-            current.some(
-              (item) =>
-                String(
-                  item.code
-                ) ===
-                String(
-                  normalized.code
-                )
-            )
-          ) {
-            return current;
-          }
+    setFavorites((current) => {
+      const exists = current.some((item) => String(item.code) === String(normalized.code));
+      if (exists) {
+        return current.filter((item) => String(item.code) !== String(normalized.code));
+      }
 
-          if (current.length >= 24) {
-            alert(
-              "En fazla 24 tercih ekleyebilirsiniz."
-            );
+      if (current.length >= 24) {
+        alert("En fazla 24 tercih ekleyebilirsiniz.");
+        return current;
+      }
 
-            return current;
-          }
+      return [...current, normalized];
+    });
+  };
 
-          return [
-            ...current,
-            normalized,
-          ];
-        }
-      );
-    };
+
 
   const movePreference =
     (sourceCode, targetCode) => {
@@ -2360,7 +2332,7 @@ function App() {
         return;
       }
 
-      setPreferences((current) => {
+      setFavorites((current) => {
         const fromIndex = current.findIndex(
           (program) => String(program.code) === String(sourceCode)
         );
@@ -2379,9 +2351,9 @@ function App() {
       });
     };
 
-  const removeFromPreferences =
+  const removeFromFavorites =
     (code) => {
-      setPreferences(
+      setFavorites(
         (current) =>
           current.filter(
             (program) =>
@@ -2414,7 +2386,7 @@ function App() {
         return;
       }
 
-      setPreferences(
+      setFavorites(
         (current) => {
           const next = [
             ...current,
@@ -2440,7 +2412,7 @@ function App() {
 
   const movePreferenceDown =
     (index) => {
-      setPreferences(
+      setFavorites(
         (current) => {
           if (
             index >=
@@ -2538,13 +2510,13 @@ function App() {
     try {
       const saved =
         localStorage.getItem(
-          "universite-tercih-listesi"
+          "yok-atlas-favorites"
         );
 
       if (saved) {
         const parsed = JSON.parse(saved);
 
-        setPreferences(
+        setFavorites(
           Array.isArray(parsed)
             ? parsed.slice(0, 24)
             : []
@@ -2553,26 +2525,26 @@ function App() {
     } catch {
       // boş bırak
     } finally {
-      setPreferencesLoaded(true);
+      setFavoritesLoaded(true);
     }
   }, []);
 
   useEffect(() => {
-    if (!preferencesLoaded) {
+    if (!favoritesLoaded) {
       return;
     }
 
     try {
       localStorage.setItem(
-        "universite-tercih-listesi",
+        "yok-atlas-favorites",
         JSON.stringify(
-          preferences
+          favorites
         )
       );
     } catch {
       // boş bırak
     }
-  }, [preferences, preferencesLoaded]);
+  }, [favorites, favoritesLoaded]);
 
   // ==================================================
   // UI
@@ -2637,33 +2609,33 @@ const activeFilterCount = [
 
             <button 
               className={`pill-btn ${showKyk ? 'active' : ''}`}
-            onClick={() => setShowKyk(!showKyk)}>
-            🏕️ KYK Yurtları
-          </button>
+              onClick={() => setShowKyk(!showKyk)}>
+              🏠 KYK Yurtları
+            </button>
 
-          <button 
-            className={`pill-btn ${typeFilter === 'Devlet Üniversitesi' ? 'active' : ''}`}
-            onClick={() => setTypeFilter(typeFilter === 'Devlet Üniversitesi' ? 'Tümü' : 'Devlet Üniversitesi')}>
-            Devlet
-          </button>
+            <button 
+              className={`pill-btn ${globalFilters.type === 'devlet' ? 'active' : ''}`}
+              onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
+              Devlet
+            </button>
 
-          <button 
-            className={`pill-btn ${typeFilter === 'Vakıf Üniversitesi' ? 'active' : ''}`}
-            onClick={() => setTypeFilter(typeFilter === 'Vakıf Üniversitesi' ? 'Tümü' : 'Vakıf Üniversitesi')}>
-            Vakıf
-          </button>
+            <button 
+              className={`pill-btn ${globalFilters.type === 'vakif' ? 'active' : ''}`}
+              onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
+              Vakıf
+            </button>
 
-          <button 
-            className={`pill-btn ${educationFilter === 'Lisans' ? 'active' : ''}`}
-            onClick={() => setEducationFilter(educationFilter === 'Lisans' ? 'Tümü' : 'Lisans')}>
-            Lisans
-          </button>
+            <button 
+              className={`pill-btn ${globalFilters.level === 'lisans' ? 'active' : ''}`}
+              onClick={() => setGlobalFilters(prev => ({ ...prev, level: prev.level === 'lisans' ? 'all' : 'lisans' }))}>
+              Lisans
+            </button>
 
-          <button 
-            className={`pill-btn ${educationFilter === 'Önlisans' ? 'active' : ''}`}
-            onClick={() => setEducationFilter(educationFilter === 'Önlisans' ? 'Tümü' : 'Önlisans')}>
-            Önlisans
-          </button>
+            <button 
+              className={`pill-btn ${globalFilters.level === 'onlisans' ? 'active' : ''}`}
+              onClick={() => setGlobalFilters(prev => ({ ...prev, level: prev.level === 'onlisans' ? 'all' : 'onlisans' }))}>
+              Önlisans
+            </button>
 
           <button 
             className="pill-btn"
@@ -3063,7 +3035,7 @@ const activeFilterCount = [
                           setFiltersOpen(false);
                         }}
                       >
-                        ⭐ Tercih Listem <b>{preferences.length}</b>
+                        ⭐ Tercih Listem <b>{favorites.length}</b>
                       </button>
 
                       <button
@@ -3106,11 +3078,11 @@ const activeFilterCount = [
                               <div className="program-card-actions">
                                 <button
                                   type="button"
-                                  className={isInPreferences(normalized) ? "program-add-button added" : "program-add-button"}
-                                  onClick={() => addToPreferences(normalized)}
-                                  title={isInPreferences(normalized) ? "Tercih listesinde" : "Tercih listesine ekle"}
+                                  className={isInFavorites(normalized) ? "program-add-button added" : "program-add-button"}
+                                  onClick={() => addToFavorites(normalized)}
+                                  title={isInFavorites(normalized) ? "Tercih listesinde" : "Tercih listesine ekle"}
                                 >
-                                  {isInPreferences(normalized) ? "✓" : "⭐"}
+                                  {isInFavorites(normalized) ? "✓" : "⭐"}
                                 </button>
 
                                 <button
@@ -3353,7 +3325,7 @@ const activeFilterCount = [
 
               <button
                 className={
-                  isInPreferences(
+                  isInFavorites(
                     selectedProgram
                   )
                     ? "primary-detail-button added"
@@ -3361,13 +3333,13 @@ const activeFilterCount = [
                 }
 
                 onClick={() =>
-                  addToPreferences(
+                  addToFavorites(
                     selectedProgram
                   )
                 }
               >
                 {
-                  isInPreferences(
+                  isInFavorites(
                     selectedProgram
                   )
                     ? "✓ Tercih listesinde"
@@ -3772,6 +3744,13 @@ const activeFilterCount = [
                           const filtered = campusPrograms.filter(p => {
                             // TİP UYUŞMAZLIĞINI (String vs Number) AŞMAK İÇİN STRING'E ÇEVİREREK KONTROL EDİYORUZ
                             if (activeCampusFilterId && String(p.campus_id) !== String(activeCampusFilterId)) return false;
+                            
+                            if (globalFilters.level !== 'all') {
+                              const level = (p.degree_level || p.programName || p.name || "").toLocaleLowerCase('tr-TR');
+                              if (globalFilters.level === 'lisans' && (!level.includes('lisans') || level.includes('önlisans') || level.includes('onlisans'))) return false;
+                              if (globalFilters.level === 'onlisans' && !level.includes('önlisans') && !level.includes('onlisans')) return false;
+                            }
+
                             return (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
                           });
                           if (filtered.length === 0) {
@@ -4220,7 +4199,7 @@ const activeFilterCount = [
 
               <h2>
                 {
-                  preferences.length
+                  favorites.length
                 } / 24 tercih
               </h2>
 
@@ -4239,10 +4218,10 @@ const activeFilterCount = [
 
           </div>
 
-          {preferences.length ===
+          {favorites.length ===
           0 ? (
 
-            <div className="empty-preferences">
+            <div className="empty-favorites">
 
               <div className="empty-icon">
                 ⭐
@@ -4292,7 +4271,7 @@ const activeFilterCount = [
 
               <div className="preference-list">
 
-                {preferences.map(
+                {favorites.map(
                   (
                     program,
                     index
@@ -4422,7 +4401,7 @@ const activeFilterCount = [
                           className="order-button"
                           disabled={
                             index ===
-                            preferences.length -
+                            favorites.length -
                               1
                           }
                           onClick={() =>
@@ -4454,7 +4433,7 @@ const activeFilterCount = [
                         <button
                           className="remove-mini"
                           onClick={() =>
-                            removeFromPreferences(
+                            removeFromFavorites(
                               program.code
                             )
                           }
@@ -4474,7 +4453,7 @@ const activeFilterCount = [
               <button
                 className="clear-list-button"
                 onClick={() => {
-                  setPreferences([]);
+                  setFavorites([]);
                   setComparisonPrograms([]);
                 }}
               >
@@ -4954,7 +4933,7 @@ const activeFilterCount = [
           <span style={{fontSize: '20px', marginBottom: '2px'}}>🎓</span>
           <span>Keşfet</span>
         </button>
-        <button type="button" onClick={() => toggleFloatingPanel("preferences")}>
+        <button type="button" onClick={() => toggleFloatingPanel("favorites")}>
           <span style={{fontSize: '20px', marginBottom: '2px'}}>⭐</span>
           <span>Tercihler</span>
         </button>
