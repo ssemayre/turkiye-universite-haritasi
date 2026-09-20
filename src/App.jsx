@@ -2739,6 +2739,24 @@ const activeFilterCount = [
   const [isSubmittingPost, setIsSubmittingPost] = useState(false);
   const [campusTab, setCampusTab] = useState('feed');
   const [campusClubs, setCampusClubs] = useState([]);
+  const [selectedClub, setSelectedClub] = useState(null);
+  const [clubEvents, setClubEvents] = useState([]);
+
+  useEffect(() => {
+    if (selectedClub) {
+      const getEvents = async () => {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('club_id', selectedClub.id)
+          .order('event_date', { ascending: true });
+        if (data) setClubEvents(data);
+      };
+      getEvents();
+    } else {
+      setClubEvents([]);
+    }
+  }, [selectedClub]);
 
   const fetchCampusPosts = async () => {
     if (!userProfileData.university_name) return;
@@ -3134,129 +3152,176 @@ const activeFilterCount = [
         </div>
         {browseOpen && (
           <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div className="browse-panel-header" style={{ padding: '16px 16px 0 16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <div>
-                  <div className="detail-label" style={{ color: '#3b82f6' }}>KAMPÜS</div>
-                  <h2 style={{ margin: 0, fontSize: '20px', color: '#0f172a' }}>
-                    {userProfileData.university_name || 'Kampüs'}
-                  </h2>
-                </div>
-                <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
-              </div>
-              
-              {user && userProfileData.university_name && (
-                <div style={{ display: 'flex' }}>
-                  <button onClick={() => setCampusTab('feed')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
-                  <button onClick={() => setCampusTab('clubs')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'clubs' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'clubs' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Kulüpler</button>
-                </div>
-              )}
-            </div>
-
-            <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
-              {!user ? (
-                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                  <div style={{ fontSize: '40px', marginBottom: '16px' }}>🔒</div>
-                  <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Giriş Yapmalısınız</h3>
-                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüsünüzdeki gönderileri görmek ve paylaşım yapmak için lütfen giriş yapın.</p>
-                  <button onClick={openAuthModal} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Giriş Yap</button>
-                </div>
-              ) : !userProfileData.university_name ? (
-                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                  <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎓</div>
-                  <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Üniversitenizi Belirleyin</h3>
-                  <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
-                  <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
-                </div>
-              ) : campusTab === 'feed' ? (
-                <>
-                  <div className="campus-composer" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
-                        <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      ) : (
-                        <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
-                      )}
-                      <textarea
-                        value={newPostContent}
-                        onChange={(e) => setNewPostContent(e.target.value)}
-                        placeholder="Kampüste neler oluyor?"
-                        style={{ flex: 1, border: 'none', background: 'transparent', resize: 'none', fontSize: '15px', color: '#334155', minHeight: '60px', padding: '8px 0', outline: 'none' }}
-                      />
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
-                      <button onClick={submitCampusPost} disabled={isSubmittingPost || !newPostContent.trim()} style={{ background: newPostContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '14px', transition: 'background 0.2s' }}>
-                        {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
-                      </button>
+            {selectedClub ? (
+              <>
+                <div className="browse-panel-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button onClick={() => setSelectedClub(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
+                    <div>
+                      <div className="detail-label" style={{ color: '#3b82f6' }}>KULÜP DETAYI</div>
+                      <h2 style={{ margin: 0, fontSize: '18px', color: '#0f172a' }}>{selectedClub.name}</h2>
                     </div>
                   </div>
-
-                  <div className="campus-feed" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {campusPosts.length === 0 ? (
-                      <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b' }}>
-                        <div style={{ fontSize: '32px', marginBottom: '8px' }}>🌱</div>
-                        <p>Henüz kimse bir şey paylaşmadı.<br/>İlk paylaşan sen ol!</p>
-                      </div>
-                    ) : (
-                      campusPosts.map(post => (
-                        <div key={post.id} className="campus-post-card" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
-                            {post.profiles?.avatar_url ? (
-                              <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                            ) : (
-                              <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
-                            )}
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                                <strong style={{ color: '#0f172a', fontSize: '15px' }}>{post.profiles?.full_name || 'İsimsiz'}</strong>
-                                <span style={{ color: '#94a3b8', fontSize: '12px' }}>
-                                  {(() => {
-                                    const diff = Date.now() - new Date(post.created_at).getTime();
-                                    const minutes = Math.floor(diff / 60000);
-                                    if (minutes < 1) return 'Az önce';
-                                    if (minutes < 60) return `${minutes}d`;
-                                    const hours = Math.floor(minutes / 60);
-                                    if (hours < 24) return `${hours}s`;
-                                    return `${Math.floor(hours / 24)}g`;
-                                  })()}
-                                </span>
-                              </div>
-                              <span style={{ fontSize: '12px', color: '#64748b' }}>{post.profiles?.department_name || post.university_name}</span>
-                            </div>
-                          </div>
-                          <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
-                          <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
-                            <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', padding: '4px 8px', borderRadius: '6px' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                              <span style={{ fontSize: '16px' }}>♡</span> {post.likes_count || 0}
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
+                </div>
+                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+                  <div style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+                    <p style={{ margin: 0, color: '#334155', fontSize: '15px', lineHeight: '1.6' }}>{selectedClub.description}</p>
                   </div>
-                </>
-              ) : (
-                <div className="campus-clubs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {campusClubs.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                      <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏆</div>
-                      <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Kulüpler Çok Yakında</h3>
-                      <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Üniversitene ait kulüpler çok yakında burada olacak.</p>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <h3 style={{ fontSize: '16px', color: '#0f172a', margin: 0 }}>Yaklaşan Etkinlikler</h3>
+                  </div>
+                  
+                  {clubEvents.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '40px 20px', background: '#fff', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📅</div>
+                      <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Yaklaşan etkinlik bulunmuyor, takipte kal!</p>
                     </div>
                   ) : (
-                    campusClubs.map(club => (
-                      <div key={club.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                        <div>
-                          <h4 style={{ margin: '0 0 4px 0', color: '#0f172a', fontSize: '16px' }}>{club.name}</h4>
-                          <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{club.description}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {clubEvents.map(ev => (
+                        <div key={ev.id} style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #3b82f6' }}>
+                          <h4 style={{ margin: '0 0 8px 0', color: '#0f172a', fontSize: '15px' }}>{ev.name}</h4>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '8px', fontSize: '12px', color: '#64748b' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>🕒 {new Date(ev.event_date).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>📍 {ev.location}</span>
+                          </div>
+                          {ev.description && (
+                            <p style={{ margin: '8px 0 0 0', color: '#475569', fontSize: '13px', lineHeight: '1.5' }}>{ev.description}</p>
+                          )}
                         </div>
-                        <button style={{ background: '#eff6ff', color: '#3b82f6', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'} onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}>İncele</button>
-                      </div>
-                    ))
+                      ))}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <>
+                <div className="browse-panel-header" style={{ padding: '16px 16px 0 16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <div>
+                      <div className="detail-label" style={{ color: '#3b82f6' }}>KAMPÜS</div>
+                      <h2 style={{ margin: 0, fontSize: '20px', color: '#0f172a' }}>
+                        {userProfileData.university_name || 'Kampüs'}
+                      </h2>
+                    </div>
+                    <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
+                  </div>
+                  
+                  {user && userProfileData.university_name && (
+                    <div style={{ display: 'flex' }}>
+                      <button onClick={() => setCampusTab('feed')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
+                      <button onClick={() => setCampusTab('clubs')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'clubs' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'clubs' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Kulüpler</button>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+                  {!user ? (
+                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                      <div style={{ fontSize: '40px', marginBottom: '16px' }}>🔒</div>
+                      <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Giriş Yapmalısınız</h3>
+                      <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüsünüzdeki gönderileri görmek ve paylaşım yapmak için lütfen giriş yapın.</p>
+                      <button onClick={openAuthModal} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Giriş Yap</button>
+                    </div>
+                  ) : !userProfileData.university_name ? (
+                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                      <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎓</div>
+                      <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Üniversitenizi Belirleyin</h3>
+                      <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
+                      <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
+                    </div>
+                  ) : campusTab === 'feed' ? (
+                    <>
+                      <div className="campus-composer" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                          {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
+                            <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                          ) : (
+                            <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
+                          )}
+                          <textarea
+                            value={newPostContent}
+                            onChange={(e) => setNewPostContent(e.target.value)}
+                            placeholder="Kampüste neler oluyor?"
+                            style={{ flex: 1, border: 'none', background: 'transparent', resize: 'none', fontSize: '15px', color: '#334155', minHeight: '60px', padding: '8px 0', outline: 'none' }}
+                          />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                          <button onClick={submitCampusPost} disabled={isSubmittingPost || !newPostContent.trim()} style={{ background: newPostContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '14px', transition: 'background 0.2s' }}>
+                            {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="campus-feed" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {campusPosts.length === 0 ? (
+                          <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b' }}>
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>🌱</div>
+                            <p>Henüz kimse bir şey paylaşmadı.<br/>İlk paylaşan sen ol!</p>
+                          </div>
+                        ) : (
+                          campusPosts.map(post => (
+                            <div key={post.id} className="campus-post-card" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
+                                {post.profiles?.avatar_url ? (
+                                  <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                                ) : (
+                                  <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
+                                )}
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                    <strong style={{ color: '#0f172a', fontSize: '15px' }}>{post.profiles?.full_name || 'İsimsiz'}</strong>
+                                    <span style={{ color: '#94a3b8', fontSize: '12px' }}>
+                                      {(() => {
+                                        const diff = Date.now() - new Date(post.created_at).getTime();
+                                        const minutes = Math.floor(diff / 60000);
+                                        if (minutes < 1) return 'Az önce';
+                                        if (minutes < 60) return `${minutes}d`;
+                                        const hours = Math.floor(minutes / 60);
+                                        if (hours < 24) return `${hours}s`;
+                                        return `${Math.floor(hours / 24)}g`;
+                                      })()}
+                                    </span>
+                                  </div>
+                                  <span style={{ fontSize: '12px', color: '#64748b' }}>{post.profiles?.department_name || post.university_name}</span>
+                                </div>
+                              </div>
+                              <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
+                              <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                                <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', padding: '4px 8px', borderRadius: '6px' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                                  <span style={{ fontSize: '16px' }}>♡</span> {post.likes_count || 0}
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="campus-clubs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      {campusClubs.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                          <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏆</div>
+                          <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Kulüpler Çok Yakında</h3>
+                          <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Üniversitene ait kulüpler çok yakında burada olacak.</p>
+                        </div>
+                      ) : (
+                        campusClubs.map(club => (
+                          <div key={club.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                            <div>
+                              <h4 style={{ margin: '0 0 4px 0', color: '#0f172a', fontSize: '16px' }}>{club.name}</h4>
+                              <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{club.description}</p>
+                            </div>
+                            <button onClick={() => setSelectedClub(club)} style={{ background: '#eff6ff', color: '#3b82f6', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'} onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}>İncele</button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </aside>
         )}
 
