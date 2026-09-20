@@ -732,8 +732,9 @@ function App() {
   const [preferenceOpen, setPreferenceOpen] =
     useState(false);
 
-  const [aboutOpen, setAboutOpen] =
-    useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [messagesOpen, setMessagesOpen] = useState(false);
+  const [inbox, setInbox] = useState([]);
 
   const [browseOpen, setBrowseOpen] =
     useState(false);
@@ -1050,14 +1051,10 @@ function App() {
     setPreferenceOpen(false);
     setAboutOpen(false);
     setBrowseOpen(false);
+    setMessagesOpen(false);
 
-    if (!isOpen) {
-      if (panel === "filters") {
-        setFiltersOpen(true);
-      } else {
-        setPreferenceOpen(true);
-      }
-    }
+    if (panel === "filters") setFiltersOpen(!isOpen);
+    else if (panel === "favorites") setPreferenceOpen(!isOpen);
   };
 
   const goHome = () => {
@@ -1065,6 +1062,7 @@ function App() {
     setPreferenceOpen(false);
     setAboutOpen(false);
     setBrowseOpen(false);
+    setMessagesOpen(false);
     setSelectedProgram(null);
     setSelectedUniversity(null);
   };
@@ -1080,7 +1078,16 @@ function App() {
     setFiltersOpen(false);
     setPreferenceOpen(false);
     setAboutOpen(false);
+    setMessagesOpen(false);
     setBrowseOpen(true);
+  };
+
+  const openMessages = () => {
+    setFiltersOpen(false);
+    setPreferenceOpen(false);
+    setAboutOpen(false);
+    setBrowseOpen(false);
+    setMessagesOpen(true);
   };
 
   const comparisonSummary =
@@ -2759,6 +2766,37 @@ const activeFilterCount = [
   const chatEndRef = useRef(null);
 
   useEffect(() => {
+    if (messagesOpen && user) {
+      const fetchInbox = async () => {
+        const { data: msgs } = await supabase
+          .from('messages')
+          .select('*')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .order('created_at', { ascending: false });
+        if (msgs) {
+          const convos = {};
+          msgs.forEach(m => {
+            const otherId = m.sender_id === user.id ? m.receiver_id : m.sender_id;
+            if (!convos[otherId]) convos[otherId] = m;
+          });
+          const otherIds = Object.keys(convos);
+          if (otherIds.length > 0) {
+            const { data: profs } = await supabase.from('profiles').select('*').in('id', otherIds);
+            const merged = otherIds.map(id => ({
+              otherUser: profs?.find(p => p.id === id) || { id, full_name: 'Bilinmiyor' },
+              latestMessage: convos[id]
+            })).sort((a, b) => new Date(b.latestMessage.created_at) - new Date(a.latestMessage.created_at));
+            setInbox(merged);
+          } else {
+            setInbox([]);
+          }
+        }
+      };
+      fetchInbox();
+    }
+  }, [messagesOpen, user]);
+
+  useEffect(() => {
     if (viewingProfile) {
       const fetchProfileContent = async () => {
         const { data: posts } = await supabase.from('posts').select('*, profiles(full_name, avatar_url)').eq('user_id', viewingProfile.id).order('created_at', { ascending: false });
@@ -2954,10 +2992,15 @@ const activeFilterCount = [
             <span style={{ fontSize: '22px' }}>🎓</span> Türkiye Üniversite Haritası
           </h1>
           
-          <div className="user-profile-section" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '4px 12px 4px 4px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', color: '#475569' }}>
-                <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '28px', height: '28px', borderRadius: '50%' }} />
+            <div className="user-profile-section" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {user && (
+                <button onClick={openMessages} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} title="Mesajlar">
+                  💬
+                </button>
+              )}
+              {user ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '4px 12px 4px 4px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', color: '#475569' }}>
+                  <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '28px', height: '28px', borderRadius: '50%' }} />
                 <span>{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
                 <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', marginLeft: '4px', color: '#ef4444', fontWeight: 'bold' }}>✕</button>
               </div>
@@ -5139,6 +5182,104 @@ const activeFilterCount = [
       {/* ========================================
           PROFIL VE TERCİH LİSTESİ
       ======================================== */}
+      {/* ========================================
+          MESSAGES DRAWER
+      ======================================== */}
+      {messagesOpen && (
+        <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column', background: '#fff', zIndex: 3000 }}>
+          {activeChatUser ? (
+              <>
+                <div className="preference-header" style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {activeChatUser.avatar_url ? (
+                        <img src={activeChatUser.avatar_url} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+                      ) : (
+                        <span style={{ background: '#3b82f6', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>👤</span>
+                      )}
+                      <div>
+                        <h2 style={{ margin: 0, fontSize: '16px', color: '#0f172a' }}>{activeChatUser.full_name || 'İsimsiz'}</h2>
+                        <div style={{ fontSize: '12px', color: '#64748b' }}>Sohbet</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: '16px', flex: 1, overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {chatMessages.length === 0 ? (
+                    <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
+                  ) : (
+                    chatMessages.map(msg => {
+                      const isMe = msg.sender_id === user?.id;
+                      return (
+                        <div key={msg.id} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
+                          <div style={{ background: isMe ? '#3b82f6' : '#e2e8f0', color: isMe ? '#fff' : '#0f172a', padding: '10px 14px', borderRadius: '16px', borderBottomRightRadius: isMe ? '4px' : '16px', borderBottomLeftRadius: !isMe ? '4px' : '16px', fontSize: '14px', lineHeight: '1.4' }}>
+                            {msg.content}
+                          </div>
+                          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', textAlign: isMe ? 'right' : 'left' }}>
+                            {new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      )
+                    })
+                  )}
+                  <div ref={chatEndRef} />
+                </div>
+                <div style={{ padding: '12px 16px', borderTop: '1px solid #e2e8f0', background: '#fff', display: 'flex', gap: '8px' }}>
+                  <input
+                    value={newMessageContent}
+                    onChange={e => setNewMessageContent(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
+                    placeholder="Mesaj yaz..."
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', outline: 'none' }}
+                  />
+                  <button onClick={sendMessage} disabled={!newMessageContent.trim()} style={{ background: newMessageContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '20px', fontWeight: 'bold', cursor: newMessageContent.trim() ? 'pointer' : 'not-allowed' }}>Gönder</button>
+                </div>
+              </>
+          ) : (
+            <>
+              <div className="preference-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+                <div>
+                  <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
+                    💬 Mesajlar
+                  </h2>
+                </div>
+                <button className="close-button" onClick={() => setMessagesOpen(false)}>×</button>
+              </div>
+              
+              <div style={{ flex: 1, overflowY: 'auto' }}>
+                {!user ? (
+                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>Mesajları görmek için giriş yapmalısınız.</div>
+                ) : inbox.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>Henüz hiçbir mesajınız yok.</div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {inbox.map((conv, idx) => (
+                      <div key={idx} onClick={() => setActiveChatUser(conv.otherUser)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderBottom: '1px solid #e2e8f0', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                        {conv.otherUser.avatar_url ? (
+                          <img src={conv.otherUser.avatar_url} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold' }}>👤</div>
+                        )}
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                          <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{conv.otherUser.full_name || 'İsimsiz'}</h4>
+                          <p style={{ margin: 0, fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {conv.latestMessage.sender_id === user.id ? 'Siz: ' : ''}{conv.latestMessage.content}
+                          </p>
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                          {new Date(conv.latestMessage.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </aside>
+      )}
+
       {preferenceOpen && (
         <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column' }}>
           <div className="preference-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
@@ -5829,15 +5970,19 @@ const activeFilterCount = [
       {/* MOBİL ALT MENÜ (Glassmorphism) */}
       <nav className={`mobile-bottom-bar ${isAnyModalOpen ? 'nav-hidden' : ''}`}>
         <button type="button" onClick={openBrowse}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>🎓</span>
-          <span>Keşfet</span>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>🌍</span>
+          <span>Kampüs</span>
+        </button>
+        <button type="button" onClick={openMessages}>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>💬</span>
+          <span>Mesajlar</span>
         </button>
         <button type="button" onClick={() => toggleFloatingPanel("favorites")}>
           <span style={{fontSize: '20px', marginBottom: '2px'}}>👤</span>
           <span>Profilim</span>
         </button>
         <button type="button" onClick={() => setFiltersOpen(true)}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>⚙</span>
+          <span style={{fontSize: '20px', marginBottom: '2px'}}>⚡</span>
           <span>Filtreler</span>
         </button>
       </nav>
