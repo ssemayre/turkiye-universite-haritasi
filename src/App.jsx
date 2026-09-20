@@ -2750,6 +2750,7 @@ const activeFilterCount = [
   const [clubEvents, setClubEvents] = useState([]);
   
   const [campusListings, setCampusListings] = useState([]);
+  const [dailyMenu, setDailyMenu] = useState(null);
   const [isListingModalOpen, setIsListingModalOpen] = useState(false);
   const [listingCategory, setListingCategory] = useState('İkinci El');
   const [listingTitle, setListingTitle] = useState('');
@@ -2883,6 +2884,22 @@ const activeFilterCount = [
     }
   }, [selectedClub]);
 
+  const fetchDailyMenu = async () => {
+    if (!userProfileData.university_name) return;
+    const offset = new Date().getTimezoneOffset() * 60000;
+    const todayLocal = new Date(Date.now() - offset).toISOString().split('T')[0];
+    
+    const { data } = await supabase
+      .from('dining_menus')
+      .select('*')
+      .eq('university_name', userProfileData.university_name)
+      .eq('menu_date', todayLocal)
+      .maybeSingle();
+      
+    if (data) setDailyMenu(data);
+    else setDailyMenu(null);
+  };
+
   const fetchCampusListings = async () => {
     if (!userProfileData.university_name) return;
     const { data, error } = await supabase
@@ -2917,6 +2934,7 @@ const activeFilterCount = [
       fetchCampusPosts();
       fetchCampusClubs();
       fetchCampusListings();
+      fetchDailyMenu();
     }
   }, [browseOpen, userProfileData.university_name]);
 
@@ -3515,6 +3533,15 @@ const activeFilterCount = [
                     </div>
                   ) : campusTab === 'feed' ? (
                     <>
+                      {dailyMenu && (
+                        <div style={{ background: '#ecfdf5', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'flex-start', gap: '12px', border: '1px solid #d1fae5', marginBottom: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                          <span style={{ fontSize: '24px', flexShrink: 0 }}>🍽️</span>
+                          <div>
+                            <h4 style={{ margin: '0 0 4px 0', color: '#065f46', fontSize: '15px' }}>Günün Menüsü</h4>
+                            <p style={{ margin: 0, color: '#047857', fontSize: '14px', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>{dailyMenu.content}</p>
+                          </div>
+                        </div>
+                      )}
                       <div className="campus-composer" style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                         <div style={{ display: 'flex', gap: '12px' }}>
                           {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
