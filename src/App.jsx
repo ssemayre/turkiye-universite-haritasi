@@ -3077,7 +3077,8 @@ const activeFilterCount = [
 
   const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
-    <div className="app" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
+    <>
+      <div className="app" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
 
       {/* ========================================
           UNIFIED MOBILE & DESKTOP HEADER
@@ -6057,12 +6058,13 @@ const activeFilterCount = [
           <span>Filtreler</span>
         </button>
       </nav>
+    </div>
 
       {/* ========================================
           ROOT-LEVEL INDEPENDENT CHAT MODAL
       ======================================== */}
       {activeChatUser && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999, backgroundColor: '#fff', display: 'flex', flexDirection: 'column', height: '100dvh' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999, backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
           
           <div style={{ flexShrink: 0, borderBottom: '1px solid #eaeaea', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
@@ -6113,7 +6115,7 @@ const activeFilterCount = [
         </div>
       )}
 
-    </div>
+    </>
   );
 }
 
