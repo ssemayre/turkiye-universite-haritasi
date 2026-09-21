@@ -279,6 +279,7 @@ function App() {
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewContent, setReviewContent] = useState('');
+  const [isAnonymousReview, setIsAnonymousReview] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
 
@@ -357,7 +358,8 @@ function App() {
       university_id: selectedSubCampus.id,
       user_id: user.id,
       rating: reviewRating,
-      content: reviewContent
+      content: reviewContent,
+      is_anonymous: isAnonymousReview
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
 
     setIsSubmittingReview(false);
@@ -368,6 +370,7 @@ function App() {
       setIsReviewFormOpen(false);
       setReviewRating(0);
       setReviewContent('');
+      setIsAnonymousReview(false);
 
       // Optimistic UI fallback if join didn't return profile
       const newReview = data;
@@ -2814,6 +2817,7 @@ const activeFilterCount = [
   // --- KAMPÜS FEED YAPISI ---
   const [campusPosts, setCampusPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
+  const [isAnonymousPost, setIsAnonymousPost] = useState(false);
   const [isSubmittingPost, setIsSubmittingPost] = useState(false);
   const [campusTab, setCampusTab] = useState('feed');
   const [campusClubs, setCampusClubs] = useState([]);
@@ -3054,7 +3058,8 @@ const activeFilterCount = [
     const { data, error } = await supabase.from('posts').insert({
       user_id: user.id,
       university_name: userProfileData.university_name,
-      content: newPostContent
+      content: newPostContent,
+      is_anonymous: isAnonymousPost
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
     
     setIsSubmittingPost(false);
@@ -3062,6 +3067,7 @@ const activeFilterCount = [
       alert('Gönderi paylaşılırken hata oluştu: ' + error.message);
     } else {
       setNewPostContent('');
+      setIsAnonymousPost(false);
       const newPost = data;
       if (newPost && !newPost.profiles) {
         newPost.profiles = {
@@ -3598,7 +3604,11 @@ const activeFilterCount = [
                             style={{ flex: 1, border: 'none', background: 'transparent', resize: 'none', fontSize: '15px', color: '#334155', minHeight: '60px', padding: '8px 0', outline: 'none' }}
                           />
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#64748b' }}>
+                            <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} />
+                            👻 Anonim Paylaş
+                          </label>
                           <button onClick={submitCampusPost} disabled={isSubmittingPost || !newPostContent.trim()} style={{ background: newPostContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '14px', transition: 'background 0.2s' }}>
                             {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
                           </button>
@@ -3613,18 +3623,22 @@ const activeFilterCount = [
                           </div>
                         ) : (
                           campusPosts.map(post => (
-                            <div key={post.id} className="campus-post-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
-                                <div style={{ cursor: 'pointer' }} onClick={() => setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
-                                  {post.profiles?.avatar_url ? (
-                                    <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                                  ) : (
-                                    <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
-                                  )}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                                    <strong onClick={() => setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })} style={{ color: '#0f172a', fontSize: '15px', cursor: 'pointer' }}>{post.profiles?.full_name || 'İsimsiz'}</strong>
+                              <div key={post.id} className="campus-post-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
+                                  <div style={{ cursor: post.is_anonymous ? 'default' : 'pointer' }} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
+                                    {post.is_anonymous ? (
+                                      <span style={{ background: '#64748b', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>🎭</span>
+                                    ) : post.profiles?.avatar_url ? (
+                                      <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                                    ) : (
+                                      <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
+                                    )}
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                      <strong onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })} style={{ color: '#0f172a', fontSize: '15px', cursor: post.is_anonymous ? 'default' : 'pointer' }}>
+                                        {post.is_anonymous ? 'Anonim' : (post.profiles?.full_name || 'İsimsiz')}
+                                      </strong>
                                     <span style={{ color: '#94a3b8', fontSize: '12px' }}>
                                       {(() => {
                                         const diff = Date.now() - new Date(post.created_at).getTime();
@@ -4839,21 +4853,27 @@ const activeFilterCount = [
                         placeholder="Bu yerleşke hakkında ne düşünüyorsunuz?"
                         style={{ width: '100%', height: '80px', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', resize: 'vertical', fontFamily: 'inherit', fontSize: '14px', boxSizing: 'border-box', marginBottom: '15px' }}
                       />
-                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <button 
-                          onClick={() => setIsReviewFormOpen(false)}
-                          style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', color: '#64748b', cursor: 'pointer', fontWeight: '500' }}
-                          disabled={isSubmittingReview}
-                        >
-                          İptal
-                        </button>
-                        <button 
-                          onClick={submitReview}
-                          style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', background: '#3b82f6', color: 'white', cursor: 'pointer', fontWeight: '500' }}
-                          disabled={isSubmittingReview}
-                        >
-                          {isSubmittingReview ? 'Gönderiliyor...' : 'Gönder'}
-                        </button>
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#64748b' }}>
+                          <input type="checkbox" checked={isAnonymousReview} onChange={e => setIsAnonymousReview(e.target.checked)} />
+                          👻 Anonim
+                        </label>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button 
+                            onClick={() => setIsReviewFormOpen(false)}
+                            style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', color: '#64748b', cursor: 'pointer', fontWeight: '500' }}
+                            disabled={isSubmittingReview}
+                          >
+                            İptal
+                          </button>
+                          <button 
+                            onClick={submitReview}
+                            style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', background: '#3b82f6', color: 'white', cursor: 'pointer', fontWeight: '500' }}
+                            disabled={isSubmittingReview}
+                          >
+                            {isSubmittingReview ? 'Gönderiliyor...' : 'Gönder'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -4874,7 +4894,9 @@ const activeFilterCount = [
                       return (
                       <div key={review.id} className="csd-review-card">
                           <div className="csd-review-top" style={{ alignItems: 'flex-start' }}>
-                            {review.profiles?.avatar_url ? (
+                            {review.is_anonymous ? (
+                              <span className="csd-review-avatar" style={{ background: '#64748b', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>🎭</span>
+                            ) : review.profiles?.avatar_url ? (
                               <img src={review.profiles.avatar_url} alt="Avatar" className="csd-review-avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                             ) : (
                               <span className="csd-review-avatar" style={{ background: '#3b82f6', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', flexShrink: 0 }}>
@@ -4883,10 +4905,10 @@ const activeFilterCount = [
                             )}
                             <div className="csd-review-meta" style={{ flex: 1, minWidth: 0, paddingRight: '8px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                                <span className="csd-review-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{review.profiles?.full_name }</span>
+                                <span className="csd-review-author" style={{ fontWeight: 'bold', color: '#0f172a' }}>{review.is_anonymous ? 'Anonim' : review.profiles?.full_name}</span>
                                 <span className="csd-review-date" style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(review.created_at).toLocaleDateString('tr-TR')}</span>
                               </div>
-                              {(review.profiles?.university_name || review.profiles?.department_name) && (
+                              {(!review.is_anonymous && (review.profiles?.university_name || review.profiles?.department_name)) && (
                                 <span style={{ fontSize: '11px', color: '#3b82f6', background: '#eff6ff', padding: '2px 6px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>
                                   {review.profiles?.university_name} {review.profiles?.department_name && `- ${review.profiles?.department_name}`}
                                 </span>
