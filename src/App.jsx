@@ -3059,7 +3059,7 @@ const activeFilterCount = [
       user_id: user.id,
       university_name: userProfileData.university_name,
       content: newPostContent,
-      is_anonymous: campusTab === 'confessions' ? true : isAnonymousPost
+      is_anonymous: isAnonymousPost
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
     
     setIsSubmittingPost(false);
@@ -3556,9 +3556,9 @@ const activeFilterCount = [
                   </div>
                   
                   {user && userProfileData.university_name && (
-                    <div style={{ display: 'flex' }}>
-                      <button onClick={() => setCampusTab('feed')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
-                      <button onClick={() => setCampusTab('confessions')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'confessions' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'confessions' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>İtiraflar</button>
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                      <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
+                      <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'confessions' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'confessions' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>İtiraflar</button>
                       <button onClick={() => setCampusTab('clubs')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'clubs' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'clubs' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Kulüpler</button>
                       <button onClick={() => setCampusTab('listings')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'listings' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'listings' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Pano</button>
                     </div>
@@ -3605,8 +3605,8 @@ const activeFilterCount = [
                             style={{ flex: 1, border: 'none', background: 'transparent', resize: 'none', fontSize: '15px', color: '#334155', minHeight: '60px', padding: '8px 0', outline: 'none' }}
                           />
                         </div>
-                        <div style={{ display: 'flex', justifyContent: campusTab === 'confessions' ? 'flex-end' : 'space-between', alignItems: 'center', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
-                          {campusTab !== 'confessions' && (
+                        <div style={{ display: 'flex', justifyContent: campusTab === 'confessions' ? 'space-between' : 'flex-end', alignItems: 'center', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                          {campusTab === 'confessions' && (
                             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#64748b' }}>
                               <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} />
                               👻 Anonim Paylaş
