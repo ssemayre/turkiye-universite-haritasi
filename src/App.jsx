@@ -3059,7 +3059,8 @@ const activeFilterCount = [
       user_id: user.id,
       university_name: userProfileData.university_name,
       content: newPostContent,
-      is_anonymous: isAnonymousPost
+      is_anonymous: isAnonymousPost,
+      category: campusTab === 'confessions' ? 'confessions' : 'feed'
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
     
     setIsSubmittingPost(false);
@@ -3619,13 +3620,19 @@ const activeFilterCount = [
                       </div>
 
                       <div className="campus-feed" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {campusPosts.filter(post => campusTab === 'confessions' ? post.is_anonymous : !post.is_anonymous).length === 0 ? (
+                        {campusPosts.filter(post => {
+                          const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
+                          return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
+                        }).length === 0 ? (
                           <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b' }}>
                             <div style={{ fontSize: '32px', marginBottom: '8px' }}>📝</div>
                             <p>Henüz kimse bir şey paylaşmadı.<br/>İlk paylaşan sen ol!</p>
                           </div>
                         ) : (
-                          campusPosts.filter(post => campusTab === 'confessions' ? post.is_anonymous : !post.is_anonymous).map(post => (
+                          campusPosts.filter(post => {
+                            const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
+                            return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
+                          }).map(post => (
                               <div key={post.id} className="campus-post-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
                                   <div style={{ cursor: post.is_anonymous ? 'default' : 'pointer' }} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
