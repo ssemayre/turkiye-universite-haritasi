@@ -2875,7 +2875,7 @@ const activeFilterCount = [
   useEffect(() => {
     if (viewingProfile) {
       const fetchProfileContent = async () => {
-        const { data: posts } = await supabase.from('posts').select('*, profiles(full_name, avatar_url)').eq('user_id', viewingProfile.id).order('created_at', { ascending: false });
+        const { data: posts } = await supabase.from('posts').select('*, profiles(full_name, avatar_url)').eq('user_id', viewingProfile.id).neq('is_anonymous', true).order('created_at', { ascending: false });
         const { data: listings } = await supabase.from('listings').select('*, profiles(full_name, avatar_url)').eq('user_id', viewingProfile.id).order('created_at', { ascending: false });
         setProfileContent({ posts: posts || [], listings: listings || [] });
       };
@@ -3059,7 +3059,7 @@ const activeFilterCount = [
       user_id: user.id,
       university_name: userProfileData.university_name,
       content: newPostContent,
-      is_anonymous: isAnonymousPost
+      is_anonymous: campusTab === 'confessions' ? true : isAnonymousPost
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
     
     setIsSubmittingPost(false);
@@ -3558,6 +3558,7 @@ const activeFilterCount = [
                   {user && userProfileData.university_name && (
                     <div style={{ display: 'flex' }}>
                       <button onClick={() => setCampusTab('feed')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
+                      <button onClick={() => setCampusTab('confessions')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'confessions' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'confessions' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>İtiraflar</button>
                       <button onClick={() => setCampusTab('clubs')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'clubs' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'clubs' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Kulüpler</button>
                       <button onClick={() => setCampusTab('listings')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'listings' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'listings' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Pano</button>
                     </div>
@@ -3579,9 +3580,9 @@ const activeFilterCount = [
                       <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
                       <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
                     </div>
-                  ) : campusTab === 'feed' ? (
+                  ) : (campusTab === 'feed' || campusTab === 'confessions') ? (
                     <>
-                      {dailyMenu && (
+                      {campusTab === 'feed' && dailyMenu && (
                         <div style={{ background: '#ecfdf5', borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px', border: '1px solid #d1fae5', marginBottom: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                           <span style={{ fontSize: '24px', flexShrink: 0 }}>🍽️</span>
                           <div>
@@ -3600,15 +3601,17 @@ const activeFilterCount = [
                           <textarea
                             value={newPostContent}
                             onChange={(e) => setNewPostContent(e.target.value)}
-                            placeholder="Kampüste neler oluyor?"
+                            placeholder={campusTab === 'confessions' ? "İçindekileri dök, tamamen anonimsin..." : "Kampüste neler oluyor?"}
                             style={{ flex: 1, border: 'none', background: 'transparent', resize: 'none', fontSize: '15px', color: '#334155', minHeight: '60px', padding: '8px 0', outline: 'none' }}
                           />
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#64748b' }}>
-                            <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} />
-                            👻 Anonim Paylaş
-                          </label>
+                        <div style={{ display: 'flex', justifyContent: campusTab === 'confessions' ? 'flex-end' : 'space-between', alignItems: 'center', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                          {campusTab !== 'confessions' && (
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#64748b' }}>
+                              <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} />
+                              👻 Anonim Paylaş
+                            </label>
+                          )}
                           <button onClick={submitCampusPost} disabled={isSubmittingPost || !newPostContent.trim()} style={{ background: newPostContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '14px', transition: 'background 0.2s' }}>
                             {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
                           </button>
@@ -3616,13 +3619,13 @@ const activeFilterCount = [
                       </div>
 
                       <div className="campus-feed" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {campusPosts.length === 0 ? (
+                        {campusPosts.filter(post => campusTab === 'confessions' ? post.is_anonymous : !post.is_anonymous).length === 0 ? (
                           <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b' }}>
-                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>🌱</div>
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📝</div>
                             <p>Henüz kimse bir şey paylaşmadı.<br/>İlk paylaşan sen ol!</p>
                           </div>
                         ) : (
-                          campusPosts.map(post => (
+                          campusPosts.filter(post => campusTab === 'confessions' ? post.is_anonymous : !post.is_anonymous).map(post => (
                               <div key={post.id} className="campus-post-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
                                   <div style={{ cursor: post.is_anonymous ? 'default' : 'pointer' }} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
@@ -3651,9 +3654,11 @@ const activeFilterCount = [
                                       })()}
                                     </span>
                                   </div>
-                                  <span style={{ fontSize: '12px', color: '#64748b' }}>{post.profiles?.department_name || post.university_name}</span>
+                                    {!post.is_anonymous && (
+                                      <span style={{ fontSize: '12px', color: '#64748b' }}>{post.profiles?.department_name || post.university_name}</span>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
                               <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
                               <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
                                 <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', padding: '4px 8px', borderRadius: '6px' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
