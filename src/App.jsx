@@ -3432,57 +3432,8 @@ const activeFilterCount = [
 </MapContainer>
         </div>
         {browseOpen && (
-          <aside className={activeChatUser ? "" : "browse-panel"} style={activeChatUser ? { position: 'fixed', bottom: 0, left: 0, right: 0, top: '15%', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', zIndex: 9999, borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', boxShadow: '0 -4px 10px rgba(0,0,0,0.1)' } : { display: 'flex', flexDirection: 'column' }}>
-            {activeChatUser ? (
-              <>
-                <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {activeChatUser.avatar_url ? (
-                        <img src={activeChatUser.avatar_url} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
-                      ) : (
-                        <span style={{ background: '#3b82f6', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>👤</span>
-                      )}
-                      <div>
-                        <h2 style={{ margin: 0, fontSize: '16px', color: '#0f172a' }}>{activeChatUser.full_name || 'İsimsiz'}</h2>
-                        <div style={{ fontSize: '12px', color: '#64748b' }}>Sohbet</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {chatMessages.length === 0 ? (
-                    <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
-                  ) : (
-                    chatMessages.map(msg => {
-                      const isMe = msg.sender_id === user.id;
-                      return (
-                        <div key={msg.id} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
-                          <div style={{ background: isMe ? '#3b82f6' : '#e2e8f0', color: isMe ? '#fff' : '#0f172a', padding: '10px 14px', borderRadius: '16px', borderBottomRightRadius: isMe ? '4px' : '16px', borderBottomLeftRadius: !isMe ? '4px' : '16px', fontSize: '14px', lineHeight: '1.4' }}>
-                            {msg.content}
-                          </div>
-                          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', textAlign: isMe ? 'right' : 'left' }}>
-                            {new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                          </div>
-                        </div>
-                      )
-                    })
-                  )}
-                  <div ref={chatEndRef} />
-                </div>
-                <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid #eaeaea', backgroundColor: '#fff', display: 'flex', gap: '8px' }}>
-                  <input
-                    value={newMessageContent}
-                    onChange={e => setNewMessageContent(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
-                    placeholder="Mesaj yaz..."
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', outline: 'none' }}
-                  />
-                  <button onClick={sendMessage} disabled={!newMessageContent.trim()} style={{ background: newMessageContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '20px', fontWeight: 'bold', cursor: newMessageContent.trim() ? 'pointer' : 'not-allowed' }}>Gönder</button>
-                </div>
-              </>
-            ) : viewingProfile ? (
+          <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+            {viewingProfile ? (
               <>
                 <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -5347,60 +5298,10 @@ const activeFilterCount = [
         </aside>
       )}
 
-      {messagesOpen && (
+      {messagesOpen && !activeChatUser && (
         <aside style={{ position: 'fixed', bottom: 0, left: 0, right: 0, top: '15%', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', zIndex: 9999, borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', boxShadow: '0 -4px 10px rgba(0,0,0,0.1)' }}>
-          {activeChatUser ? (
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {activeChatUser.avatar_url ? (
-                        <img src={activeChatUser.avatar_url} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
-                      ) : (
-                        <span style={{ background: '#3b82f6', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>👤</span>
-                      )}
-                      <div>
-                        <h2 style={{ margin: 0, fontSize: '16px', color: '#0f172a' }}>{activeChatUser.full_name || 'İsimsiz'}</h2>
-                        <div style={{ fontSize: '12px', color: '#64748b' }}>Sohbet</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style={{ flex: 1, overflowY: 'auto', padding: '16px', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {chatMessages.length === 0 ? (
-                    <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
-                  ) : (
-                    chatMessages.map(msg => {
-                      const isMe = msg.sender_id === user?.id;
-                      return (
-                        <div key={msg.id} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
-                          <div style={{ background: isMe ? '#3b82f6' : '#e2e8f0', color: isMe ? '#fff' : '#0f172a', padding: '10px 14px', borderRadius: '16px', borderBottomRightRadius: isMe ? '4px' : '16px', borderBottomLeftRadius: !isMe ? '4px' : '16px', fontSize: '14px', lineHeight: '1.4' }}>
-                            {msg.content}
-                          </div>
-                          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', textAlign: isMe ? 'right' : 'left' }}>
-                            {new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                          </div>
-                        </div>
-                      )
-                    })
-                  )}
-                  <div ref={chatEndRef} />
-                </div>
-                <div style={{ flexShrink: 0, padding: '16px', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', borderTop: '1px solid #eaeaea', backgroundColor: '#fff', display: 'flex', gap: '8px' }}>
-                  <input
-                    value={newMessageContent}
-                    onChange={e => setNewMessageContent(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
-                    placeholder="Mesaj yaz..."
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', outline: 'none' }}
-                  />
-                  <button onClick={sendMessage} disabled={!newMessageContent.trim()} style={{ background: newMessageContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '20px', fontWeight: 'bold', cursor: newMessageContent.trim() ? 'pointer' : 'not-allowed' }}>Gönder</button>
-                </div>
-              </div>
-          ) : (
-            <>
-              <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+          <>
+            <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
                 <div>
                   <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
                     💬 Mesajlar
@@ -5438,7 +5339,6 @@ const activeFilterCount = [
                 )}
               </div>
             </>
-          )}
         </aside>
       )}
 
@@ -6157,6 +6057,61 @@ const activeFilterCount = [
           <span>Filtreler</span>
         </button>
       </nav>
+
+      {/* ========================================
+          ROOT-LEVEL INDEPENDENT CHAT MODAL
+      ======================================== */}
+      {activeChatUser && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999, backgroundColor: '#fff', display: 'flex', flexDirection: 'column', height: '100dvh' }}>
+          
+          <div style={{ flexShrink: 0, borderBottom: '1px solid #eaeaea', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button onClick={() => setActiveChatUser(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>←</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {activeChatUser.avatar_url ? (
+                <img src={activeChatUser.avatar_url} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <span style={{ background: '#3b82f6', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>👤</span>
+              )}
+              <div>
+                <h2 style={{ margin: 0, fontSize: '16px', color: '#0f172a' }}>{activeChatUser.full_name || 'İsimsiz'}</h2>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>Sohbet</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {chatMessages.length === 0 ? (
+              <div style={{ textAlign: 'center', marginTop: '20px', color: '#94a3b8', fontSize: '14px' }}>Sohbeti başlatın...</div>
+            ) : (
+              chatMessages.map(msg => {
+                const isMe = msg.sender_id === user?.id;
+                return (
+                  <div key={msg.id} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
+                    <div style={{ background: isMe ? '#3b82f6' : '#e2e8f0', color: isMe ? '#fff' : '#0f172a', padding: '10px 14px', borderRadius: '16px', borderBottomRightRadius: isMe ? '4px' : '16px', borderBottomLeftRadius: !isMe ? '4px' : '16px', fontSize: '14px', lineHeight: '1.4' }}>
+                      {msg.content}
+                    </div>
+                    <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', textAlign: isMe ? 'right' : 'left' }}>
+                      {new Date(msg.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                )
+              })
+            )}
+            <div ref={chatEndRef} />
+          </div>
+
+          <div style={{ flexShrink: 0, padding: '16px', borderTop: '1px solid #eaeaea', backgroundColor: '#fff', paddingBottom: 'max(16px, env(safe-area-inset-bottom))', display: 'flex', gap: '8px' }}>
+            <input
+              value={newMessageContent}
+              onChange={e => setNewMessageContent(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
+              placeholder="Mesaj yaz..."
+              style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', outline: 'none' }}
+            />
+            <button onClick={sendMessage} disabled={!newMessageContent.trim()} style={{ background: newMessageContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '20px', fontWeight: 'bold', cursor: newMessageContent.trim() ? 'pointer' : 'not-allowed' }}>Gönder</button>
+          </div>
+        </div>
+      )}
 
     </div>
   );
