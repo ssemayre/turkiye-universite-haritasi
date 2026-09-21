@@ -3432,7 +3432,7 @@ const activeFilterCount = [
 </MapContainer>
         </div>
         {browseOpen && (
-          <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+          <aside className={activeChatUser ? "" : "browse-panel"} style={activeChatUser ? { position: 'fixed', bottom: 0, left: 0, right: 0, top: '15%', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', zIndex: 9999, borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', boxShadow: '0 -4px 10px rgba(0,0,0,0.1)' } : { display: 'flex', flexDirection: 'column' }}>
             {activeChatUser ? (
               <>
                 <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
