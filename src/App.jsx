@@ -741,6 +741,9 @@ function App() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
+  // --- MOBİL İÇİN YENİ SOSYAL NAVİGASYON ---
+  const [mainTab, setMainTab] = useState('home'); // 'home' | 'map' | 'compose' | 'notifications' | 'profile'
+
   const [browseOpen, setBrowseOpen] =
     useState(false);
 
@@ -3012,13 +3015,13 @@ const activeFilterCount = [
   };
 
   useEffect(() => {
-    if (browseOpen && userProfileData.university_name) {
+    if ((browseOpen || mainTab === 'home') && userProfileData.university_name) {
       fetchCampusPosts();
       fetchCampusClubs();
       fetchCampusListings();
       fetchDailyMenu();
     }
-  }, [browseOpen, userProfileData.university_name]);
+  }, [browseOpen, mainTab, userProfileData.university_name]);
 
   const submitListing = async () => {
     if (!listingTitle.trim() || !listingDescription.trim()) return;
@@ -3090,7 +3093,7 @@ const activeFilterCount = [
       {/* ========================================
           UNIFIED MOBILE & DESKTOP HEADER
       ======================================== */}
-      <header className="header-unified" style={{ flexShrink: 0, position: 'relative', zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
+      <header className={`header-unified ${mainTab === 'home' ? 'hide-mobile' : ''}`} style={{ flexShrink: 0, position: 'relative', zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: mainTab === 'home' ? 'none' : 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
         
         {/* Satır 1: Başlık ve Kullanıcı Profil */}
         <div className="logo-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -3232,7 +3235,7 @@ const activeFilterCount = [
       {/* ========================================
           MAP
       ======================================== */}
-      <main className="map-area-unified" style={{ flex: 1, display: 'flex', flexDirection: 'row', position: 'relative', width: '100%', overflow: 'hidden', zIndex: 10 }}>
+      <main className="map-area-unified" style={{ flex: 1, display: mainTab === 'map' ? 'flex' : 'none', flexDirection: 'row', position: 'relative', width: '100%', overflow: 'hidden', zIndex: 10 }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <MapContainer
             center={[
@@ -3439,8 +3442,8 @@ const activeFilterCount = [
 
 </MapContainer>
         </div>
-        {browseOpen && (
-          <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
+        {(browseOpen || mainTab === 'home') && (
+          <aside className={mainTab === 'home' ? 'social-home-panel' : 'browse-panel'} style={{ display: 'flex', flexDirection: 'column', flex: mainTab === 'home' ? 1 : undefined, position: mainTab === 'home' ? 'relative' : undefined, width: mainTab === 'home' ? '100%' : undefined, height: mainTab === 'home' ? '100%' : undefined, background: '#f8fafc', zIndex: mainTab === 'home' ? 5 : undefined }}>
             {viewingProfile ? (
               <>
                 <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
@@ -3553,15 +3556,15 @@ const activeFilterCount = [
                         {userProfileData.university_name || 'Kampüs'}
                       </h2>
                     </div>
-                    <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
+                    {mainTab !== 'home' && (
+                      <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
+                    )}
                   </div>
                   
                   {user && userProfileData.university_name && (
                     <div style={{ display: 'flex', gap: '16px' }}>
                       <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'feed' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'feed' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Akış</button>
                       <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'confessions' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'confessions' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>İtiraflar</button>
-                      <button onClick={() => setCampusTab('clubs')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'clubs' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'clubs' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Kulüpler</button>
-                      <button onClick={() => setCampusTab('listings')} style={{ flex: 1, padding: '12px 0', background: 'none', border: 'none', borderBottom: campusTab === 'listings' ? '2px solid #3b82f6' : '2px solid transparent', color: campusTab === 'listings' ? '#3b82f6' : '#64748b', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', fontSize: '15px' }}>Pano</button>
                     </div>
                   )}
                 </div>
@@ -3669,7 +3672,10 @@ const activeFilterCount = [
                               <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
                               <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
                                 <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', padding: '4px 8px', borderRadius: '6px' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                                  <span style={{ fontSize: '16px' }}>♡</span> {post.likes_count || 0}
+                                  <span style={{ fontSize: '16px' }}>❤️</span> {post.likes_count || 0}
+                                </button>
+                                <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', padding: '4px 8px', borderRadius: '6px' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                                  <span style={{ fontSize: '16px' }}>💬</span> Yorum Yap
                                 </button>
                               </div>
                             </div>
@@ -6064,32 +6070,33 @@ const activeFilterCount = [
         </div>
 
       )}
-      {/* MOBİL ALT MENÜ (Glassmorphism) */}
-      <nav className={`mobile-bottom-bar ${isAnyModalOpen ? 'nav-hidden' : ''}`}>
-        <button type="button" onClick={openBrowse}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>🌍</span>
-          <span>Kampüs</span>
+      {/* MOBİL ALT MENÜ (Social UI) */}
+      <nav className={`mobile-bottom-bar`} style={{ zIndex: 50, background: '#fff', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '8px 0', paddingBottom: 'max(8px, env(safe-area-inset-bottom))', position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+        <button type="button" onClick={() => { setMainTab('home'); setBrowseOpen(false); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: mainTab === 'home' ? '#3b82f6' : '#94a3b8', flex: 1 }}>
+          <span style={{fontSize: '24px', marginBottom: '2px'}}>🏠</span>
+          <span style={{fontSize: '10px', fontWeight: mainTab === 'home' ? 'bold' : 'normal'}}>Ana Sayfa</span>
         </button>
-        <button type="button" onClick={openNotifications} style={{ position: 'relative' }}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>🔔</span>
-          <span>Bildirimler</span>
+        <button type="button" onClick={() => { setMainTab('map'); setBrowseOpen(false); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: mainTab === 'map' ? '#3b82f6' : '#94a3b8', flex: 1 }}>
+          <span style={{fontSize: '24px', marginBottom: '2px'}}>📍</span>
+          <span style={{fontSize: '10px', fontWeight: mainTab === 'map' ? 'bold' : 'normal'}}>Harita</span>
+        </button>
+        <button type="button" onClick={() => { setMainTab('home'); setBrowseOpen(false); /* scrollToComposer */ }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', flex: 1, position: 'relative', top: '-10px' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', boxShadow: '0 4px 10px rgba(59,130,246,0.4)' }}>
+            ➕
+          </div>
+        </button>
+        <button type="button" onClick={openNotifications} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: '#94a3b8', flex: 1 }}>
+          <span style={{fontSize: '24px', marginBottom: '2px'}}>🔔</span>
+          <span style={{fontSize: '10px'}}>Bildirimler</span>
           {notifications.filter(n => !n.is_read).length > 0 && (
-            <span style={{ position: 'absolute', top: '4px', right: '14px', background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 'bold', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ position: 'absolute', top: '0px', right: '50%', marginRight: '-12px', background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 'bold', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {notifications.filter(n => !n.is_read).length}
             </span>
           )}
         </button>
-        <button type="button" onClick={openMessages}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>💬</span>
-          <span>Mesajlar</span>
-        </button>
-        <button type="button" onClick={() => toggleFloatingPanel("favorites")}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>👤</span>
-          <span>Profilim</span>
-        </button>
-        <button type="button" onClick={() => setFiltersOpen(true)}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>⚡</span>
-          <span>Filtreler</span>
+        <button type="button" onClick={() => toggleFloatingPanel("favorites")} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: '#94a3b8', flex: 1 }}>
+          <span style={{fontSize: '24px', marginBottom: '2px'}}>👤</span>
+          <span style={{fontSize: '10px'}}>Profil</span>
         </button>
       </nav>
     </div>
