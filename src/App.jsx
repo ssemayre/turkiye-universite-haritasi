@@ -254,7 +254,7 @@ function App() {
 
   useEffect(() => {
     const fetchUniversities = async () => {
-      const { data, error } = await supabase.from('universities').select('id, name, lat, lng, type, city, history, website, instagram_url, x_url, linkedin_url');
+      const { data, error } = await supabase.from('universities').select('id, name, lat, lng, type, city, history, website, instagram_url, x_url, linkedin_url, parent_id');
       if (error) {
         console.error("Error fetching universities:", error);
       } else if (data) {
@@ -1438,7 +1438,7 @@ function App() {
         (university) => {
           // 1. Parent ID bazlı filtreleme
           if (!showMyo) {
-            if (university.parent_id !== null) {
+            if (university.parent_id) {
               return false;
             }
           }
@@ -1461,9 +1461,9 @@ function App() {
         }
       );
 
-      // 3. Fallback: Eğer filtreleme sonucu boş dönerse, harita boş kalmasın diye tümünü göster
+      // 3. Fallback: Eğer filtreleme sonucu boş dönerse, harita boş kalmasın diye en azından MYO ayarını koruyarak tümünü göster
       if (filtered.length === 0 && mapUniversities.length > 0) {
-        return mapUniversities;
+        return showMyo ? mapUniversities : mapUniversities.filter(u => !u.parent_id);
       }
 
       return filtered;
@@ -3364,7 +3364,7 @@ const activeFilterCount = [
                       }}
                       key={university.id} 
                       position={[Number(university.latitude || university.lat), Number(university.longitude || university.lng)]} 
-                    icon={university.parent_id !== null ? myoIcon : (university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon)} 
+                    icon={university.parent_id ? myoIcon : (university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon)} 
                     eventHandlers={{ click: () => setSelectedSubCampus(university) }}
                  >
                     <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
@@ -3454,7 +3454,7 @@ const activeFilterCount = [
               <Marker 
                 key={`active-campus-${activeCampusMarker.id}`}
                 position={[Number(activeCampusMarker.lat || activeCampusMarker.latitude), Number(activeCampusMarker.lng || activeCampusMarker.longitude)]}
-                icon={activeCampusMarker.parent_id !== null ? myoIcon : (activeCampusMarker.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon)}
+                icon={activeCampusMarker.parent_id ? myoIcon : (activeCampusMarker.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon)}
                 ref={(r) => { if (r) markerRefs.current[activeCampusMarker.id] = r; }}
                 eventHandlers={{ click: () => setSelectedSubCampus(activeCampusMarker) }}
               >
