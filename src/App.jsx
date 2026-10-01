@@ -74,6 +74,13 @@ const subCampusIcon = L.divIcon({
   iconAnchor: [16, 16],
 });
 
+const myoIcon = L.divIcon({
+  className: "campus-marker myo-campus",
+  html: `<div style="background:#8b5cf6; color:white; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(139,92,246,0.4); border: 2px solid white;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg></div>`,
+  iconSize: [26, 26],
+  iconAnchor: [13, 13],
+});
+
 const kykKizIcon = L.divIcon({
   className: "kyk-marker kyk-kiz-marker",
   html: `<div class="kyk-marker-inner" style="background:#ec4899; color:white; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(236,72,153,0.4); border: 2px solid white;">
@@ -1429,10 +1436,9 @@ function App() {
     useMemo(() => {
       const filtered = mapUniversities.filter(
         (university) => {
-          // 1. İsim bazlı Ana Kampüs filtrelemesi
+          // 1. Parent ID bazlı filtreleme
           if (!showMyo) {
-            const upperName = (university.name || '').toLocaleUpperCase('tr-TR');
-            if (!upperName.includes('ÜNİVERSİTESİ')) {
+            if (university.parent_id !== null) {
               return false;
             }
           }
@@ -3358,7 +3364,7 @@ const activeFilterCount = [
                       }}
                       key={university.id} 
                       position={[Number(university.latitude || university.lat), Number(university.longitude || university.lng)]} 
-                    icon={university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon} 
+                    icon={university.parent_id !== null ? myoIcon : (university.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon)} 
                     eventHandlers={{ click: () => setSelectedSubCampus(university) }}
                  >
                     <Tooltip direction="top" offset={[0, -18]} opacity={0.95} sticky>
@@ -3448,7 +3454,7 @@ const activeFilterCount = [
               <Marker 
                 key={`active-campus-${activeCampusMarker.id}`}
                 position={[Number(activeCampusMarker.lat || activeCampusMarker.latitude), Number(activeCampusMarker.lng || activeCampusMarker.longitude)]}
-                icon={activeCampusMarker.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon}
+                icon={activeCampusMarker.parent_id !== null ? myoIcon : (activeCampusMarker.type === 'Ana Kampüs' ? mainCampusIcon : subCampusIcon)}
                 ref={(r) => { if (r) markerRefs.current[activeCampusMarker.id] = r; }}
                 eventHandlers={{ click: () => setSelectedSubCampus(activeCampusMarker) }}
               >
