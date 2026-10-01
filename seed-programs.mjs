@@ -5,9 +5,14 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('❌ Hata: .env.local dosyasında SUPABASE_URL veya SUPABASE_SERVICE_ROLE_KEY eksik!');
+  process.exit(1);
+}
+
 const supabase = createClient(
-  'https://qoambngledgzdcstkopr.supabase.co', 
-  'sb_publishable_JtfPLdYQZBmjio3tzIg1rg_sOSI62FH'
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 const normalize = (str) => {

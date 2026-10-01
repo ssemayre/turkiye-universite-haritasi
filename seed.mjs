@@ -1,10 +1,18 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
 
-const SUPABASE_URL = 'https://qoambngledgzdcstkopr.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvYW1ibmdsZWRnemRjc3Rrb3ByIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUwNDQ0MywiZXhwIjoyMTA1MDgwNDQzfQ.BRIa9lgJanPL07yo000Nn2IGcIB1eZt2uUT60CRAmiE'; 
-const GOOGLE_API_KEY = 'AIzaSyBLOZrF2ejnEOuTLcVZWV0hWjxXQIJjloY';
+dotenv.config({ path: '.env.local' });
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY || !GOOGLE_API_KEY) {
+  console.error('❌ Hata: .env.local dosyasında SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY veya GOOGLE_API_KEY eksik!');
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
