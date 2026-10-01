@@ -301,7 +301,11 @@ function App() {
       const fetchNews = async () => {
         setIsFetchingNews(true);
         try {
-          const uniName = selectedSubCampus.universityName || selectedSubCampus.name;
+          const parentUni = selectedSubCampus.parent_id 
+            ? universities.find(u => u.id === selectedSubCampus.parent_id) 
+            : null;
+          const searchEntity = parentUni || selectedSubCampus;
+          const uniName = searchEntity.universityName || searchEntity.name;
           const res = await fetch(`/api/news?q=${encodeURIComponent(uniName)}`);
           const data = await res.json();
           if (data.articles) {
@@ -318,7 +322,7 @@ function App() {
       };
       fetchNews();
     }
-  }, [selectedSubCampus?.id]);
+  }, [selectedSubCampus?.id, universities]);
 
 
   // Programs Fetch
@@ -3111,6 +3115,10 @@ const activeFilterCount = [
     }
   };
 
+  const displayUniversity = selectedSubCampus?.parent_id
+    ? (universities.find(u => u.id === selectedSubCampus.parent_id) || selectedSubCampus)
+    : selectedSubCampus;
+
   const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
     <>
@@ -4552,10 +4560,13 @@ const activeFilterCount = [
                 <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#0f172a', margin: '0 0 4px 0', lineHeight: '1.2' }}>
                   {selectedSubCampus.name}
                 </h2>
+                {selectedSubCampus.parent_id && displayUniversity && (
+                  <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Bağlı olduğu kurum: <strong style={{color: '#334155'}}>{displayUniversity.name}</strong>
+                  </div>
+                )}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '13px', color: '#64748b' }}>
-                    {selectedSubCampus.universityName}
-                  </span>
                   <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '12px', background: selectedSubCampus.isMain ? '#fef3c7' : '#dcfce3', color: selectedSubCampus.isMain ? '#d97706' : '#16a34a' }}>
                     {selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}
                   </span>
@@ -4627,7 +4638,7 @@ const activeFilterCount = [
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
                       {/* Instagram */}
                       <a
-                        href={selectedSubCampus.instagram_url || `https://www.instagram.com/${(selectedSubCampus.universityName || selectedSubCampus.name || '').replace(/\s+/g, '').toLowerCase()}`}
+                        href={displayUniversity?.instagram_url || `https://www.instagram.com/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(220,39,67,0.3)', transition: 'transform 0.15s' }}
                         onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -4638,7 +4649,7 @@ const activeFilterCount = [
                       </a>
                       {/* X (Twitter) */}
                       <a
-                        href={selectedSubCampus.x_url || `https://x.com/${(selectedSubCampus.universityName || selectedSubCampus.name || '').replace(/\s+/g, '').toLowerCase()}`}
+                        href={displayUniversity?.x_url || `https://x.com/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: '#0f1419', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(0,0,0,0.2)', transition: 'transform 0.15s' }}
                         onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -4649,7 +4660,7 @@ const activeFilterCount = [
                       </a>
                       {/* LinkedIn */}
                       <a
-                        href={selectedSubCampus.linkedin_url || `https://www.linkedin.com/school/${(selectedSubCampus.universityName || selectedSubCampus.name || '').replace(/\s+/g, '-').toLowerCase()}`}
+                        href={displayUniversity?.linkedin_url || `https://www.linkedin.com/school/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '-').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: '#0a66c2', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(10,102,194,0.3)', transition: 'transform 0.15s' }}
                         onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -4660,7 +4671,7 @@ const activeFilterCount = [
                       </a>
                       {/* Web Sitesi */}
                       <a
-                        href={selectedSubCampus.website || `https://www.${(selectedSubCampus.universityName || selectedSubCampus.name || '').replace(/\s+/g, '').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/İ/g,'i').replace(/Ü/g,'u').replace(/Ö/g,'o').replace(/Ş/g,'s').replace(/Ç/g,'c').replace(/Ğ/g,'g').toLowerCase()}.edu.tr`}
+                        href={displayUniversity?.website || `https://www.${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/İ/g,'i').replace(/Ü/g,'u').replace(/Ö/g,'o').replace(/Ş/g,'s').replace(/Ç/g,'c').replace(/Ğ/g,'g').toLowerCase()}.edu.tr`}
                         target="_blank" rel="noreferrer"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: '#059669', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(5,150,105,0.3)', transition: 'transform 0.15s' }}
                         onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -4687,10 +4698,10 @@ const activeFilterCount = [
                         margin: 0,
                         transition: 'all 0.3s ease'
                       }}>
-                        {selectedSubCampus.history ? (
-                          selectedSubCampus.history
+                        {displayUniversity?.history ? (
+                          displayUniversity.history
                         ) : (
-                          `${selectedSubCampus.universityName || selectedSubCampus.name} Türkiye'nin önde gelen yükseköğretim kurumlarından biridir. Köklü akademik geçmişi ve modern eğitim anlayışıyla ulusal ve uluslararası alanda tanınan üniversite, geniş kampüs alanlarında binlerce öğrenciye eğitim vermektedir. Araştırma odaklı yapısı, güçlü akademik kadrosu ve sanayi iş birlikleri ile mezunlarına güçlü kariyer fırsatları sunmaktadır.`
+                          `${displayUniversity?.universityName || displayUniversity?.name} Türkiye'nin önde gelen yükseköğretim kurumlarından biridir. Köklü akademik geçmişi ve modern eğitim anlayışıyla ulusal ve uluslararası alanda tanınan üniversite, geniş kampüs alanlarında binlerce öğrenciye eğitim vermektedir. Araştırma odaklı yapısı, güçlü akademik kadrosu ve sanayi iş birlikleri ile mezunlarına güçlü kariyer fırsatları sunmaktadır.`
                         )}
                       </p>
                       <button
