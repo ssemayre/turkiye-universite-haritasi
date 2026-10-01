@@ -1,0 +1,66 @@
+[33m68024f4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m feat: Admin Paneli (Geocoding API) ve Supabase gercek zamanli kampus pinleri entegrasyonu
+[33m5569141[m fix: GoogleMap mount edilmeden once isLoaded kontrolu eklenerek ReferenceError (google is not defined) hatasi giderildi
+[33m8a2991e[m refactor: Harita altyapisi Leaflet.js'den Google Maps API'ye (@react-google-maps/api) tasindi
+[33m78d503f[m fix: Oylama sistemi (voteTotals) icin ReferenceError degisken siralama hatasi düzeltildi
+[33m84a7fa4[m feat: Yorum, Soru ve Cevaplara gercek zamanli Supabase Oylama (Upvote/Downvote) entegre edildi
+[33m378d201[m feat: Sorulara yanit (answer) verme ve ic ice listeleme ozelligi eklendi
+[33m39a9f1f[m fix: Üniversiteyi incele butonundaki map is not defined cökme hatasi düzeltildi
+[33mf6e96ee[m feat: Gercek zamanli Supabase soru sorma (Q&A) formu entegre edildi
+[33m5fa57b5[m fix: Yorum gonderme hatasi veritabanı semasi uyuşmazligi yuzunden düzeltildi
+[33m44d4dca[m fix: ReferenceError cannot access selectedSubCampus before initialization hatasi giderildi
+[33m6b4d480[m feat: Gercek zamanli Supabase yorum formu ve rating sistemi entegre edildi
+[33m9eb379b[m fix: Oturum acildiginda butonlarin aktif tepki vermesi saglandi ve console log eklendi
+[33ma40e6c9[m feat: Auth modal e-posta ve şifre giriş/kayıt yapısına geçirildi, Google pasife alındı
+[33m7f6d5e6[m feat: Ust bara kullanici profil arayuzu ve cikis yapma islevi eklendi
+[33m22397f9[m feat: Supabase auth altyapısı kuruldu ve Google Giriş modalı eklendi
+[33mc056a9b[m fix: Arama kutusu eşleşme hatası giderildi ve harita pinlerine Popup eklendi
+[33m3ca7f4b[m fix: Harita varsayilan olarak tum yerleskeleri gosterir ve yeni sosyal cekmeceyi acar
+[33m0fbeaec[m fix: Vercel build hatasina neden olan geçersiz utf-8 dosyasi temizlendi (osm-fetch.cjs)
+[33md544142[m deploy: dist klasoru eklendi (Vercel statik deploy icin)
+[33m990a875[m fix: beyaz ekran - selectedSubCampus state useEffect oncesine tasinarak hook sirasi duzeltildi
+[33m26e9c0e[m feat: Sosyal Katman - 4 sekmeli drawer (Bilgi/Bolumler/Degerlendirmeler/Soru-Cevap), mock reviews & Q&A, mobil scroll fix
+[33m5b3231d[m feat: LocationIQ API ile eksik yerleşke koordinatları nokta atışı tamamlandı, undefined kayıtlar temizlendi
+[33mbda7ac5[m feat: Nokta atışı bina koordinatları (Overpass API proximity-first + Kocaeli manuel doğrulama)
+[33m6e46ccb[m fix: Mükerrer yerleşkeler birleştirildi, jitter koordinatları temizlendi, sınır dışı koordinatlar düzeltildi
+[33mfb5315c[m refactor: Mobil UI tek bir güvenilir çatı altında birleştirildi (Unified Header, Absolute Map, Viewport Fix)
+[33m15ca758[m fix: Z-index çakışmaları ve UI kaybolma sorunu kökten çözüldü
+[33m4e7f60b[m fix: isAnyModalOpen tanımı geri yüklendi (beyaz ekran çözümü)
+[33m5be851b[m fix: App.jsx global scope variable ReferenceError (beyaz ekran) çözüldü
+[33m697515e[m feat: Kapsamlı mobil arayüz (Mobile-First) ve UX revizyonları (Safe Area, Bottom Sheet, 100dvh, Touch Action)
+[33m7b70ddd[m fix: MYO bölümleri için derece (Önlisans) metinleri düzeltildi
+[33m2620e7b[m fix: Haritaya çıkmayan MYO'lar ana kampüslerden bağımsızlaştırılarak fiziksel pinlere dönüştürüldü
+[33m315aed8[m fix: Kalan 31 bin bölüm için strict catch-all eşleştirme ve cache-busting eklendi
+[33m0ba4802[m feat: Tüm Türkiye çapında 11,889 bölümün kampüs verisi (campus_id) statik JSON dosyalarına işlendi ve performans optimizasyonu sağlandı
+[33mc193b3e[m fix: Haritada göster butonu MYO'lar için ana kampüs yerine gerçek bina koordinatlarına odaklanacak şekilde düzeltildi
+[33m2e08dbe[m feat: Tüm fakülte, MYO ve yüksekokullar yerleşkelerle tam eşleştirildi ve hap tasarımı ile UI'a entegre edildi
+[33m839c778[m fix: Tüm Yerleşkeler butonu için oluşan JSX syntax hatası giderildi
+[33m35015d1[m feat: Türkiye geneli tüm yerleşkeleri (ana kampüs, MYO, dış fakülteler) haritada tek seferde görme modu ve detay paneli eklendi
+[33mdc3fb32[m fix: Özel yurtlar katı filtre ile temizlendi, adres ve anlık kampüs hesaplama hataları giderildi
+[33mc2773c2[m refactor: KYK yurt veri seti temizlendi, mükerrer pinler birleştirildi, yeni SVG ikonlar eklendi ve detay paneli modernleştirildi
+[33mfe9f848[m feat: KYK Yurtları verisi OpenStreetMap (Overpass API) üzerinden otomatik olarak güncellendi. Toplam 1173 yurt (building=dormitory ve amenity=student_accommodation) Türkiye geneli haritaya entegre edildi
+[33m476e1a2[m fix: KYK Yurdu detay paneli açılırken campusData veri formatından kaynaklanan TypeError (beyaz ekran) çökmesi düzeltildi
+[33m0015df4[m fix: Harita üzerindeki KYK Yurtları aç/kapat butonunun görünmeme sorunu düzeltildi
+[33m7013f2e[m fix: KYK state değişkenlerinin tanımlanmaması kaynaklı beyaz ekran hatası çözüldü
+[33md080d9b[m feat: KYK Yurtları katmanı eklendi (Filtreleme, özel ikonlar, dinamik kampüs mesafesi, detay paneli)
+[33m87f42f2[m fix: Mobil popitlerde yanlış CSS ezilmelerinden kaynaklı üst üste binen kaydırma çubukları düzeltildi, panel boyutları ve boşlukları ayarlandı
+[33m085cb5d[m fix: Mobil popit arayüzünde dokunmatik (pointer) çakışmaları yaratan bozuk swipe kodu geri alındı, iOS benzeri bulanık tasarım (glassmorphism) ve %65'lik (65dvh) doğru native panel yapısı kusursuz şekilde CSS ile entegre edildi
+[33mf842a05[m fix: App.jsx içindeki normalize() fonksiyonu data scriptleriyle aynı olacak şekilde güncellendi (I/ı ve Â harfleri hatası giderildi)
+[33mc00a3f3[m feat: 245 çakışan kampüs birleştirildi, 182 sahipsiz bölüm doğru kampüse/MYO'ya bağlandı - bölüm-yerleşke eşleşmesi tamamlandı.
+[33mf27fd75[m feat: 205/205 üniversite kampüs verisi tamamlandı - Manisa Celal Bayar ve Bezm-i Alem eklendi.
+[33m397fdda[m feat: Tüm üniversite kampüs/MYO koordinatları tamamlandı - 831+80=911 kampüse gerçek GPS koordinatı eklendi, 23 geçersiz KKTC kaydı temizlendi.
+[33mf49f7cc[m feat: Türkiye'nin en büyük 8 üniversitesinin gerçek kampüs verileri haritaya eklendi.
+[33m829cc94[m fix: Program detayından kampüse tıklandığında üniversite panelinin tekrar ekranı kaplaması sorunu çözüldü.
+[33mc1847c4[m fix: Program detay ekranının arama çubuğuyla üst üste binmesi ve haritada göster butonunun tepki vermemesi düzeltildi.
+[33m3c4a2c9[m fix: Mobil university-panel içerisindeki nested scroll (çift kaydırma) çakışması giderildi.
+[33mef54564[m fix: Eksik div kapatma (JSX Parse) hatası giderildi.
+[33mc409214[m fix: Üniversite paneli tamamen kaydırılabilir yapıldı (JSX Sarmalama)
+[33m7bce9cb[m fix: Vite JSX Parse Error düzeltildi, üniversite paneli güvenli bir şekilde kaydırılabilir hale getirildi.
+[33mf7d32de[m feat: Üniversite paneli tamamen kaydırılabilir hale getirildi (Header da scrolla dahil edildi).
+[33m059ddc9[m fix: Mobil arayüzde panel listesinin scroll olmasını engelleyen ve içeriği kesen CSS hatası (flex bozulması) giderildi.
+[33m8d98a90[m fix: Harita üzerindeki kampüslerin aynı ID (key) değerine sahip olmasından kaynaklı çökmeler düzeltildi.
+[33mc740dc4[m fix: Mobil university-panel alt kısmının kesilip görünmemesi sorunu (bottom: 0 eksikliği) düzeltildi.
+[33mb829c70[m fix: Mobil pop-up yükseklik hatası giderildi, Kampüsleri Göster butonunda haritanın açılması için panelin küçülmesi sağlandı.
+[33maa869c4[m fix: Mobil arayüzde üst üste binen butonlar düzeltildi, iPhone tarzı Glassmorphism alt menü (Tab Bar) eklendi, Üniversite detay pencerelerinin kaydırılamama (scroll) sorunu çözüldü.
+[33m0ec545d[m feat: iPhone 17 Pro UI, Glassmorphism, Advanced Search, Full-Screen Map, 1128 Campuses
+[33m399155f[m Son mobil düzenlemeler
+[33mfb7f69b[m İlk sürüm

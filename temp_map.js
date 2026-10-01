@@ -1,0 +1,113 @@
+﻿const fs = require('fs');
+let code = fs.readFileSync('src/App.jsx', 'utf8');
+
+const sIdx = code.indexOf('<MapContainer');
+const eIdx = code.indexOf('</MapContainer>') + '</MapContainer>'.length;
+if (sIdx !== -1 && eIdx > sIdx) {
+  const rep = \{isLoaded ? (
+            <GoogleMap
+              mapContainerStyle={{ width: '100%', height: '100%' }}
+              center={{ lat: 39.0, lng: 35.0 }}
+              zoom={7}
+              onLoad={onMapLoad}
+              options={{ disableDefaultUI: true, zoomControl: true }}
+            >
+              {campusFocusOnly &&
+              selectedCampus &&
+              Number.isFinite(Number(selectedCampus.latitude)) &&
+              Number.isFinite(Number(selectedCampus.longitude)) ? (
+                <MarkerF
+                  position={{ lat: Number(selectedCampus.latitude), lng: Number(selectedCampus.longitude) }}
+                  icon={campusIcon}
+                  title={selectedCampus.name}
+                  onClick={() => openCampus(selectedCampus)}
+                />
+              ) : !campusViewOpen ? (
+                showAllCampuses ? (
+                  <MarkerClustererF>
+                    {(clusterer) => (
+                      <>
+                        {allCampusesList.map(campus => (
+                          <MarkerF
+                            key={campus.id}
+                            position={{ lat: Number(campus.latitude), lng: Number(campus.longitude) }}
+                            icon={campus.isMain ? mainCampusIcon : subCampusIcon}
+                            title={campus.universityName + '\\n' + campus.name}
+                            onClick={() => setSelectedSubCampus(campus)}
+                            clusterer={clusterer}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </MarkerClustererF>
+                ) : (
+                  <MarkerClustererF>
+                    {(clusterer) => (
+                      <>
+                        {filteredUniversities.map(university => (
+                          <MarkerF
+                            key={university.id}
+                            position={{ lat: Number(university.latitude), lng: Number(university.longitude) }}
+                            icon={selectedUniversity?.id === university.id ? selectedUniversityIcon : universityIcon}
+                            title={university.name}
+                            clusterer={clusterer}
+                            onClick={() => openUniversity(university)}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </MarkerClustererF>
+                )
+              ) : (
+                selectedUniversity &&
+                universityCampuses
+                  .filter((campus) =>
+                    Number.isFinite(Number(campus.latitude)) &&
+                    Number.isFinite(Number(campus.longitude))
+                  )
+                  .map((campus, index) => (
+                  <MarkerF
+                    key={\campus-\\}
+                    position={{ lat: Number(campus.latitude), lng: Number(campus.longitude) }}
+                    icon={campusIcon}
+                    title={campus.name}
+                    onClick={() => openCampus(campus)}
+                  />
+                ))
+              )}
+
+              {showKyk && (
+                <MarkerClustererF>
+                  {(clusterer) => (
+                    <>
+                      {filteredKyk
+                        .filter(
+                          (kyk) =>
+                            kyk.coordinates &&
+                            Number.isFinite(kyk.coordinates.lat) &&
+                            Number.isFinite(kyk.coordinates.lng)
+                        )
+                        .map(kyk => (
+                          <MarkerF
+                            key={\kyk-\\}
+                            position={{ lat: Number(kyk.coordinates.lat), lng: Number(kyk.coordinates.lng) }}
+                            icon={kyk.gender === 'Kız' ? kykKizIcon : kykErkekIcon}
+                            title={\\ (\)\}
+                            onClick={() => setSelectedKyk(kyk)}
+                            clusterer={clusterer}
+                          />
+                      ))}
+                    </>
+                  )}
+                </MarkerClustererF>
+              )}
+            </GoogleMap>
+          ) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Harita yükleniyor...</div>
+          )}\;
+  code = code.substring(0, sIdx) + rep + code.substring(eIdx);
+  fs.writeFileSync('src/App.jsx', code, 'utf8');
+  console.log('Success');
+} else {
+  console.log('Could not find block');
+}

@@ -7032,3 +7032,7 @@ input[type="text"], input[type="search"] {
 .campus-popup {
   box-sizing: border-box !important;
 }
+body {
+  user-select: none;
+  -webkit-user-select: none;
+}
