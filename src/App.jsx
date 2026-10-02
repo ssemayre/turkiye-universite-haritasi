@@ -3736,8 +3736,8 @@ const activeFilterCount = [
             )}
 
             {isListingModalOpen && (
-               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-                  <div className="relative bg-white/75 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl p-6 w-full max-w-[400px]">
+               <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-sm">
+                  <div className="relative w-full max-w-md mx-auto bg-white/70 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl p-6">
                      <h3 className="text-xl font-extrabold text-slate-900 mb-6 text-left">İlan Ver</h3>
                      <button onClick={() => setIsListingModalOpen(false)} className="absolute top-4 right-4 bg-slate-100/50 hover:bg-slate-200/80 rounded-full p-2 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -3765,7 +3765,7 @@ const activeFilterCount = [
                            <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Fiyat (₺) - Opsiyonel</label>
                            <input type="number" value={listingPrice} onChange={(e) => setListingPrice(e.target.value)} placeholder="Örn: 500" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
                         </div>
-                        <button onClick={submitListing} disabled={isSubmittingListing || !listingTitle.trim() || !listingDescription.trim()} className={`w-full py-3.5 rounded-xl shadow-md transition-colors mt-4 text-sm font-bold ${listingTitle.trim() && listingDescription.trim() ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-slate-300 text-slate-500 cursor-not-allowed"}`}>
+                        <button onClick={submitListing} disabled={isSubmittingListing || !listingTitle.trim() || !listingDescription.trim()} className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3.5 rounded-xl shadow-md transition-colors mt-4 ${(!listingTitle.trim() || !listingDescription.trim() || isSubmittingListing) ? "opacity-50 cursor-not-allowed" : ""}`}>
                            {isSubmittingListing ? 'Ekleniyor...' : 'İlanı Yayınla'}
                         </button>
                      </div>
