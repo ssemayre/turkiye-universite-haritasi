@@ -5578,30 +5578,33 @@ const activeFilterCount = [
                         </div>
                       </div>
 
-                    {userProfileData.bio && (
-                      <div className="bg-white/40 border border-white/50 rounded-2xl p-4 shadow-sm text-sm text-slate-700 leading-relaxed border-l-4 border-l-indigo-500">
-                        {userProfileData.bio}
-                      </div>
-                    )}
-
-                    <div className="bg-white/40 border border-white/50 rounded-2xl p-4 shadow-sm flex flex-wrap gap-2">
-                      <span style={{ background: '#e0e7ff', color: '#4338ca', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🎓 {userProfileData.education_status || 'Belirtilmedi'}</span>
-                      {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && userProfileData.university_name && (
-                        <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🏛️ {userProfileData.university_name}</span>
-                      )}
-                      {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && userProfileData.department_name && (
-                        <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>📘 {userProfileData.department_name}</span>
-                      )}
-                      {userProfileData.education_status === 'Lise' && userProfileData.targetRank && (
-                        <span style={{ background: '#fce7f3', color: '#be185d', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🎯 Hedef Sıra: {userProfileData.targetRank}</span>
-                      )}
-                      {userProfileData.education_status === 'Lise' && userProfileData.targetScore && (
-                        <span style={{ background: '#fce7f3', color: '#be185d', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>⭐ Puan: {userProfileData.targetScore}</span>
-                      )}
+                    {userProfileData.bio || userProfileData.education_status ? (
+                        <div className="p-5 bg-white/40 backdrop-blur-md border border-white/50 rounded-2xl shadow-sm flex flex-col gap-3 mt-4">
+                          {userProfileData.bio && (
+                            <div className="text-sm text-slate-700 italic border-l-4 border-indigo-400 pl-3">
+                              {userProfileData.bio}
+                            </div>
+                          )}
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            <span className="px-3 py-1.5 bg-white/60 text-indigo-800 text-xs font-bold rounded-lg border border-indigo-100 shadow-sm">🎓 {userProfileData.education_status || 'Belirtilmedi'}</span>
+                            {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && userProfileData.university_name && (
+                              <span className="px-3 py-1.5 bg-white/60 text-indigo-800 text-xs font-bold rounded-lg border border-indigo-100 shadow-sm">🏫 {userProfileData.university_name}</span>
+                            )}
+                            {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && userProfileData.department_name && (
+                              <span className="px-3 py-1.5 bg-white/60 text-indigo-800 text-xs font-bold rounded-lg border border-indigo-100 shadow-sm">🔬 {userProfileData.department_name}</span>
+                            )}
+                            {userProfileData.education_status === 'Lise' && userProfileData.targetRank && (
+                              <span className="px-3 py-1.5 bg-white/60 text-indigo-800 text-xs font-bold rounded-lg border border-indigo-100 shadow-sm">🎯 Hedef Sıra: {userProfileData.targetRank}</span>
+                            )}
+                            {userProfileData.education_status === 'Lise' && userProfileData.targetScore && (
+                              <span className="px-3 py-1.5 bg-white/60 text-indigo-800 text-xs font-bold rounded-lg border border-indigo-100 shadow-sm">💯 Puan: {userProfileData.targetScore}</span>
+                            )}
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
-                  </div>
-                ) : (
-                  // EDIT MODE
+                  ) : (
+                    // EDIT MODE
                   <div className="flex flex-col gap-4">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>Profili Düzenle</h3>
@@ -5677,65 +5680,39 @@ const activeFilterCount = [
               </div>
             )}
 
-            {/* --- FAVORITES LIST --- */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#334155', margin: 0 }}>⭐ Tercih Listem ({favorites.length}/24)</h3>
-              {favorites.length > 0 && (
-                <button onClick={() => { setFavorites([]); setComparisonPrograms([]); }} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>
-                  Temizle
-                </button>
-              )}
-            </div>
-
-            {favorites.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '32px 16px', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🎯</div>
-                <h4 style={{ fontSize: '15px', color: '#475569', margin: '0 0 8px 0' }}>Henüz tercih eklenmedi</h4>
-                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>Haritadan veya sağ panelden bölümlerin yanındaki yıldıza tıklayarak listenizi oluşturabilirsiniz.</p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '24px' }}>
-                {favorites.map((program, index) => (
-                  <div key={program.code} style={{ display: 'flex', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                    <div style={{ background: '#f1f5f9', color: '#64748b', fontWeight: 'bold', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #e2e8f0', fontSize: '14px' }}>
-                      {index + 1}
-                    </div>
-                    <button 
-                      style={{ flex: 1, padding: '12px', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
-                      onClick={() => {
-                        const university = universityMap.get(program.universityId);
-                        if (university) {
-                          openProgram(program, university);
-                          setPreferenceOpen(false);
-                        }
-                      }}
-                    >
-                      <strong style={{ display: 'block', fontSize: '14px', color: '#0f172a', marginBottom: '4px', lineHeight: '1.3' }}>
-                        {program.name || program.programName || program.birimAdi || "Program"}
-                      </strong>
-                      <span style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>
-                        {program.universityName || program.university || "-"}
-                      </span>
-                      <div style={{ display: 'inline-block', background: '#eff6ff', color: '#3b82f6', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>
-                        {program.scoreType || program.puanTuru || "-"} • TBS: {formatNumber(program.successRank ?? program.basariSirasi)}
-                      </div>
-                    </button>
-                    <button 
-                      onClick={() => addToFavorites(program)}
-                      style={{ width: '40px', background: '#fff', border: 'none', borderLeft: '1px solid #e2e8f0', color: '#ef4444', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#fee2e2'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#fff'}
-                    >
-                      ✕
-                    </button>
+            {/* --- ACTIVE LISTINGS --- */}
+              <div className="mt-2">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Aktif İlanlarım</h3>
+                {campusListings.filter(l => l.user_id === user?.id).length === 0 ? (
+                  <div className="bg-white/40 border border-white/50 rounded-2xl p-8 shadow-sm flex flex-col items-center justify-center text-center">
+                    <span className="text-4xl mb-3">🪧</span>
+                    <h4 className="text-sm font-bold text-slate-800 mb-1">Henüz ilanınız yok</h4>
+                    <p className="text-xs text-slate-500">Panoda yayınladığınız ilanlar burada görünür.</p>
                   </div>
-                ))}
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {campusListings.filter(l => l.user_id === user?.id).map((listing, idx) => (
+                      <div key={idx} className="bg-white/60 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4 flex flex-col gap-2 relative">
+                         <div className="flex justify-between items-start">
+                           <h4 className="font-bold text-sm text-slate-900 break-words pr-2">{listing.title}</h4>
+                           <span className="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md shrink-0">{listing.category}</span>
+                         </div>
+                         <p className="text-xs text-slate-600 line-clamp-2 break-words">{listing.description}</p>
+                         <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-200/50">
+                           <span className="text-[10px] text-slate-400 font-medium">{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
+                           <div className="text-emerald-600 font-extrabold text-xs">
+                             {(listing.price !== null && listing.price !== undefined && Number(listing.price) > 0) ? `${Number(listing.price).toLocaleString('tr-TR')} ₺` : 'Ücretsiz'}
+                           </div>
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      )}
-      {/* ========================================
+        )}
+        {/* ========================================
           COMPARISON
       ======================================== */}
 
