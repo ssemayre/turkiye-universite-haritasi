@@ -3484,7 +3484,7 @@ const activeFilterCount = [
                               <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#475569' }}>{listing.category}</span>
                             </div>
                             <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>{listing.description}</p>
-                            {listing.price && <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}>{listing.price} ₺</div>}
+                            {listing.price && <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}>{Number(listing.price).toLocaleString('tr-TR')} ₺</div>}
                           </div>
                         ))}
                       </div>
@@ -3739,8 +3739,8 @@ const activeFilterCount = [
                                <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>{listing.description}</p>
                                {listing.price !== null && listing.price !== undefined && (
                                  <div style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981', fontSize: '16px' }}>
-                                    {listing.price} ₺
-                                 </div>
+                                     {Number(listing.price).toLocaleString('tr-TR')} ₺
+                                   </div>
                                )}
                             </div>
                           ))
@@ -3784,7 +3784,7 @@ const activeFilterCount = [
                         </div>
                         <div>
                            <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Fiyat (₺) - Opsiyonel</label>
-                           <input type="number" value={listingPrice} onChange={(e) => setListingPrice(e.target.value)} placeholder="Örn: 500" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
+                           <input type="number" min="0" max="999999" onKeyDown={(e) => ["e", "E", "+", "-", ",", "."].includes(e.key) && e.preventDefault()} value={listingPrice} onChange={(e) => setListingPrice(e.target.value)} placeholder="Örn: 500" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
                         </div>
                         <button onClick={submitListing} disabled={isSubmittingListing || !listingCategory || !listingTitle.trim() || !listingDescription.trim()} className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3.5 rounded-xl shadow-md transition-colors mt-4 ${(!listingCategory || !listingTitle.trim() || !listingDescription.trim() || isSubmittingListing) ? "opacity-50 cursor-not-allowed" : ""}`}>
                            {isSubmittingListing ? 'Ekleniyor...' : 'İlanı Yayınla'}
