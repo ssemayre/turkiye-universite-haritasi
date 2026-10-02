@@ -3484,7 +3484,14 @@ const activeFilterCount = [
                               <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#475569' }}>{listing.category}</span>
                             </div>
                             <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>{listing.description}</p>
-                            {listing.price && <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}>{Number(listing.price).toLocaleString('tr-TR')} ₺</div>}
+                            <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200/50">
+  <button onClick={(e) => { e.stopPropagation(); setActiveChatUser({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name }); }} className="bg-indigo-50/60 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-4 py-2 rounded-xl transition-all border border-indigo-100/50 flex items-center gap-1.5 shadow-sm active:scale-95">
+    <span>💬</span> Mesaj At
+  </button>
+  <div className="text-emerald-600 font-extrabold text-sm">
+    {(listing.price !== null && listing.price !== undefined && Number(listing.price) > 0) ? `${Number(listing.price).toLocaleString('tr-TR')} ₺` : 'Ücretsiz'}
+  </div>
+</div>
                           </div>
                         ))}
                       </div>
@@ -3737,11 +3744,14 @@ const activeFilterCount = [
                                </div>
                                <h4 className="break-words break-all whitespace-normal" style={{ margin: '0 0 6px 0', color: '#0f172a', fontSize: '16px' }}>{listing.title}</h4>
                                <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>{listing.description}</p>
-                               {listing.price !== null && listing.price !== undefined && (
-                                 <div style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981', fontSize: '16px' }}>
-                                     {Number(listing.price).toLocaleString('tr-TR')} ₺
-                                   </div>
-                               )}
+                               <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200/50">
+  <button onClick={(e) => { e.stopPropagation(); setActiveChatUser({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name }); }} className="bg-indigo-50/60 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-4 py-2 rounded-xl transition-all border border-indigo-100/50 flex items-center gap-1.5 shadow-sm active:scale-95">
+    <span>💬</span> Mesaj At
+  </button>
+  <div className="text-emerald-600 font-extrabold text-sm">
+    {(listing.price !== null && listing.price !== undefined && Number(listing.price) > 0) ? `${Number(listing.price).toLocaleString('tr-TR')} ₺` : 'Ücretsiz'}
+  </div>
+</div>
                             </div>
                           ))
                       )}
