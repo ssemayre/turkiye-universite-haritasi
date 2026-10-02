@@ -3431,7 +3431,7 @@ const activeFilterCount = [
 
 </MapContainer>
         {browseOpen && (
-          <aside className="fixed right-4 top-[100px] bottom-[90px] w-[calc(100%-2rem)] md:w-full max-w-[420px] z-[1500] bg-white/75 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-transform">
+          <aside className="fixed right-4 top-[100px] bottom-[90px] w-[calc(100%-2rem)] md:w-full max-w-[420px] z-[1500] bg-white/60 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-transform">
             {viewingProfile ? (
               <>
                 <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.3)', background: 'transparent' }}>
@@ -3440,7 +3440,7 @@ const activeFilterCount = [
                     <div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '14px' }}>PROFİL</div>
                   </div>
                 </div>
-                <div style={{ padding: '24px 16px', flex: 1, overflowY: 'auto', background: 'transparent' }}>
+                <div className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']" style={{ padding: '24px 16px', flex: 1, background: 'transparent' }}>
                   <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                     {viewingProfile.avatar_url ? (
                       <img src={viewingProfile.avatar_url} style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px' }} />
@@ -3461,7 +3461,7 @@ const activeFilterCount = [
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {profileContent.posts.map(post => (
-                          <div key={post.id} className="bg-white/40 rounded-2xl p-4 shadow-sm border border-white/30">
+                          <div key={post.id} className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4">
                             <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#334155' }}>{post.content}</p>
                             <span style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(post.created_at).toLocaleDateString('tr-TR')}</span>
                           </div>
@@ -3477,7 +3477,7 @@ const activeFilterCount = [
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {profileContent.listings.map(listing => (
-                          <div key={listing.id} className="bg-white/40 rounded-2xl p-4 shadow-sm border border-white/30">
+                          <div key={listing.id} className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4">
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                               <h4 style={{ margin: 0, fontSize: '14px', color: '#0f172a' }}>{listing.title}</h4>
                               <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#475569' }}>{listing.category}</span>
@@ -3502,8 +3502,8 @@ const activeFilterCount = [
                     </div>
                   </div>
                 </div>
-                <div style={{ flex: 1, overflowY: 'auto', background: 'transparent' }}>
-                  <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+                <div className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']" style={{ flex: 1, background: 'transparent' }}>
+                  <div className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl mb-5 p-4">
                     <p style={{ margin: 0, color: '#334155', fontSize: '15px', lineHeight: '1.6' }}>{selectedClub.description}</p>
                   </div>
                   
@@ -3512,14 +3512,14 @@ const activeFilterCount = [
                   </div>
                   
                   {clubEvents.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px 20px', background: '#fff', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                    <div className="bg-white/30 backdrop-blur-md rounded-2xl border border-white/40 border-dashed text-center p-10">
                       <div style={{ fontSize: '32px', marginBottom: '12px' }}>📅</div>
                       <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Yaklaşan etkinlik bulunmuyor, takipte kal!</p>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {clubEvents.map(ev => (
-                        <div key={ev.id} style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #3b82f6' }}>
+                        <div key={ev.id} className="bg-white/40 border border-white/50 border-l-4 border-l-blue-500 backdrop-blur-md shadow-sm rounded-xl p-4">
                           <h4 style={{ margin: '0 0 8px 0', color: '#0f172a', fontSize: '15px' }}>{ev.name}</h4>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '8px', fontSize: '12px', color: '#64748b' }}>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>🕒 {new Date(ev.event_date).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}</span>
@@ -3549,16 +3549,16 @@ const activeFilterCount = [
                   </span>
                   
                   {user && userProfileData.university_name && (
-                    <div className="flex w-full bg-slate-200/60 backdrop-blur-md p-1 rounded-xl mt-5">
-                      <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'feed' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Akış</button>
-                      <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'confessions' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>İtiraflar</button>
-                      <button onClick={() => setCampusTab('clubs')} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'clubs' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Kulüpler</button>
-                      <button onClick={() => setCampusTab('listings')} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'listings' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Pano</button>
+                    <div className="flex w-full bg-black/5 backdrop-blur-md p-1 rounded-xl mt-5">
+                      <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'feed' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Akış</button>
+                      <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'confessions' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>İtiraflar</button>
+                      <button onClick={() => setCampusTab('clubs')} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'clubs' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Kulüpler</button>
+                      <button onClick={() => setCampusTab('listings')} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'listings' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Pano</button>
                     </div>
                   )}
                 </div>
 
-                <div style={{ flex: 1, overflowY: 'auto', background: 'transparent' }}>
+                <div className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']" style={{ flex: 1, background: 'transparent' }}>
                   {!user ? (
                     <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                       <div style={{ fontSize: '40px', marginBottom: '16px' }}>🔒</div>
@@ -3584,7 +3584,7 @@ const activeFilterCount = [
                           </div>
                         </div>
                       )}
-                      <div className="campus-composer bg-white/50 border border-white/60 rounded-2xl p-3 mx-4 my-3 shadow-sm focus-within:bg-white/80 transition-all">
+                      <div className="campus-composer bg-white/50 border border-white/60 backdrop-blur-md shadow-sm rounded-2xl p-3 mx-4 my-3 focus-within:bg-white/80 transition-all">
                         <div style={{ display: 'flex', gap: '12px' }}>
                           {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
                             <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
@@ -3625,7 +3625,7 @@ const activeFilterCount = [
                             const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
                             return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
                           }).map(post => (
-                              <div key={post.id} className="campus-post-card bg-white/40 rounded-2xl p-4 mb-3 mx-4 shadow-sm border border-white/30">
+                              <div key={post.id} className="campus-post-card bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4 mb-3 mx-4">
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
                                   <div style={{ cursor: post.is_anonymous ? 'default' : 'pointer' }} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
                                     {post.is_anonymous ? (
@@ -3679,7 +3679,7 @@ const activeFilterCount = [
                         </div>
                       ) : (
                         campusClubs.map(club => (
-                          <div key={club.id} className="bg-white/40 rounded-2xl p-4 mb-3 mx-4 shadow-sm border border-white/30 flex items-center justify-between">
+                          <div key={club.id} className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4 mb-3 mx-4 flex items-center justify-between">
                             <div>
                               <h4 style={{ margin: '0 0 4px 0', color: '#0f172a', fontSize: '16px' }}>{club.name}</h4>
                               <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{club.description}</p>
@@ -3703,7 +3703,7 @@ const activeFilterCount = [
                           </div>
                       ) : (
                           campusListings.map(listing => (
-                            <div key={listing.id} className="bg-white/40 rounded-2xl p-4 mb-3 mx-4 shadow-sm border border-white/30 relative">
+                            <div key={listing.id} className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4 mb-3 mx-4 relative">
                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setViewingProfile({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name })}>
                                    {listing.profiles?.avatar_url ? (
