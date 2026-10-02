@@ -3133,13 +3133,13 @@ const activeFilterCount = [
         {/* ========================================
             FLOATING HEADER (Navbar + Filters)
         ======================================== */}
-        <header className="fixed top-0 left-0 w-full z-[1000] bg-white/60 backdrop-blur-xl border-b border-white/20 pointer-events-auto">
+        <header className="fixed top-4 left-0 w-full z-[1000] flex flex-col gap-3 px-4 bg-transparent pointer-events-none">
           
           {/* TOP ROW: Logo, Search, Profile */}
-          <div className="flex flex-row items-center justify-between gap-2 md:gap-3 px-3 md:px-4 pt-2 pb-1.5">
+          <div className="flex flex-row items-center justify-between gap-2 md:gap-3">
             
             {/* Logo */}
-            <div className="flex items-center shrink-0">
+            <div className="bg-white/70 backdrop-blur-md shadow-lg rounded-2xl px-4 py-2 flex items-center shrink-0 pointer-events-auto transition-all">
               <h1 className="text-lg md:text-xl font-bold !text-slate-900 flex items-center gap-2">
                 <span className="text-2xl">🎓</span>
                 <span className="hidden md:inline">Türkiye Üniversite Haritası</span>
@@ -3147,13 +3147,13 @@ const activeFilterCount = [
             </div>
 
             {/* Search Input */}
-            <div className="relative w-full max-w-md">
+            <div className="relative w-full max-w-md pointer-events-auto">
               <input
                 type="text"
                 placeholder="🔍 Üniversite veya şehir ara..."
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
-                className="w-full h-9 md:h-10 rounded-full border border-white/60 bg-white/50 backdrop-blur-md shadow-sm text-slate-800 px-4 md:px-5 outline-none transition focus:bg-white/70 focus:ring-2 focus:ring-blue-400/50 text-sm"
+                className="bg-white/70 backdrop-blur-md shadow-lg border border-white/40 rounded-full px-5 py-3 w-full outline-none transition focus:bg-white/90 focus:ring-2 focus:ring-blue-400/50 text-sm text-slate-800"
               />
               {searchInput.trim().length > 1 && (
                 <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2">
@@ -3195,15 +3195,15 @@ const activeFilterCount = [
             </div>
 
             {/* User Profile Section */}
-            <div className="flex items-center shrink-0">
+            <div className="flex items-center shrink-0 pointer-events-auto">
                 {user ? (
-                  <div className="flex items-center gap-2 bg-white/50 backdrop-blur-md p-1 md:pr-2.5 rounded-full border border-white/60 shadow-sm">
+                  <div className="flex items-center gap-2 bg-white/70 backdrop-blur-md shadow-lg p-2 rounded-full border border-white/40 transition">
                     <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-7 h-7 rounded-full" />
                     <span className="hidden md:block text-xs font-medium text-slate-800 truncate max-w-[90px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
                     <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="hidden md:block text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
                   </div>
                 ) : (
-                  <button onClick={openAuthModal} className="bg-blue-600/90 hover:bg-blue-600 backdrop-blur-md text-white px-4 md:px-5 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border border-blue-500/50">
+                  <button onClick={openAuthModal} className="bg-white/70 hover:bg-white/90 backdrop-blur-md shadow-lg rounded-full px-5 py-2.5 text-blue-600 text-sm font-medium transition border border-white/40">
                     Giriş
                   </button>
                 )}
@@ -3211,29 +3211,29 @@ const activeFilterCount = [
           </div>
           
           {/* BOTTOM ROW: Filters */}
-          <div className="flex gap-2 overflow-x-auto px-3 md:px-4 pb-1.5 pt-0.5 hide-scrollbar items-center justify-start md:justify-center">
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar items-center justify-start pointer-events-auto pb-2">
               <button 
-                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border backdrop-blur-md ${showMyo ? 'bg-indigo-500/20 text-indigo-800 border-indigo-300/50' : 'bg-white/40 text-slate-700 border-white/60 hover:bg-white/60'}`}
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${showMyo ? 'bg-indigo-500/30 text-indigo-900 border-indigo-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
                 onClick={() => setShowMyo(!showMyo)}>
                 🏢 Tüm MYO'ları Göster
               </button>
               <button 
-                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border backdrop-blur-md ${showKyk ? 'bg-rose-500/20 text-rose-800 border-rose-300/50' : 'bg-white/40 text-slate-700 border-white/60 hover:bg-white/60'}`}
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${showKyk ? 'bg-rose-500/30 text-rose-900 border-rose-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
                 onClick={() => setShowKyk(!showKyk)}>
                 🏠 KYK Yurtları
               </button>
               <button 
-                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border backdrop-blur-md ${globalFilters.type === 'devlet' ? 'bg-blue-500/20 text-blue-800 border-blue-300/50' : 'bg-white/40 text-slate-700 border-white/60 hover:bg-white/60'}`}
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${globalFilters.type === 'devlet' ? 'bg-blue-500/30 text-blue-900 border-blue-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
                 onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
                 Devlet
               </button>
               <button 
-                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border backdrop-blur-md ${globalFilters.type === 'vakif' ? 'bg-emerald-500/20 text-emerald-800 border-emerald-300/50' : 'bg-white/40 text-slate-700 border-white/60 hover:bg-white/60'}`}
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${globalFilters.type === 'vakif' ? 'bg-emerald-500/30 text-emerald-900 border-emerald-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
                 onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
                 Vakıf
               </button>
               <button 
-                className="whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium bg-white/40 text-slate-700 border-white/60 shadow-sm hover:bg-white/60 transition border backdrop-blur-md"
+                className="whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white/70 text-slate-700 border-white/40 shadow-md hover:bg-white/90 transition border backdrop-blur-md"
                 onClick={() => setFiltersOpen(true)}>
                 ⚙ Detaylı Filtre
               </button>
