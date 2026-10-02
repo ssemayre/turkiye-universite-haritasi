@@ -3194,20 +3194,8 @@ const activeFilterCount = [
               )}
             </div>
 
-            {/* User Profile Section */}
-            <div className="flex items-center shrink-0 pointer-events-auto">
-                {user ? (
-                  <div className="flex items-center gap-2 bg-white/70 backdrop-blur-md shadow-lg p-2 rounded-full border border-white/40 transition">
-                    <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-7 h-7 rounded-full" />
-                    <span className="hidden md:block text-xs font-medium text-slate-800 truncate max-w-[90px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
-                    <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="hidden md:block text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
-                  </div>
-                ) : (
-                  <button onClick={openAuthModal} className="bg-white/70 hover:bg-white/90 backdrop-blur-md shadow-lg rounded-full px-5 py-2.5 text-blue-600 text-sm font-medium transition border border-white/40">
-                    Giriş
-                  </button>
-                )}
-            </div>
+            {/* Dummy Spacer to balance the Logo on desktop */}
+            <div className="hidden lg:block shrink-0 w-[260px] pointer-events-none"></div>
           </div>
           
           {/* BOTTOM ROW: Filters */}
