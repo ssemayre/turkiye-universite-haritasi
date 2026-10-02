@@ -3128,16 +3128,16 @@ const activeFilterCount = [
   const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
     <>
-      <div className="relative w-screen h-screen overflow-hidden bg-slate-50 text-slate-800 font-sans">
+      <div className="relative w-screen h-[100dvh] flex flex-col bg-slate-50 text-slate-800 font-sans">
         
         {/* ========================================
             FLOATING NAVBAR (Glassmorphism)
         ======================================== */}
-        <nav className="fixed top-0 left-0 right-0 z-[1000] bg-white/90 backdrop-blur-md shadow-sm p-3 md:p-4 flex flex-row items-center justify-between gap-2 md:gap-4 border-b border-slate-200">
+        <nav className="fixed top-0 left-0 right-0 z-[9999] bg-white/90 backdrop-blur-md shadow-sm py-2 px-3 md:py-3 md:px-4 flex flex-row items-center justify-between gap-2 md:gap-4 border-b border-slate-200">
           
           {/* Logo */}
           <div className="flex items-center shrink-0">
-            <h1 className="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
+            <h1 className="text-lg md:text-xl font-bold !text-slate-900 flex items-center gap-2">
               <span className="text-2xl">🎓</span>
               <span className="hidden md:inline">Türkiye Üniversite Haritası</span>
             </h1>
@@ -3211,7 +3211,7 @@ const activeFilterCount = [
         {/* ========================================
             SCROLLABLE FILTER PILLS (Mobile Friendly)
         ======================================== */}
-        <div className="fixed top-[70px] md:top-[76px] left-0 w-full z-[900] flex gap-2 overflow-x-auto px-4 py-2 hide-scrollbar items-center justify-start md:justify-center">
+        <div className="fixed top-[60px] md:top-[68px] left-0 w-full z-[9999] flex gap-2 overflow-x-auto px-4 py-2 hide-scrollbar items-center justify-start md:justify-center">
             <button 
               className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showMyo ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
               onClick={() => setShowMyo(!showMyo)}>
@@ -3242,7 +3242,7 @@ const activeFilterCount = [
       {/* ========================================
           FULLSCREEN MAP
       ======================================== */}
-      <main className="absolute inset-0 z-0 pt-[116px] md:pt-[76px] pb-[72px]">
+      <main className="absolute inset-0 z-0">
         <MapContainer
             center={[
               39.0,
@@ -4520,7 +4520,7 @@ const activeFilterCount = [
 
         {selectedSubCampus && (
           <aside
-            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col pt-20 md:pt-[76px] transform transition-transform duration-300 translate-x-0"
+            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col pt-20 md:pt-[76px] pb-[72px] transform transition-transform duration-300 translate-x-0"
             onTouchStart={e => e.stopPropagation()}
             onTouchMove={e => e.stopPropagation()}
             onWheel={e => e.stopPropagation()}
@@ -6168,7 +6168,7 @@ const activeFilterCount = [
       )}
 
       {/* MOBILE BOTTOM NAVIGATION (Glassmorphism) */}
-      <nav className={`md:hidden fixed bottom-0 left-0 w-full z-[2000] bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex justify-around items-center py-2 pb-safe transition-transform duration-300 ${isAnyModalOpen ? 'translate-y-full' : 'translate-y-0'}`}>
+      <nav className="fixed bottom-0 left-0 w-full z-[9999] bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex justify-around items-center py-2 pb-safe">
         <button type="button" onClick={openBrowse} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
           <span className="text-xl mb-1">🌍</span>
           <span className="text-[10px] font-semibold">Kampüs</span>
