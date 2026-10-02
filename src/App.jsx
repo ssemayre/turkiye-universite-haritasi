@@ -3133,47 +3133,24 @@ const activeFilterCount = [
         {/* ========================================
             FLOATING NAVBAR (Glassmorphism)
         ======================================== */}
-        <nav className="absolute top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-[1000] bg-white/80 backdrop-blur-md shadow-lg rounded-2xl p-3 md:p-4 flex flex-col md:flex-row items-center gap-3 md:gap-4 border border-white/40">
+        <nav className="fixed top-0 left-0 right-0 z-[1000] bg-white/90 backdrop-blur-md shadow-sm p-3 md:p-4 flex flex-row items-center justify-between gap-2 md:gap-4 border-b border-slate-200">
           
-          {/* Logo & Profile Row */}
-          <div className="flex justify-between items-center w-full md:w-auto md:shrink-0">
+          {/* Logo */}
+          <div className="flex items-center shrink-0">
             <h1 className="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
               <span className="text-2xl">🎓</span>
               <span className="hidden md:inline">Türkiye Üniversite Haritası</span>
             </h1>
-            
-            <div className="flex md:hidden items-center gap-2">
-              {/* Mobile User Profile Section */}
-              {user && (
-                <div className="relative">
-                  <button onClick={openNotifications} className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full w-9 h-9 flex items-center justify-center transition" title="Bildirimler">🔔</button>
-                  {notifications.filter(n => !n.is_read).length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                      {notifications.filter(n => !n.is_read).length}
-                    </span>
-                  )}
-                </div>
-              )}
-              {user ? (
-                <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="bg-slate-100 p-1 rounded-full border border-slate-200">
-                  <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-7 h-7 rounded-full" />
-                </button>
-              ) : (
-                <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full text-xs font-medium transition shadow-md">
-                  Giriş
-                </button>
-              )}
-            </div>
           </div>
 
           {/* Search Input */}
-          <div className="relative w-full flex-1">
+          <div className="relative w-full max-w-md">
             <input
               type="text"
-              placeholder="🔍 Üniversite, bölüm veya şehir ara..."
+              placeholder="🔍 Üniversite veya şehir ara..."
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
-              className="w-full h-11 rounded-xl border border-slate-200 bg-white/70 focus:bg-white text-slate-700 px-4 outline-none transition shadow-sm focus:ring-2 focus:ring-blue-500/50"
+              className="w-full h-10 md:h-11 rounded-full border border-slate-300 bg-slate-50 focus:bg-white text-slate-700 px-4 md:px-5 outline-none transition shadow-inner focus:ring-2 focus:ring-blue-500/50 text-sm"
             />
             {searchInput.trim().length > 1 && (
               <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2">
@@ -3214,30 +3191,17 @@ const activeFilterCount = [
             )}
           </div>
 
-          {/* Desktop User Profile Section & Filters */}
-          <div className="hidden md:flex items-center gap-2 shrink-0">
-             {user && (
-                <div className="relative">
-                  <button onClick={openNotifications} className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition" title="Bildirimler">🔔</button>
-                  {notifications.filter(n => !n.is_read).length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                      {notifications.filter(n => !n.is_read).length}
-                    </span>
-                  )}
-                </div>
-              )}
-              {user && (
-                  <button onClick={openMessages} className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition" title="Mesajlar">💬</button>
-              )}
+          {/* User Profile Section */}
+          <div className="flex items-center shrink-0">
               {user ? (
-                <div className="flex items-center gap-2 bg-slate-100 p-1 pl-1 pr-3 rounded-full border border-slate-200">
+                <div className="flex items-center gap-2 bg-slate-100 p-1 md:pr-3 rounded-full border border-slate-200">
                   <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-8 h-8 rounded-full" />
-                  <span className="text-sm font-medium text-slate-700 truncate max-w-[100px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
-                  <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
+                  <span className="hidden md:block text-sm font-medium text-slate-700 truncate max-w-[100px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                  <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="hidden md:block text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
                 </div>
               ) : (
-                <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-md">
-                  Giriş Yap
+                <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition shadow-md">
+                  Giriş
                 </button>
               )}
           </div>
@@ -3247,7 +3211,7 @@ const activeFilterCount = [
         {/* ========================================
             SCROLLABLE FILTER PILLS (Mobile Friendly)
         ======================================== */}
-        <div className="absolute top-[125px] md:top-[85px] left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-[1000] flex gap-2 overflow-x-auto pb-2 hide-scrollbar items-center justify-start md:justify-center">
+        <div className="fixed top-[70px] md:top-[76px] left-0 w-full z-[900] flex gap-2 overflow-x-auto px-4 py-2 hide-scrollbar items-center justify-start md:justify-center">
             <button 
               className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showMyo ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
               onClick={() => setShowMyo(!showMyo)}>
@@ -3278,7 +3242,7 @@ const activeFilterCount = [
       {/* ========================================
           FULLSCREEN MAP
       ======================================== */}
-      <main className="absolute inset-0 z-0">
+      <main className="absolute inset-0 z-0 pt-[116px] md:pt-[76px] pb-[72px]">
         <MapContainer
             center={[
               39.0,
@@ -4556,13 +4520,13 @@ const activeFilterCount = [
 
         {selectedSubCampus && (
           <aside
-            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-0"
+            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col pt-20 md:pt-[76px] transform transition-transform duration-300 translate-x-0"
             onTouchStart={e => e.stopPropagation()}
             onTouchMove={e => e.stopPropagation()}
             onWheel={e => e.stopPropagation()}
           >
             {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
-            <div className="flex justify-between items-start shrink-0 border-b border-slate-200 bg-white p-5">
+            <div className="flex justify-between items-start shrink-0 border-b border-slate-200 bg-white p-5 md:p-6">
               <div className="flex-1 pr-4">
                 <h2 className="text-2xl font-bold text-slate-800 mb-2 leading-tight">
                   {selectedSubCampus.name}
@@ -4589,7 +4553,7 @@ const activeFilterCount = [
             </div>
 
             {/* ── TAB BAR ── */}
-            <div className="flex overflow-x-auto shrink-0 border-b border-slate-200 hide-scrollbar bg-slate-50 px-2">
+            <div className="flex overflow-x-auto shrink-0 border-b border-slate-200 hide-scrollbar bg-slate-50">
               {[
                 { key: 'info',    label: 'Bilgi',            icon: 'ℹ️' },
                 { key: 'units',   label: 'Bölümler',         icon: '📚' },
@@ -4599,7 +4563,7 @@ const activeFilterCount = [
               ].map(tab => (
                 <button
                   key={tab.key}
-                  className={`flex flex-col items-center gap-1 min-w-[80px] p-3 text-sm font-medium border-b-2 transition-colors ${campusDetailTab === tab.key ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
+                  className={`flex flex-col items-center gap-1 px-4 py-3 min-w-max flex-1 text-sm font-medium border-b-2 transition-colors ${campusDetailTab === tab.key ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setCampusDetailTab(tab.key)}
                 >
                   <span className="text-base">{tab.icon}</span>
@@ -6202,6 +6166,31 @@ const activeFilterCount = [
         </div>
 
       )}
+
+      {/* MOBILE BOTTOM NAVIGATION (Glassmorphism) */}
+      <nav className={`md:hidden fixed bottom-0 left-0 w-full z-[2000] bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex justify-around items-center py-2 pb-safe transition-transform duration-300 ${isAnyModalOpen ? 'translate-y-full' : 'translate-y-0'}`}>
+        <button type="button" onClick={openBrowse} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
+          <span className="text-xl mb-1">🌍</span>
+          <span className="text-[10px] font-semibold">Kampüs</span>
+        </button>
+        <button type="button" onClick={openNotifications} className="relative flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
+          <span className="text-xl mb-1">🔔</span>
+          <span className="text-[10px] font-semibold">Bildirimler</span>
+          {notifications.filter(n => !n.is_read).length > 0 && (
+            <span className="absolute top-1 right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+              {notifications.filter(n => !n.is_read).length}
+            </span>
+          )}
+        </button>
+        <button type="button" onClick={openMessages} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
+          <span className="text-xl mb-1">💬</span>
+          <span className="text-[10px] font-semibold">Mesajlar</span>
+        </button>
+        <button type="button" onClick={() => toggleFloatingPanel("favorites")} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
+          <span className="text-xl mb-1">👤</span>
+          <span className="text-[10px] font-semibold">Profilim</span>
+        </button>
+      </nav>
     </div>
 
       {/* ========================================
