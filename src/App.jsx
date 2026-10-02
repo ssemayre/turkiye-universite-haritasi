@@ -3480,10 +3480,10 @@ const activeFilterCount = [
                         {profileContent.listings.map(listing => (
                           <div key={listing.id} className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4">
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                              <h4 style={{ margin: 0, fontSize: '14px', color: '#0f172a' }}>{listing.title}</h4>
+                              <h4 className="break-words break-all whitespace-normal" style={{ margin: 0, fontSize: '14px', color: '#0f172a' }}>{listing.title}</h4>
                               <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#475569' }}>{listing.category}</span>
                             </div>
-                            <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>{listing.description}</p>
+                            <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>{listing.description}</p>
                             {listing.price && <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#10b981' }}>{listing.price} ₺</div>}
                           </div>
                         ))}
@@ -3735,8 +3735,8 @@ const activeFilterCount = [
                                  </div>
                                  <span className="text-xs font-bold bg-indigo-100/80 text-indigo-700 px-2.5 py-1 rounded-md">{listing.category}</span>
                                </div>
-                               <h4 style={{ margin: '0 0 6px 0', color: '#0f172a', fontSize: '16px' }}>{listing.title}</h4>
-                               <p style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>{listing.description}</p>
+                               <h4 className="break-words break-all whitespace-normal" style={{ margin: '0 0 6px 0', color: '#0f172a', fontSize: '16px' }}>{listing.title}</h4>
+                               <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>{listing.description}</p>
                                {listing.price !== null && listing.price !== undefined && (
                                  <div style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981', fontSize: '16px' }}>
                                     {listing.price} ₺
@@ -3776,11 +3776,11 @@ const activeFilterCount = [
                         </div>
                         <div>
                            <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Başlık</label>
-                           <input value={listingTitle} onChange={(e) => setListingTitle(e.target.value)} placeholder="Örn: 2. El Temiz Çalışma Masası" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
+                           <input maxLength={50} value={listingTitle} onChange={(e) => setListingTitle(e.target.value)} placeholder="Örn: 2. El Temiz Çalışma Masası" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
                         </div>
                         <div>
                            <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Açıklama</label>
-                           <textarea value={listingDescription} onChange={(e) => setListingDescription(e.target.value)} placeholder="İlan detayları..." rows={4} className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all resize-none" />
+                           <textarea maxLength={300} value={listingDescription} onChange={(e) => setListingDescription(e.target.value)} placeholder="İlan detayları..." rows={4} className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all resize-none" />
                         </div>
                         <div>
                            <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Fiyat (₺) - Opsiyonel</label>
