@@ -3128,12 +3128,12 @@ const activeFilterCount = [
   const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
     <>
-      <div className="relative w-screen h-[100dvh] flex flex-col bg-slate-50 text-slate-800 font-sans">
+      <div className="relative w-screen h-screen overflow-hidden bg-slate-50 text-slate-800 font-sans">
         
         {/* ========================================
             FLOATING HEADER (Navbar + Filters)
         ======================================== */}
-        <header className="fixed top-0 left-0 w-full z-[1000] bg-white/60 backdrop-blur-2xl border-b border-gray-200/50 shadow-sm flex flex-col pointer-events-auto">
+        <header className="fixed top-0 left-0 w-full z-[1000] bg-white/60 backdrop-blur-xl border-b border-white/20 pointer-events-auto">
           
           {/* TOP ROW: Logo, Search, Profile */}
           <div className="flex flex-row items-center justify-between gap-2 md:gap-3 px-3 md:px-4 pt-2 pb-1.5">
@@ -3243,14 +3243,14 @@ const activeFilterCount = [
       {/* ========================================
           FULLSCREEN MAP
       ======================================== */}
-      <main className="absolute inset-0 z-0 w-screen h-screen">
+      <main className="absolute top-0 left-0 w-full h-full z-0">
         <MapContainer
             center={[
               39.0,
               35.0,
             ]}
             zoom={7}
-            className="map"
+            style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 0 }}
           >
             <MapResizer isPanelOpen={isAnyModalOpen} />
 
@@ -6169,7 +6169,7 @@ const activeFilterCount = [
       )}
 
       {/* MOBILE BOTTOM NAVIGATION (Glassmorphism) */}
-      <nav className="fixed bottom-0 left-0 w-full z-[9999] bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex justify-around items-center py-2 pb-safe">
+      <nav className="fixed bottom-0 left-0 w-full z-[1000] bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex justify-around items-center py-2 pb-safe">
         <button type="button" onClick={openBrowse} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
           <span className="text-xl mb-1">🌍</span>
           <span className="text-[10px] font-semibold">Kampüs</span>
