@@ -1,4 +1,4 @@
-import {
+﻿import {
   MapContainer,
   TileLayer,
   Marker,
@@ -3136,7 +3136,7 @@ const activeFilterCount = [
         <header className="fixed top-0 left-0 w-full z-[1000] bg-white/80 backdrop-blur-md shadow-sm flex flex-col pointer-events-auto">
           
           {/* TOP ROW: Logo, Search, Profile */}
-          <div className="flex flex-row items-center justify-between gap-2 md:gap-4 px-3 md:px-4 py-2 md:py-3 border-b border-slate-200/50">
+          <div className="flex flex-row items-center justify-between gap-2 md:gap-3 px-3 md:px-4 pt-2 pb-1.5">
             
             {/* Logo */}
             <div className="flex items-center shrink-0">
@@ -3153,7 +3153,7 @@ const activeFilterCount = [
                 placeholder="🔍 Üniversite veya şehir ara..."
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
-                className="w-full h-10 md:h-11 rounded-full border border-slate-300 bg-slate-50 focus:bg-white text-slate-700 px-4 md:px-5 outline-none transition shadow-inner focus:ring-2 focus:ring-blue-500/50 text-sm"
+                className="w-full h-9 md:h-10 rounded-full border border-slate-300 bg-slate-50 focus:bg-white text-slate-700 px-4 md:px-5 outline-none transition shadow-inner focus:ring-2 focus:ring-blue-500/50 text-sm"
               />
               {searchInput.trim().length > 1 && (
                 <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2">
@@ -3197,13 +3197,13 @@ const activeFilterCount = [
             {/* User Profile Section */}
             <div className="flex items-center shrink-0">
                 {user ? (
-                  <div className="flex items-center gap-2 bg-slate-100 p-1 md:pr-3 rounded-full border border-slate-200">
-                    <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-8 h-8 rounded-full" />
-                    <span className="hidden md:block text-sm font-medium text-slate-700 truncate max-w-[100px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                  <div className="flex items-center gap-2 bg-slate-100 p-1 md:pr-2.5 rounded-full border border-slate-200">
+                    <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-7 h-7 rounded-full" />
+                    <span className="hidden md:block text-xs font-medium text-slate-700 truncate max-w-[90px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
                     <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="hidden md:block text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
                   </div>
                 ) : (
-                  <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition shadow-md">
+                  <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md">
                     Giriş
                   </button>
                 )}
@@ -3211,29 +3211,29 @@ const activeFilterCount = [
           </div>
           
           {/* BOTTOM ROW: Filters */}
-          <div className="flex gap-2 overflow-x-auto px-3 md:px-4 py-2 hide-scrollbar items-center justify-start md:justify-center">
+          <div className="flex gap-2 overflow-x-auto px-3 md:px-4 pb-1.5 pt-0.5 hide-scrollbar items-center justify-start md:justify-center">
               <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showMyo ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border ${showMyo ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
                 onClick={() => setShowMyo(!showMyo)}>
                 🏢 Tüm MYO'ları Göster
               </button>
               <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showKyk ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border ${showKyk ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
                 onClick={() => setShowKyk(!showKyk)}>
                 🏠 KYK Yurtları
               </button>
               <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'devlet' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border ${globalFilters.type === 'devlet' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
                 onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
                 Devlet
               </button>
               <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'vakif' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium transition shadow-sm border ${globalFilters.type === 'vakif' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
                 onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
                 Vakıf
               </button>
               <button 
-                className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-white/90 text-slate-600 border-slate-200 shadow-sm hover:bg-slate-50 transition border"
+                className="whitespace-nowrap px-3 py-1 rounded-full text-xs md:text-sm font-medium bg-white/90 text-slate-600 border-slate-200 shadow-sm hover:bg-slate-50 transition border"
                 onClick={() => setFiltersOpen(true)}>
                 ⚙ Detaylı Filtre
               </button>
