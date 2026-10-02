@@ -5462,38 +5462,39 @@ const activeFilterCount = [
         )}
 
       {messagesOpen && !activeChatUser && (
-        <aside style={{ position: 'fixed', bottom: 0, left: 0, right: 0, top: '15%', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', zIndex: 9999, borderTopLeftRadius: '24px', borderTopRightRadius: '24px', overflow: 'hidden', boxShadow: '0 -4px 10px rgba(0,0,0,0.1)' }}>
-          <>
-            <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
-                <div>
-                  <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
-                    💬 Mesajlar
-                  </h2>
-                </div>
-                <button className="close-button" onClick={() => setMessagesOpen(false)}>×</button>
-              </div>
+          <div className="absolute inset-0 z-[2000] flex justify-center items-start p-4 pointer-events-none">
+            <div className="relative w-full max-w-2xl mx-auto mt-10 bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl flex flex-col max-h-[80vh] z-[2000] overflow-hidden pointer-events-auto">
               
-              <div style={{ flex: 1, overflowY: 'auto' }}>
+              <div className="flex justify-between items-center p-6 border-b border-slate-200/60">
+                <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                  💬 Mesajlar
+                </h2>
+                <button onClick={() => setMessagesOpen(false)} className="bg-slate-100/50 hover:bg-slate-200/80 rounded-full p-2 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+
+              <div className="overflow-y-auto p-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] flex-1">
                 {!user ? (
-                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>Mesajları görmek için giriş yapmalısınız.</div>
+                  <div className="text-center p-10 text-slate-500 font-medium">Mesajları görmek için giriş yapmalısınız.</div>
                 ) : inbox.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>Henüz hiçbir mesajınız yok.</div>
+                  <div className="text-center p-10 text-slate-500 font-medium">Henüz hiçbir mesajınız yok.</div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className="flex flex-col">
                     {inbox.map((conv, idx) => (
-                      <div key={idx} onClick={() => setActiveChatUser(conv.otherUser)} style={{ display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #e2e8f0', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                      <div key={idx} onClick={() => setActiveChatUser(conv.otherUser)} className="flex items-center gap-4 p-4 mx-2 my-1 rounded-2xl hover:bg-slate-100/50 transition-colors cursor-pointer active:scale-[0.98]">
                         {conv.otherUser.avatar_url ? (
-                          <img src={conv.otherUser.avatar_url} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                          <img src={conv.otherUser.avatar_url} className="w-12 h-12 rounded-full object-cover shadow-sm shrink-0" />
                         ) : (
-                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold' }}>👤</div>
+                          <div className="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-sm shrink-0">👤</div>
                         )}
-                        <div style={{ flex: 1, overflow: 'hidden' }}>
-                          <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{conv.otherUser.full_name || 'İsimsiz'}</h4>
-                          <p style={{ margin: 0, fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {conv.latestMessage.sender_id === user.id ? 'Siz: ' : ''}{conv.latestMessage.content}
+                        <div className="flex flex-col flex-1 min-w-0">
+                          <h4 className="text-sm font-bold text-slate-900 text-left truncate">{conv.otherUser.full_name || 'İsimsiz'}</h4>
+                          <p className="text-xs text-slate-600 text-left truncate mt-0.5">
+                            {conv.latestMessage.sender_id === user?.id ? 'Siz: ' : ''}{conv.latestMessage.content}
                           </p>
                         </div>
-                        <div style={{ fontSize: '11px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                        <div className="text-xs text-slate-400 whitespace-nowrap ml-2 font-medium">
                           {new Date(conv.latestMessage.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
                         </div>
                       </div>
@@ -5501,9 +5502,10 @@ const activeFilterCount = [
                   </div>
                 )}
               </div>
-            </>
-        </aside>
-      )}
+              
+            </div>
+          </div>
+        )}
 
       {preferenceOpen && (
         <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column' }}>
