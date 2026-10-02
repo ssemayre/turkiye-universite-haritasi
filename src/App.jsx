@@ -3131,32 +3131,29 @@ const activeFilterCount = [
       <div className="relative w-screen h-screen overflow-hidden bg-slate-50 text-slate-800 font-sans">
         
         {/* ========================================
-            FLOATING HEADER (Navbar + Filters)
+            FLOATING WIDGETS (Logo + Search + Filters)
         ======================================== */}
-        <header className="fixed top-4 left-0 w-full z-[1000] flex flex-col gap-3 px-4 bg-transparent pointer-events-none">
-          
-          {/* TOP ROW: Logo, Search, Profile */}
-          <div className="flex flex-row items-center justify-between gap-2 md:gap-3">
-            
-            {/* Logo */}
-            <div className="bg-white/70 backdrop-blur-md shadow-lg rounded-2xl px-4 py-2 flex items-center shrink-0 pointer-events-auto transition-all">
-              <h1 className="text-lg md:text-xl font-bold !text-slate-900 flex items-center gap-2">
-                <span className="text-2xl">🎓</span>
-                <span className="hidden md:inline">Türkiye Üniversite Haritası</span>
-              </h1>
-            </div>
+        <>
+          {/* 1. Logo (Top Left) */}
+          <div className="fixed top-4 left-4 z-[1000] bg-white/70 backdrop-blur-md shadow-sm border border-white/40 rounded-xl px-3 py-1.5 flex items-center gap-2 pointer-events-auto">
+            <span className="text-xl">🎓</span>
+            <span className="text-sm font-semibold !text-slate-900 hidden md:inline">Türkiye Üniversite Haritası</span>
+          </div>
 
-            {/* Search Input */}
-            <div className="relative w-full max-w-md pointer-events-auto">
+          {/* 2. Search & Filters (Top Center) */}
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[1000] flex flex-col items-center gap-2 w-full max-w-[90%] md:max-w-md pointer-events-none">
+            
+            {/* Search Input Container */}
+            <div className="pointer-events-auto w-full bg-white/80 backdrop-blur-xl shadow-md border border-white/50 rounded-full px-4 py-2 flex items-center relative">
               <input
                 type="text"
                 placeholder="🔍 Üniversite veya şehir ara..."
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
-                className="bg-white/70 backdrop-blur-md shadow-lg border border-white/40 rounded-full px-5 py-3 w-full outline-none transition focus:bg-white/90 focus:ring-2 focus:ring-blue-400/50 text-sm text-slate-800"
+                className="w-full bg-transparent outline-none text-sm text-slate-800"
               />
               {searchInput.trim().length > 1 && (
-                <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2">
+                <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2 text-left">
                   {loadingSupabaseSearch ? (
                     <div className="text-center text-slate-500 p-4">Arama sonuçları yükleniyor...</div>
                   ) : visibleSearchResults.length > 0 ? (
@@ -3194,39 +3191,36 @@ const activeFilterCount = [
               )}
             </div>
 
-            {/* Dummy Spacer to balance the Logo on desktop */}
-            <div className="hidden lg:block shrink-0 w-[260px] pointer-events-none"></div>
+            {/* Filters Container */}
+            <div className="flex flex-wrap justify-center gap-1.5 w-full pointer-events-auto">
+                <button 
+                  className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium transition shadow-sm border backdrop-blur-md ${showMyo ? 'bg-indigo-500/30 text-indigo-900 border-indigo-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
+                  onClick={() => setShowMyo(!showMyo)}>
+                  🏢 Tüm MYO'ları Göster
+                </button>
+                <button 
+                  className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium transition shadow-sm border backdrop-blur-md ${showKyk ? 'bg-rose-500/30 text-rose-900 border-rose-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
+                  onClick={() => setShowKyk(!showKyk)}>
+                  🏠 KYK Yurtları
+                </button>
+                <button 
+                  className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium transition shadow-sm border backdrop-blur-md ${globalFilters.type === 'devlet' ? 'bg-blue-500/30 text-blue-900 border-blue-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
+                  onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
+                  Devlet
+                </button>
+                <button 
+                  className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium transition shadow-sm border backdrop-blur-md ${globalFilters.type === 'vakif' ? 'bg-emerald-500/30 text-emerald-900 border-emerald-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
+                  onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
+                  Vakıf
+                </button>
+                <button 
+                  className="whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium bg-white/70 text-slate-700 border-white/40 shadow-sm hover:bg-white/90 transition border backdrop-blur-md"
+                  onClick={() => setFiltersOpen(true)}>
+                  ⚙ Detaylı Filtre
+                </button>
+            </div>
           </div>
-          
-          {/* BOTTOM ROW: Filters */}
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar items-center justify-start pointer-events-auto pb-2">
-              <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${showMyo ? 'bg-indigo-500/30 text-indigo-900 border-indigo-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
-                onClick={() => setShowMyo(!showMyo)}>
-                🏢 Tüm MYO'ları Göster
-              </button>
-              <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${showKyk ? 'bg-rose-500/30 text-rose-900 border-rose-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
-                onClick={() => setShowKyk(!showKyk)}>
-                🏠 KYK Yurtları
-              </button>
-              <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${globalFilters.type === 'devlet' ? 'bg-blue-500/30 text-blue-900 border-blue-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
-                onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
-                Devlet
-              </button>
-              <button 
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition shadow-md border backdrop-blur-md ${globalFilters.type === 'vakif' ? 'bg-emerald-500/30 text-emerald-900 border-emerald-300/60' : 'bg-white/70 text-slate-700 border-white/40 hover:bg-white/90'}`}
-                onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
-                Vakıf
-              </button>
-              <button 
-                className="whitespace-nowrap px-4 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white/70 text-slate-700 border-white/40 shadow-md hover:bg-white/90 transition border backdrop-blur-md"
-                onClick={() => setFiltersOpen(true)}>
-                ⚙ Detaylı Filtre
-              </button>
-          </div>
-        </header>
+        </>
 
       {/* ========================================
           FULLSCREEN MAP
