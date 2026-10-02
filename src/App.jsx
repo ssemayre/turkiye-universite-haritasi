@@ -4503,7 +4503,7 @@ const activeFilterCount = [
 
         {selectedSubCampus && (
           <aside
-            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col pt-20 md:pt-[76px] pb-[72px] transform transition-transform duration-300 translate-x-0"
+            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col pt-20 md:pt-[76px] transform transition-transform duration-300 translate-x-0"
             onTouchStart={e => e.stopPropagation()}
             onTouchMove={e => e.stopPropagation()}
             onWheel={e => e.stopPropagation()}
@@ -6150,28 +6150,28 @@ const activeFilterCount = [
 
       )}
 
-      {/* MOBILE BOTTOM NAVIGATION (Glassmorphism) */}
-      <nav className="fixed bottom-0 left-0 w-full z-[1000] bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex justify-around items-center py-2 pb-safe">
-        <button type="button" onClick={openBrowse} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
-          <span className="text-xl mb-1">🌍</span>
-          <span className="text-[10px] font-semibold">Kampüs</span>
+      {/* FLOATING GLASS DOCK */}
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1000] flex items-center justify-around w-[90%] max-w-[400px] bg-white/70 backdrop-blur-xl shadow-2xl border border-white/50 rounded-full px-6 py-3 pointer-events-auto transition-all">
+        <button type="button" onClick={openBrowse} className={`flex flex-col items-center p-1 transition-all hover:scale-110 ${browseOpen ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
+          <span className="text-xl mb-0.5">🌍</span>
+          <span className="text-[10px] font-bold">Kampüs</span>
         </button>
-        <button type="button" onClick={openNotifications} className="relative flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
-          <span className="text-xl mb-1">🔔</span>
-          <span className="text-[10px] font-semibold">Bildirimler</span>
+        <button type="button" onClick={openNotifications} className={`relative flex flex-col items-center p-1 transition-all hover:scale-110 ${notificationsOpen ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
+          <span className="text-xl mb-0.5">🔔</span>
+          <span className="text-[10px] font-bold">Bildirimler</span>
           {notifications.filter(n => !n.is_read).length > 0 && (
-            <span className="absolute top-1 right-2 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm border border-white">
               {notifications.filter(n => !n.is_read).length}
             </span>
           )}
         </button>
-        <button type="button" onClick={openMessages} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
-          <span className="text-xl mb-1">💬</span>
-          <span className="text-[10px] font-semibold">Mesajlar</span>
+        <button type="button" onClick={openMessages} className={`flex flex-col items-center p-1 transition-all hover:scale-110 ${messagesOpen ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
+          <span className="text-xl mb-0.5">💬</span>
+          <span className="text-[10px] font-bold">Mesajlar</span>
         </button>
-        <button type="button" onClick={() => toggleFloatingPanel("favorites")} className="flex flex-col items-center p-2 text-slate-500 hover:text-blue-600 transition-colors">
-          <span className="text-xl mb-1">👤</span>
-          <span className="text-[10px] font-semibold">Profilim</span>
+        <button type="button" onClick={() => toggleFloatingPanel("favorites")} className={`flex flex-col items-center p-1 transition-all hover:scale-110 ${preferenceOpen ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
+          <span className="text-xl mb-0.5">👤</span>
+          <span className="text-[10px] font-bold">Profilim</span>
         </button>
       </nav>
     </div>
