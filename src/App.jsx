@@ -5508,17 +5508,17 @@ const activeFilterCount = [
         )}
 
       {preferenceOpen && (
-        <aside className="preference-drawer" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div className="preference-header p-2 md:p-4" style={{ borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
-            <div>
-              <h2 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', margin: 0 }}>
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl flex flex-col max-h-[80vh] z-[2000] overflow-hidden">
+          <div className="flex justify-between items-center p-6 border-b border-slate-200/60">
+              <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
                 👤 Profilim
               </h2>
+              <button onClick={() => setPreferenceOpen(false)} className="bg-slate-100/50 hover:bg-slate-200/80 rounded-full p-2 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
             </div>
-            <button className="close-button" onClick={() => setPreferenceOpen(false)}>✕</button>
-          </div>
           
-          <div style={{ flex: 1, overflowY: 'auto', paddingRight: '4px' }}>
+          <div className="overflow-y-auto p-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] flex-1 flex flex-col gap-6">
             {!user ? (
               // --- AUTH FORM (LOGGED OUT) ---
               <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
@@ -5560,31 +5560,31 @@ const activeFilterCount = [
               </div>
             ) : (
               // --- PROFILE DASHBOARD (LOGGED IN) ---
-              <div style={{ padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '24px', background: '#fff', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+              <div className="flex flex-col gap-6 w-full">
                 {!isEditingProfile ? (
                   // DISPLAY MODE
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '64px', height: '64px', borderRadius: '50%', border: '2px solid #e2e8f0', objectFit: 'cover' }} />
-                        <div>
-                          <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#0f172a' }}>{userProfileData.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}</h3>
-                          <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>{user.email}</p>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-white/50 object-cover shadow-sm shrink-0" />
+                          <div className="flex flex-col">
+                            <h3 className="text-lg font-bold text-slate-900 m-0">{userProfileData.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}</h3>
+                            <p className="text-sm text-slate-600 m-0">{user.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => setIsEditingProfile(true)} className="bg-slate-100/50 hover:bg-slate-200/80 text-slate-700 font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm active:scale-95">Düzenle</button>
+                          <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm active:scale-95">Çıkış</button>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button onClick={() => setIsEditingProfile(true)} style={{ background: '#f1f5f9', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: '#475569', transition: 'background 0.2s' }}>Düzenle</button>
-                        <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} style={{ background: '#fee2e2', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: '#ef4444', transition: 'background 0.2s' }}>Çıkış</button>
-                      </div>
-                    </div>
 
                     {userProfileData.bio && (
-                      <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '12px', fontSize: '13px', color: '#334155', lineHeight: '1.6', borderLeft: '4px solid #3b82f6' }}>
+                      <div className="bg-white/40 border border-white/50 rounded-2xl p-4 shadow-sm text-sm text-slate-700 leading-relaxed border-l-4 border-l-indigo-500">
                         {userProfileData.bio}
                       </div>
                     )}
 
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    <div className="bg-white/40 border border-white/50 rounded-2xl p-4 shadow-sm flex flex-wrap gap-2">
                       <span style={{ background: '#e0e7ff', color: '#4338ca', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🎓 {userProfileData.education_status || 'Belirtilmedi'}</span>
                       {(userProfileData.education_status === 'Okuyor' || userProfileData.education_status === 'Mezun') && userProfileData.university_name && (
                         <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>🏛️ {userProfileData.university_name}</span>
@@ -5602,7 +5602,7 @@ const activeFilterCount = [
                   </div>
                 ) : (
                   // EDIT MODE
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="flex flex-col gap-4">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>Profili Düzenle</h3>
                       <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '6px 12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
@@ -5733,7 +5733,7 @@ const activeFilterCount = [
               </div>
             )}
           </div>
-        </aside>
+        </div>
       )}
       {/* ========================================
           COMPARISON
