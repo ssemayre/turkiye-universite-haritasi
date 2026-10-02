@@ -3736,8 +3736,8 @@ const activeFilterCount = [
             )}
 
             {isListingModalOpen && (
-               <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-sm">
-                  <div className="relative w-full max-w-md mx-auto bg-white/70 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl p-6">
+               <div className="absolute inset-0 z-[2000] flex items-start justify-center p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                  <div className="relative w-full max-w-md mx-auto my-auto bg-white/70 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl p-6">
                      <h3 className="text-xl font-extrabold text-slate-900 mb-6 text-left">İlan Ver</h3>
                      <button onClick={() => setIsListingModalOpen(false)} className="absolute top-4 right-4 bg-slate-100/50 hover:bg-slate-200/80 rounded-full p-2 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
