@@ -3541,7 +3541,7 @@ const activeFilterCount = [
                     ✕
                   </button>
                   
-                  <h2 className="text-xl font-bold text-slate-800 text-center leading-tight">
+                  <h2 className="text-xl font-bold text-slate-900 drop-shadow-sm text-center leading-tight">
                     {userProfileData.university_name || 'Kampüs'}
                   </h2>
                   <span className="text-sm text-slate-500 font-medium mt-1">
@@ -3584,30 +3584,35 @@ const activeFilterCount = [
                           </div>
                         </div>
                       )}
-                      <div className="campus-composer bg-white/50 border border-white/60 backdrop-blur-md shadow-sm rounded-2xl p-3 mx-4 my-3 focus-within:bg-white/80 transition-all">
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                          {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
-                            <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                          ) : (
-                            <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
-                          )}
+                      <div className="campus-composer flex items-start gap-3 p-4 bg-white/50 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm mb-4 mx-4">
+                        {userProfileData.avatar_url || user.user_metadata?.avatar_url ? (
+                          <img src={userProfileData.avatar_url || user.user_metadata?.avatar_url} alt="Avatar" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <span className="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-base font-bold shrink-0">👤</span>
+                        )}
+                        <div className="flex-1 flex flex-col w-full">
                           <textarea
                             value={newPostContent}
                             onChange={(e) => setNewPostContent(e.target.value)}
                             placeholder={campusTab === 'confessions' ? "İçindekileri dök, tamamen anonimsin..." : "Kampüste neler oluyor?"}
-                            style={{ flex: 1, border: 'none', background: 'transparent', resize: 'none', fontSize: '15px', color: '#334155', minHeight: '60px', padding: '8px 0', outline: 'none' }}
+                            className="w-full bg-transparent resize-none outline-none text-sm text-slate-800 placeholder:text-slate-500"
+                            style={{ minHeight: '60px' }}
                           />
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: campusTab === 'confessions' ? 'space-between' : 'flex-end', alignItems: 'center', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
-                          {campusTab === 'confessions' && (
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#64748b' }}>
-                              <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} />
-                              👻 Anonim Paylaş
-                            </label>
-                          )}
-                          <button onClick={submitCampusPost} disabled={isSubmittingPost || !newPostContent.trim()} style={{ background: newPostContent.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '14px', transition: 'background 0.2s' }}>
-                            {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
-                          </button>
+                          <div className="flex items-center w-full mt-2 pt-2 border-t border-white/40">
+                            {campusTab === 'confessions' && (
+                              <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-500 mr-auto">
+                                <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} />
+                                💬 Anonim Paylaş
+                              </label>
+                            )}
+                            <button
+                              onClick={submitCampusPost}
+                              disabled={isSubmittingPost || !newPostContent.trim()}
+                              className={`bg-indigo-600 text-white px-5 py-1.5 rounded-full text-sm font-semibold hover:bg-indigo-700 transition-colors ml-auto ${!newPostContent.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                              {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
+                            </button>
+                          </div>
                         </div>
                       </div>
 
@@ -3625,23 +3630,26 @@ const activeFilterCount = [
                             const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
                             return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
                           }).map(post => (
-                              <div key={post.id} className="campus-post-card bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4 mb-3 mx-4">
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
-                                  <div style={{ cursor: post.is_anonymous ? 'default' : 'pointer' }} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
+                              <div key={post.id} className="campus-post-card flex flex-col p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm mb-3 mx-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <div className={`shrink-0 ${post.is_anonymous ? 'cursor-default' : 'cursor-pointer'}`} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
                                     {post.is_anonymous ? (
-                                      <span style={{ background: '#64748b', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>🎭</span>
+                                      <span className="bg-slate-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl">👻</span>
                                     ) : post.profiles?.avatar_url ? (
-                                      <img src={post.profiles.avatar_url} alt="Avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                                      <img src={post.profiles.avatar_url} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
                                     ) : (
-                                      <span style={{ background: '#3b82f6', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold', flexShrink: 0 }}>👤</span>
+                                      <span className="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-base font-bold">👤</span>
                                     )}
                                   </div>
-                                  <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                                      <strong onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })} style={{ color: '#0f172a', fontSize: '15px', cursor: post.is_anonymous ? 'default' : 'pointer' }}>
-                                        {post.is_anonymous ? 'Anonim' : (post.profiles?.full_name || 'İsimsiz')}
-                                      </strong>
-                                    <span style={{ color: '#94a3b8', fontSize: '12px' }}>
+                                  
+                                  <div className="flex flex-col items-start text-left">
+                                    <span className={`text-sm font-bold text-slate-900 ${post.is_anonymous ? 'cursor-default' : 'cursor-pointer'}`} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
+                                      {post.is_anonymous ? 'Anonim' : (post.profiles?.full_name || 'İsimsiz')}
+                                    </span>
+                                    <span className="text-xs text-slate-500">
+                                      {!post.is_anonymous && (
+                                        <>{post.profiles?.department_name || post.university_name} • </>
+                                      )}
                                       {(() => {
                                         const diff = Date.now() - new Date(post.created_at).getTime();
                                         const minutes = Math.floor(diff / 60000);
@@ -3653,18 +3661,14 @@ const activeFilterCount = [
                                       })()}
                                     </span>
                                   </div>
-                                    {!post.is_anonymous && (
-                                      <span style={{ fontSize: '12px', color: '#64748b' }}>{post.profiles?.department_name || post.university_name}</span>
-                                    )}
-                                  </div>
                                 </div>
-                              <p style={{ margin: '0 0 12px 0', color: '#334155', fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{post.content}</p>
-                              <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
-                                <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', padding: '4px 8px', borderRadius: '6px' }} onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                                  <span style={{ fontSize: '16px' }}>♡</span> {post.likes_count || 0}
-                                </button>
+                                <p className="text-sm text-slate-800 text-left leading-relaxed whitespace-pre-wrap break-words">{post.content}</p>
+                                <div className="flex items-center gap-4 mt-1 pt-3 border-t border-white/40">
+                                  <button className="flex items-center gap-1.5 text-slate-500 hover:bg-white/50 transition-colors px-2 py-1 rounded-md text-xs font-medium">
+                                    <span className="text-base">🤍</span> {post.likes_count || 0}
+                                  </button>
+                                </div>
                               </div>
-                            </div>
                           ))
                         )}
                       </div>
