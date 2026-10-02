@@ -3131,113 +3131,114 @@ const activeFilterCount = [
       <div className="relative w-screen h-[100dvh] flex flex-col bg-slate-50 text-slate-800 font-sans">
         
         {/* ========================================
-            FLOATING NAVBAR (Glassmorphism)
+            FLOATING HEADER (Navbar + Filters)
         ======================================== */}
-        <nav className="fixed top-0 left-0 right-0 z-[9999] bg-white/90 backdrop-blur-md shadow-sm py-2 px-3 md:py-3 md:px-4 flex flex-row items-center justify-between gap-2 md:gap-4 border-b border-slate-200">
+        <header className="fixed top-0 left-0 w-full z-[1000] bg-white/80 backdrop-blur-md shadow-sm flex flex-col pointer-events-auto">
           
-          {/* Logo */}
-          <div className="flex items-center shrink-0">
-            <h1 className="text-lg md:text-xl font-bold !text-slate-900 flex items-center gap-2">
-              <span className="text-2xl">🎓</span>
-              <span className="hidden md:inline">Türkiye Üniversite Haritası</span>
-            </h1>
-          </div>
+          {/* TOP ROW: Logo, Search, Profile */}
+          <div className="flex flex-row items-center justify-between gap-2 md:gap-4 px-3 md:px-4 py-2 md:py-3 border-b border-slate-200/50">
+            
+            {/* Logo */}
+            <div className="flex items-center shrink-0">
+              <h1 className="text-lg md:text-xl font-bold !text-slate-900 flex items-center gap-2">
+                <span className="text-2xl">🎓</span>
+                <span className="hidden md:inline">Türkiye Üniversite Haritası</span>
+              </h1>
+            </div>
 
-          {/* Search Input */}
-          <div className="relative w-full max-w-md">
-            <input
-              type="text"
-              placeholder="🔍 Üniversite veya şehir ara..."
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              className="w-full h-10 md:h-11 rounded-full border border-slate-300 bg-slate-50 focus:bg-white text-slate-700 px-4 md:px-5 outline-none transition shadow-inner focus:ring-2 focus:ring-blue-500/50 text-sm"
-            />
-            {searchInput.trim().length > 1 && (
-              <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2">
-                {loadingSupabaseSearch ? (
-                  <div className="text-center text-slate-500 p-4">Arama sonuçları yükleniyor...</div>
-                ) : visibleSearchResults.length > 0 ? (
-                  visibleSearchResults.map((result, i) => (
-                    <div 
-                      key={i}
-                      onClick={() => {
-                        setSearchInput("");
-                        setSearch("");
-                        if (result.type === "university") {
-                           setSelectedSubCampus(result.university);
-                           setMapFocus({ latitude: Number(result.university.lat || result.university.latitude), longitude: Number(result.university.lng || result.university.longitude), zoom: 11 });
-                        } else {
-                           setSelectedSubCampus(result.university);
-                           const tLat = result.program.latitude || result.university.lat || result.university.latitude;
-                           const tLng = result.program.longitude || result.university.lng || result.university.longitude;
-                           setMapFocus({ latitude: Number(tLat), longitude: Number(tLng), zoom: 14 });
-                           setActiveCampusFilterId(result.program.campus_id || null);
-                        }
-                      }}
-                      className="px-4 py-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer flex flex-col rounded-lg transition"
-                    >
-                      <strong className="text-sm text-slate-800">
-                        {result.type === 'university' ? result.university.name : result.program.name}
-                      </strong>
-                      <span className="text-xs text-slate-500 mt-1">
-                        {result.type === 'university' ? result.university.city : result.university.name}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-slate-500 p-4">Sonuç bulunamadı.</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* User Profile Section */}
-          <div className="flex items-center shrink-0">
-              {user ? (
-                <div className="flex items-center gap-2 bg-slate-100 p-1 md:pr-3 rounded-full border border-slate-200">
-                  <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-8 h-8 rounded-full" />
-                  <span className="hidden md:block text-sm font-medium text-slate-700 truncate max-w-[100px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
-                  <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="hidden md:block text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
+            {/* Search Input */}
+            <div className="relative w-full max-w-md">
+              <input
+                type="text"
+                placeholder="🔍 Üniversite veya şehir ara..."
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                className="w-full h-10 md:h-11 rounded-full border border-slate-300 bg-slate-50 focus:bg-white text-slate-700 px-4 md:px-5 outline-none transition shadow-inner focus:ring-2 focus:ring-blue-500/50 text-sm"
+              />
+              {searchInput.trim().length > 1 && (
+                <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2">
+                  {loadingSupabaseSearch ? (
+                    <div className="text-center text-slate-500 p-4">Arama sonuçları yükleniyor...</div>
+                  ) : visibleSearchResults.length > 0 ? (
+                    visibleSearchResults.map((result, i) => (
+                      <div 
+                        key={i}
+                        onClick={() => {
+                          setSearchInput("");
+                          setSearch("");
+                          if (result.type === "university") {
+                             setSelectedSubCampus(result.university);
+                             setMapFocus({ latitude: Number(result.university.lat || result.university.latitude), longitude: Number(result.university.lng || result.university.longitude), zoom: 11 });
+                          } else {
+                             setSelectedSubCampus(result.university);
+                             const tLat = result.program.latitude || result.university.lat || result.university.latitude;
+                             const tLng = result.program.longitude || result.university.lng || result.university.longitude;
+                             setMapFocus({ latitude: Number(tLat), longitude: Number(tLng), zoom: 14 });
+                             setActiveCampusFilterId(result.program.campus_id || null);
+                          }
+                        }}
+                        className="px-4 py-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer flex flex-col rounded-lg transition"
+                      >
+                        <strong className="text-sm text-slate-800">
+                          {result.type === 'university' ? result.university.name : result.program.name}
+                        </strong>
+                        <span className="text-xs text-slate-500 mt-1">
+                          {result.type === 'university' ? result.university.city : result.university.name}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-slate-500 p-4">Sonuç bulunamadı.</div>
+                  )}
                 </div>
-              ) : (
-                <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition shadow-md">
-                  Giriş
-                </button>
               )}
+            </div>
+
+            {/* User Profile Section */}
+            <div className="flex items-center shrink-0">
+                {user ? (
+                  <div className="flex items-center gap-2 bg-slate-100 p-1 md:pr-3 rounded-full border border-slate-200">
+                    <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-8 h-8 rounded-full" />
+                    <span className="hidden md:block text-sm font-medium text-slate-700 truncate max-w-[100px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                    <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="hidden md:block text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
+                  </div>
+                ) : (
+                  <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition shadow-md">
+                    Giriş
+                  </button>
+                )}
+            </div>
           </div>
           
-        </nav>
-
-        {/* ========================================
-            SCROLLABLE FILTER PILLS (Mobile Friendly)
-        ======================================== */}
-        <div className="fixed top-[60px] md:top-[68px] left-0 w-full z-[9999] flex gap-2 overflow-x-auto px-4 py-2 hide-scrollbar items-center justify-start md:justify-center">
-            <button 
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showMyo ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
-              onClick={() => setShowMyo(!showMyo)}>
-              🏢 Tüm MYO'ları Göster
-            </button>
-            <button 
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showKyk ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
-              onClick={() => setShowKyk(!showKyk)}>
-              🏠 KYK Yurtları
-            </button>
-            <button 
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'devlet' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
-              onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
-              Devlet
-            </button>
-            <button 
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'vakif' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
-              onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
-              Vakıf
-            </button>
-            <button 
-              className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-white/90 text-slate-600 border-slate-200 shadow-sm hover:bg-slate-50 transition border backdrop-blur-sm"
-              onClick={() => setFiltersOpen(true)}>
-              ⚙ Detaylı Filtre
-            </button>
-        </div>
+          {/* BOTTOM ROW: Filters */}
+          <div className="flex gap-2 overflow-x-auto px-3 md:px-4 py-2 hide-scrollbar items-center justify-start md:justify-center">
+              <button 
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showMyo ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                onClick={() => setShowMyo(!showMyo)}>
+                🏢 Tüm MYO'ları Göster
+              </button>
+              <button 
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showKyk ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                onClick={() => setShowKyk(!showKyk)}>
+                🏠 KYK Yurtları
+              </button>
+              <button 
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'devlet' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
+                Devlet
+              </button>
+              <button 
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'vakif' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white'}`}
+                onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
+                Vakıf
+              </button>
+              <button 
+                className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-white/90 text-slate-600 border-slate-200 shadow-sm hover:bg-slate-50 transition border"
+                onClick={() => setFiltersOpen(true)}>
+                ⚙ Detaylı Filtre
+              </button>
+          </div>
+        </header>
 
       {/* ========================================
           FULLSCREEN MAP
