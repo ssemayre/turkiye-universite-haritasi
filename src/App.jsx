@@ -3431,7 +3431,7 @@ const activeFilterCount = [
 
 </MapContainer>
         {browseOpen && (
-          <aside className="fixed z-[1500] flex flex-col overflow-hidden transition-transform bg-white/70 backdrop-blur-2xl border border-white/50 shadow-2xl right-0 top-20 bottom-20 w-full rounded-t-3xl md:right-4 md:top-20 md:bottom-24 md:max-w-[400px] md:rounded-3xl">
+          <aside className="fixed right-4 top-[100px] bottom-[90px] w-[calc(100%-2rem)] md:w-full max-w-[420px] z-[1500] bg-white/75 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-transform">
             {viewingProfile ? (
               <>
                 <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.3)', background: 'transparent' }}>
@@ -3536,23 +3536,24 @@ const activeFilterCount = [
               </>
             ) : (
               <>
-                <div className="browse-panel-header p-2 md:p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.3)', background: 'transparent' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <div>
-                      <div className="detail-label" style={{ color: '#3b82f6' }}>KAMPÜS</div>
-                      <h2 style={{ margin: 0, fontSize: '20px', color: '#0f172a' }}>
-                        {userProfileData.university_name || 'Kampüs'}
-                      </h2>
-                    </div>
-                    <button className="close-button" onClick={() => setBrowseOpen(false)}>×</button>
-                  </div>
+                <div className="relative flex flex-col items-center pt-8 pb-4 px-6 border-b border-gray-200/50">
+                  <button className="absolute top-4 right-4 bg-gray-100/50 hover:bg-gray-200 rounded-full p-2 text-gray-500 transition-colors w-8 h-8 flex items-center justify-center" onClick={() => setBrowseOpen(false)}>
+                    ✕
+                  </button>
+                  
+                  <h2 className="text-xl font-bold text-slate-800 text-center leading-tight">
+                    {userProfileData.university_name || 'Kampüs'}
+                  </h2>
+                  <span className="text-sm text-slate-500 font-medium mt-1">
+                    Üniversite Kampüsü
+                  </span>
                   
                   {user && userProfileData.university_name && (
-                    <div className="bg-slate-200/50 backdrop-blur-md p-1 rounded-xl flex mx-4 mt-2 mb-2">
-                      <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} className={`py-1.5 flex-1 text-center text-sm transition-all ${campusTab === 'feed' ? 'bg-white shadow-sm rounded-lg text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-800'}`}>Akış</button>
-                      <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} className={`py-1.5 flex-1 text-center text-sm transition-all ${campusTab === 'confessions' ? 'bg-white shadow-sm rounded-lg text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-800'}`}>İtiraflar</button>
-                      <button onClick={() => setCampusTab('clubs')} className={`py-1.5 flex-1 text-center text-sm transition-all ${campusTab === 'clubs' ? 'bg-white shadow-sm rounded-lg text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-800'}`}>Kulüpler</button>
-                      <button onClick={() => setCampusTab('listings')} className={`py-1.5 flex-1 text-center text-sm transition-all ${campusTab === 'listings' ? 'bg-white shadow-sm rounded-lg text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-800'}`}>Pano</button>
+                    <div className="flex w-full bg-slate-200/60 backdrop-blur-md p-1 rounded-xl mt-5">
+                      <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'feed' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Akış</button>
+                      <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'confessions' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>İtiraflar</button>
+                      <button onClick={() => setCampusTab('clubs')} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'clubs' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Kulüpler</button>
+                      <button onClick={() => setCampusTab('listings')} className={`flex-1 text-center py-2 text-sm font-medium rounded-lg transition-all ${campusTab === 'listings' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Pano</button>
                     </div>
                   )}
                 </div>
