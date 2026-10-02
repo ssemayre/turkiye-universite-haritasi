@@ -3128,65 +3128,57 @@ const activeFilterCount = [
   const isAnyModalOpen = (selectedUniversity !== null) || (selectedProgram !== null) || (selectedKyk !== null) || (filtersOpen === true) || (selectedSubCampus !== null) || (preferenceOpen === true) || (browseOpen === true) || (aboutOpen === true);
   return (
     <>
-      <div className="app" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
-
-      {/* ========================================
-          UNIFIED MOBILE & DESKTOP HEADER
-      ======================================== */}
-      <header className="header-unified" style={{ flexShrink: 0, position: 'relative', zIndex: 2000, background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,0,0,0.08)', padding: 'max(12px, env(safe-area-inset-top)) 16px 12px 16px', display: 'flex', flexDirection: 'column', gap: '12px', pointerEvents: 'auto' }}>
+      <div className="relative w-screen h-screen overflow-hidden bg-slate-50 text-slate-800 font-sans">
         
-        {/* Satır 1: Başlık ve Kullanıcı Profil */}
-        <div className="logo-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '18px', fontWeight: '700', margin: 0, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '22px' }}>🎓</span> Türkiye Üniversite Haritası
-          </h1>
+        {/* ========================================
+            FLOATING NAVBAR (Glassmorphism)
+        ======================================== */}
+        <nav className="absolute top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-[1000] bg-white/80 backdrop-blur-md shadow-lg rounded-2xl p-3 md:p-4 flex flex-col md:flex-row items-center gap-3 md:gap-4 border border-white/40">
           
-            <div className="user-profile-section" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Logo & Profile Row */}
+          <div className="flex justify-between items-center w-full md:w-auto md:shrink-0">
+            <h1 className="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
+              <span className="text-2xl">🎓</span>
+              <span className="hidden md:inline">Türkiye Üniversite Haritası</span>
+            </h1>
+            
+            <div className="flex md:hidden items-center gap-2">
+              {/* Mobile User Profile Section */}
               {user && (
-                <>
-                  <div style={{ position: 'relative' }}>
-                    <button onClick={openNotifications} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} title="Bildirimler">
-                      🔔
-                    </button>
-                    {notifications.filter(n => !n.is_read).length > 0 && (
-                      <span style={{ position: 'absolute', top: '-2px', right: '-2px', background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 'bold', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {notifications.filter(n => !n.is_read).length}
-                      </span>
-                    )}
-                  </div>
-                  <button onClick={openMessages} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} title="Mesajlar">
-                    💬
-                  </button>
-                </>
+                <div className="relative">
+                  <button onClick={openNotifications} className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full w-9 h-9 flex items-center justify-center transition" title="Bildirimler">🔔</button>
+                  {notifications.filter(n => !n.is_read).length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                      {notifications.filter(n => !n.is_read).length}
+                    </span>
+                  )}
+                </div>
               )}
               {user ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '4px 12px 4px 4px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', color: '#475569' }}>
-                  <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" style={{ width: '28px', height: '28px', borderRadius: '50%' }} />
-                <span>{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
-                <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', marginLeft: '4px', color: '#ef4444', fontWeight: 'bold' }}>✕</button>
-              </div>
-            ) : (
-              <button onClick={openAuthModal} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)' }}>
-                Giriş Yap
-              </button>
-            )}
+                <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="bg-slate-100 p-1 rounded-full border border-slate-200">
+                  <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-7 h-7 rounded-full" />
+                </button>
+              ) : (
+                <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full text-xs font-medium transition shadow-md">
+                  Giriş
+                </button>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Satır 2: Arama */}
-        <div className="search-row">
-          <div style={{ position: 'relative', flex: 1 }}>
+          {/* Search Input */}
+          <div className="relative w-full flex-1">
             <input
               type="text"
               placeholder="🔍 Üniversite, bölüm veya şehir ara..."
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
-              style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid #cbd5e1', padding: '0 16px', background: '#f1f5f9', color: '#334155', outline: 'none', fontSize: '16px' }}
+              className="w-full h-11 rounded-xl border border-slate-200 bg-white/70 focus:bg-white text-slate-700 px-4 outline-none transition shadow-sm focus:ring-2 focus:ring-blue-500/50"
             />
             {searchInput.trim().length > 1 && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 1000, maxHeight: '300px', overflowY: 'auto', marginTop: '8px' }}>
+              <div className="absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur-md rounded-xl shadow-xl z-[1001] max-h-72 overflow-y-auto border border-slate-100 p-2">
                 {loadingSupabaseSearch ? (
-                  <div style={{ textAlign: 'center', color: '#64748b' }}>Arama sonuçları yükleniyor...</div>
+                  <div className="text-center text-slate-500 p-4">Arama sonuçları yükleniyor...</div>
                 ) : visibleSearchResults.length > 0 ? (
                   visibleSearchResults.map((result, i) => (
                     <div 
@@ -3205,79 +3197,89 @@ const activeFilterCount = [
                            setActiveCampusFilterId(result.program.campus_id || null);
                         }
                       }}
-                      style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+                      className="px-4 py-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer flex flex-col rounded-lg transition"
                     >
-                      <strong style={{ fontSize: '14px', color: '#1e293b' }}>
+                      <strong className="text-sm text-slate-800">
                         {result.type === 'university' ? result.university.name : result.program.name}
                       </strong>
-                      <span style={{ fontSize: '12px', color: '#64748b' }}>
+                      <span className="text-xs text-slate-500 mt-1">
                         {result.type === 'university' ? result.university.city : result.university.name}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <div style={{ textAlign: 'center', color: '#64748b' }}>Sonuç bulunamadı.</div>
+                  <div className="text-center text-slate-500 p-4">Sonuç bulunamadı.</div>
                 )}
               </div>
             )}
           </div>
-        </div>
 
-        {/* Satır 3: Hızlı Keşfet ve Filtreler */}
-          <div className="filters-row hide-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+          {/* Desktop User Profile Section & Filters */}
+          <div className="hidden md:flex items-center gap-2 shrink-0">
+             {user && (
+                <div className="relative">
+                  <button onClick={openNotifications} className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition" title="Bildirimler">🔔</button>
+                  {notifications.filter(n => !n.is_read).length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                      {notifications.filter(n => !n.is_read).length}
+                    </span>
+                  )}
+                </div>
+              )}
+              {user && (
+                  <button onClick={openMessages} className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition" title="Mesajlar">💬</button>
+              )}
+              {user ? (
+                <div className="flex items-center gap-2 bg-slate-100 p-1 pl-1 pr-3 rounded-full border border-slate-200">
+                  <img src={user.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} alt="Avatar" className="w-8 h-8 rounded-full" />
+                  <span className="text-sm font-medium text-slate-700 truncate max-w-[100px]">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>
+                  <button onClick={() => window.confirm('Çıkış yapmak istiyor musunuz?') && signOut()} className="text-red-500 font-bold ml-1 hover:text-red-600 transition">✕</button>
+                </div>
+              ) : (
+                <button onClick={openAuthModal} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-md">
+                  Giriş Yap
+                </button>
+              )}
+          </div>
+          
+        </nav>
 
+        {/* ========================================
+            SCROLLABLE FILTER PILLS (Mobile Friendly)
+        ======================================== */}
+        <div className="absolute top-[125px] md:top-[85px] left-1/2 -translate-x-1/2 w-[95%] max-w-5xl z-[1000] flex gap-2 overflow-x-auto pb-2 hide-scrollbar items-center justify-start md:justify-center">
             <button 
-              className={`pill-btn ${showMyo ? 'active' : ''}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showMyo ? 'bg-indigo-100 text-indigo-700 border-indigo-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
               onClick={() => setShowMyo(!showMyo)}>
               🏢 Tüm MYO'ları Göster
             </button>
-
             <button 
-              className={`pill-btn ${showKyk ? 'active' : ''}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${showKyk ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
               onClick={() => setShowKyk(!showKyk)}>
               🏠 KYK Yurtları
             </button>
-
             <button 
-              className={`pill-btn ${globalFilters.type === 'devlet' ? 'active' : ''}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'devlet' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
               onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'devlet' ? 'all' : 'devlet' }))}>
               Devlet
             </button>
-
             <button 
-              className={`pill-btn ${globalFilters.type === 'vakif' ? 'active' : ''}`}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-sm border ${globalFilters.type === 'vakif' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-white/90 text-slate-600 border-slate-200 hover:bg-white backdrop-blur-sm'}`}
               onClick={() => setGlobalFilters(prev => ({ ...prev, type: prev.type === 'vakif' ? 'all' : 'vakif' }))}>
               Vakıf
             </button>
-
             <button 
-              className={`pill-btn ${globalFilters.level === 'lisans' ? 'active' : ''}`}
-              onClick={() => setGlobalFilters(prev => ({ ...prev, level: prev.level === 'lisans' ? 'all' : 'lisans' }))}>
-              Lisans
+              className="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-white/90 text-slate-600 border-slate-200 shadow-sm hover:bg-slate-50 transition border backdrop-blur-sm"
+              onClick={() => setFiltersOpen(true)}>
+              ⚙ Detaylı Filtre
             </button>
-
-            <button 
-              className={`pill-btn ${globalFilters.level === 'onlisans' ? 'active' : ''}`}
-              onClick={() => setGlobalFilters(prev => ({ ...prev, level: prev.level === 'onlisans' ? 'all' : 'onlisans' }))}>
-              Önlisans
-            </button>
-
-          <button 
-            className="pill-btn"
-            style={{ background: '#f8fafc' }}
-            onClick={() => setFiltersOpen(true)}>
-            ⚙ Detaylı Filtre
-          </button>
-
         </div>
-      </header>
 
       {/* ========================================
-          MAP
+          FULLSCREEN MAP
       ======================================== */}
-      <main className="map-area-unified" style={{ flex: 1, display: 'flex', flexDirection: 'row', position: 'relative', width: '100%', overflow: 'hidden', zIndex: 10 }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <MapContainer
+      <main className="absolute inset-0 z-0">
+        <MapContainer
             center={[
               39.0,
               35.0,
@@ -3481,7 +3483,6 @@ const activeFilterCount = [
             )}
 
 </MapContainer>
-        </div>
         {browseOpen && (
           <aside className="browse-panel" style={{ display: 'flex', flexDirection: 'column' }}>
             {viewingProfile ? (
@@ -4555,25 +4556,25 @@ const activeFilterCount = [
 
         {selectedSubCampus && (
           <aside
-            className="campus-social-drawer"
+            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-0"
             onTouchStart={e => e.stopPropagation()}
             onTouchMove={e => e.stopPropagation()}
             onWheel={e => e.stopPropagation()}
           >
             {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
-            <div className="csd-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0, borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
-              <div>
-                <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#0f172a', margin: '0 0 4px 0', lineHeight: '1.2' }}>
+            <div className="flex justify-between items-start shrink-0 border-b border-slate-200 bg-white p-5">
+              <div className="flex-1 pr-4">
+                <h2 className="text-2xl font-bold text-slate-800 mb-2 leading-tight">
                   {selectedSubCampus.name}
                 </h2>
                 {selectedSubCampus.parent_id && displayUniversity && (
-                  <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div className="text-sm text-slate-500 mb-2 flex items-center gap-1.5">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    Bağlı olduğu kurum: <strong style={{color: '#334155'}}>{displayUniversity.name}</strong>
+                    Bağlı olduğu kurum: <strong className="text-slate-700">{displayUniversity.name}</strong>
                   </div>
                 )}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '12px', background: selectedSubCampus.isMain ? '#fef3c7' : '#dcfce3', color: selectedSubCampus.isMain ? '#d97706' : '#16a34a' }}>
+                <div className="flex items-center gap-2 flex-wrap mt-1">
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${selectedSubCampus.isMain ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>
                     {selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}
                   </span>
                 </div>
@@ -4581,14 +4582,14 @@ const activeFilterCount = [
               
               <button 
                 onClick={() => setSelectedSubCampus(null)}
-                style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#f1f5f9', border: 'none', color: '#475569', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition shrink-0"
               >
                 ✕
               </button>
             </div>
 
             {/* ── TAB BAR ── */}
-            <div className="csd-tabbar">
+            <div className="flex overflow-x-auto shrink-0 border-b border-slate-200 hide-scrollbar bg-slate-50 px-2">
               {[
                 { key: 'info',    label: 'Bilgi',            icon: 'ℹ️' },
                 { key: 'units',   label: 'Bölümler',         icon: '📚' },
@@ -4598,90 +4599,83 @@ const activeFilterCount = [
               ].map(tab => (
                 <button
                   key={tab.key}
-                  className={`csd-tab ${campusDetailTab === tab.key ? 'csd-tab--active' : ''}`}
+                  className={`flex flex-col items-center gap-1 min-w-[80px] p-3 text-sm font-medium border-b-2 transition-colors ${campusDetailTab === tab.key ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
                   onClick={() => setCampusDetailTab(tab.key)}
                 >
-                  <span className="csd-tab-icon">{tab.icon}</span>
-                  <span className="csd-tab-label">{tab.label}</span>
+                  <span className="text-base">{tab.icon}</span>
+                  <span className="whitespace-nowrap">{tab.label}</span>
                 </button>
               ))}
             </div>
 
             {/* ── TAB İÇERİKLERİ ── */}
-            <div className="csd-body">
+            <div className="flex-1 overflow-y-auto p-4 bg-slate-50/50">
 
               {/* ━━ BİLGİ ━━ */}
               {campusDetailTab === 'info' && (
-                <div className="csd-section-list">
-                  <div className="csd-card">
-                    <div className="csd-card-header"><span>🗺️</span><h4>Açık Adres</h4></div>
-                    <p className="csd-card-text">
-                      {selectedSubCampus.address ||
-                        [selectedSubCampus.district, selectedSubCampus.city].filter(Boolean).join(', ') ||
-                        'Adres bilgisi mevcut değil'}
-                    </p>
-                  </div>
-                  {selectedSubCampus.latitude && (
-                    <div className="csd-card">
-                      <div className="csd-card-header"><span>📍</span><h4>Koordinatlar</h4></div>
-                      <p className="csd-card-text" style={{ fontFamily: 'monospace', fontSize: '13px' }}>
-                        {Number(selectedSubCampus.latitude).toFixed(6)}, {Number(selectedSubCampus.longitude).toFixed(6)}
+                <div className="flex flex-col gap-4">
+                  
+                  {/* Açık Adres ve Koordinatlar Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>🗺️</span><h4>Açık Adres</h4></div>
+                      <p className="text-sm text-slate-600">
+                        {selectedSubCampus.address ||
+                          [selectedSubCampus.district, selectedSubCampus.city].filter(Boolean).join(', ') ||
+                          'Adres bilgisi mevcut değil'}
                       </p>
                     </div>
-                  )}
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${selectedSubCampus.latitude},${selectedSubCampus.longitude}`}
-                    target="_blank" rel="noreferrer"
-                    className="csd-directions-btn"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-                    Yol Tarifi Al
-                  </a>
+                    {selectedSubCampus.latitude && (
+                      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                        <div className="flex items-center gap-2 mb-2 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>📍</span><h4>Koordinatlar</h4></div>
+                        <p className="text-sm text-slate-600 font-mono">
+                          {Number(selectedSubCampus.latitude).toFixed(6)}, {Number(selectedSubCampus.longitude).toFixed(6)}
+                        </p>
+                        <a
+                          href={`https://www.google.com/maps/dir/?api=1&destination=${selectedSubCampus.latitude},${selectedSubCampus.longitude}`}
+                          target="_blank" rel="noreferrer"
+                          className="mt-3 flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                          Yol Tarifi Al
+                        </a>
+                      </div>
+                    )}
+                  </div>
 
                   {/* ── SOSYAL MEDYA ── */}
-                  <div className="csd-card">
-                    <div className="csd-card-header"><span>🌐</span><h4>Sosyal Medya & Web</h4></div>
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
-                      {/* Instagram */}
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center gap-2 mb-3 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>🌐</span><h4>Sosyal Medya & Web</h4></div>
+                    <div className="flex gap-2 flex-wrap">
                       <a
                         href={displayUniversity?.instagram_url || `https://www.instagram.com/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(220,39,67,0.3)', transition: 'transform 0.15s' }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
+                        style={{ background: 'linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                         Instagram
                       </a>
-                      {/* X (Twitter) */}
                       <a
                         href={displayUniversity?.x_url || `https://x.com/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: '#0f1419', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(0,0,0,0.2)', transition: 'transform 0.15s' }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0f1419] text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         X
                       </a>
-                      {/* LinkedIn */}
                       <a
                         href={displayUniversity?.linkedin_url || `https://www.linkedin.com/school/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '-').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: '#0a66c2', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(10,102,194,0.3)', transition: 'transform 0.15s' }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0a66c2] text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                         LinkedIn
                       </a>
-                      {/* Web Sitesi */}
                       <a
                         href={displayUniversity?.website || `https://www.${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/İ/g,'i').replace(/Ü/g,'u').replace(/Ö/g,'o').replace(/Ş/g,'s').replace(/Ç/g,'c').replace(/Ğ/g,'g').toLowerCase()}.edu.tr`}
                         target="_blank" rel="noreferrer"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: '#059669', color: '#fff', textDecoration: 'none', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 6px rgba(5,150,105,0.3)', transition: 'transform 0.15s' }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                         Web Sitesi
@@ -4690,20 +4684,10 @@ const activeFilterCount = [
                   </div>
 
                   {/* ── TARİHÇE / HAKKINDA ── */}
-                  <div className="csd-card">
-                    <div className="csd-card-header"><span>🏛️</span><h4>Tarihçe & Hakkında</h4></div>
-                    <div style={{ marginTop: '8px' }}>
-                      <p className="csd-card-text" style={{ 
-                        overflow: 'hidden', 
-                        display: '-webkit-box', 
-                        WebkitLineClamp: expandedAbout ? 'unset' : 3, 
-                        WebkitBoxOrient: 'vertical',
-                        lineHeight: '1.6',
-                        color: '#334155',
-                        fontSize: '14px',
-                        margin: 0,
-                        transition: 'all 0.3s ease'
-                      }}>
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>🏛️</span><h4>Tarihçe & Hakkında</h4></div>
+                    <div>
+                      <p className={`text-sm text-slate-600 leading-relaxed transition-all duration-300 ${expandedAbout ? '' : 'line-clamp-3'}`}>
                         {displayUniversity?.history ? (
                           displayUniversity.history
                         ) : (
@@ -4712,7 +4696,7 @@ const activeFilterCount = [
                       </p>
                       <button
                         onClick={() => setExpandedAbout(!expandedAbout)}
-                        style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', fontSize: '13px', fontWeight: 600, padding: '6px 0 0 0', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        className="text-blue-600 text-sm font-semibold mt-2 flex items-center gap-1 hover:text-blue-700"
                       >
                         {expandedAbout ? '▲ Kısalt' : '▼ Devamını Oku'}
                       </button>
@@ -4720,33 +4704,27 @@ const activeFilterCount = [
                   </div>
 
                   {/* ── SON HABERLER / DUYURULAR ── */}
-                  <div className="csd-card">
-                    <div className="csd-card-header"><span>📰</span><h4>Üniversiteden Haberler</h4></div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center gap-2 mb-3 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>📰</span><h4>Üniversiteden Haberler</h4></div>
+                    <div className="flex flex-col gap-3">
                       {isFetchingNews ? (
-                         <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>Haberler yükleniyor...</div>
+                         <div className="text-center text-slate-500 py-4">Haberler yükleniyor...</div>
                       ) : uniNews.length > 0 ? (
                         uniNews.map((news, i) => (
-                          <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', transition: 'box-shadow 0.2s' }}
-                            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'}
-                            onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-                          >
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <h5 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 600, color: '#0f172a', lineHeight: '1.3' }}>{news.title}</h5>
-                              <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                          <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg hover:shadow-md hover:border-slate-200 transition-all">
+                            <div className="flex-1 min-w-0">
+                              <h5 className="text-sm font-semibold text-slate-800 leading-snug mb-1">{news.title}</h5>
+                              <span className="text-xs text-slate-400">
                                 {new Date(news.pubDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                               </span>
                             </div>
-                            <a href={news.link} target="_blank" rel="noreferrer" style={{ flexShrink: 0, fontSize: '12px', color: '#3b82f6', fontWeight: 600, textDecoration: 'none', padding: '4px 10px', borderRadius: '6px', background: '#eff6ff', transition: 'background 0.15s', whiteSpace: 'nowrap' }}
-                              onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'}
-                              onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}
-                            >
+                            <a href={news.link} target="_blank" rel="noreferrer" className="shrink-0 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors">
                               Habere Git →
                             </a>
                           </div>
                         ))
                       ) : (
-                         <div style={{ padding: '10px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>Güncel haber bulunamadı.</div>
+                        <div className="text-center text-slate-500 py-2">Haber bulunamadı.</div>
                       )}
                     </div>
                   </div>
@@ -6224,34 +6202,6 @@ const activeFilterCount = [
         </div>
 
       )}
-      {/* MOBİL ALT MENÜ (Glassmorphism) */}
-      <nav className={`mobile-bottom-bar ${isAnyModalOpen ? 'nav-hidden' : ''}`}>
-        <button type="button" onClick={openBrowse}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>🌍</span>
-          <span>Kampüs</span>
-        </button>
-        <button type="button" onClick={openNotifications} style={{ position: 'relative' }}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>🔔</span>
-          <span>Bildirimler</span>
-          {notifications.filter(n => !n.is_read).length > 0 && (
-            <span style={{ position: 'absolute', top: '4px', right: '14px', background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 'bold', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {notifications.filter(n => !n.is_read).length}
-            </span>
-          )}
-        </button>
-        <button type="button" onClick={openMessages}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>💬</span>
-          <span>Mesajlar</span>
-        </button>
-        <button type="button" onClick={() => toggleFloatingPanel("favorites")}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>👤</span>
-          <span>Profilim</span>
-        </button>
-        <button type="button" onClick={() => setFiltersOpen(true)}>
-          <span style={{fontSize: '20px', marginBottom: '2px'}}>⚡</span>
-          <span>Filtreler</span>
-        </button>
-      </nav>
     </div>
 
       {/* ========================================
