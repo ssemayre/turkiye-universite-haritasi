@@ -3737,36 +3737,38 @@ const activeFilterCount = [
 
             {isListingModalOpen && (
                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-                  <div style={{ background: '#fff', width: '100%', maxWidth: '400px', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
-                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ margin: 0, color: '#0f172a' }}>İlan Ver</h3>
-                        <button onClick={() => setIsListingModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>×</button>
-                     </div>
-                     
-                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Kategori</label>
-                        <select value={listingCategory} onChange={(e) => setListingCategory(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}>
-                           <option value="İkinci El">İkinci El Eşya</option>
-                           <option value="Ev/Oda">Ev Arkadaşı / Kiralık Oda</option>
-                           <option value="Ders/Not">Özel Ders / Ders Notu</option>
-                           <option value="Diğer">Diğer</option>
-                        </select>
-                     </div>
-                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Başlık</label>
-                        <input value={listingTitle} onChange={(e) => setListingTitle(e.target.value)} placeholder="Örn: 2. El Temiz Çalışma Masası" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                     </div>
-                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Açıklama</label>
-                        <textarea value={listingDescription} onChange={(e) => setListingDescription(e.target.value)} placeholder="İlan detayları..." rows={4} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', resize: 'none' }} />
-                     </div>
-                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '4px' }}>Fiyat (₺) - Opsiyonel</label>
-                        <input type="number" value={listingPrice} onChange={(e) => setListingPrice(e.target.value)} placeholder="Örn: 500" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                     </div>
-                     <button onClick={submitListing} disabled={isSubmittingListing || !listingTitle.trim() || !listingDescription.trim()} style={{ background: listingTitle.trim() && listingDescription.trim() ? '#3b82f6' : '#cbd5e1', color: '#fff', padding: '12px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: listingTitle.trim() && listingDescription.trim() ? 'pointer' : 'not-allowed' }}>
-                        {isSubmittingListing ? 'Ekleniyor...' : 'İlanı Yayınla'}
+                  <div className="relative bg-white/75 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-2xl p-6 w-full max-w-[400px]">
+                     <h3 className="text-xl font-extrabold text-slate-900 mb-6 text-left">İlan Ver</h3>
+                     <button onClick={() => setIsListingModalOpen(false)} className="absolute top-4 right-4 bg-slate-100/50 hover:bg-slate-200/80 rounded-full p-2 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                      </button>
+                     
+                     <div className="flex flex-col gap-4">
+                        <div>
+                           <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Kategori</label>
+                           <select value={listingCategory} onChange={(e) => setListingCategory(e.target.value)} className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all">
+                              <option value="İkinci El">İkinci El Eşya</option>
+                              <option value="Ev/Oda">Ev Arkadaşı / Kiralık Oda</option>
+                              <option value="Ders/Not">Özel Ders / Ders Notu</option>
+                              <option value="Diğer">Diğer</option>
+                           </select>
+                        </div>
+                        <div>
+                           <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Başlık</label>
+                           <input value={listingTitle} onChange={(e) => setListingTitle(e.target.value)} placeholder="Örn: 2. El Temiz Çalışma Masası" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
+                        </div>
+                        <div>
+                           <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Açıklama</label>
+                           <textarea value={listingDescription} onChange={(e) => setListingDescription(e.target.value)} placeholder="İlan detayları..." rows={4} className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all resize-none" />
+                        </div>
+                        <div>
+                           <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Fiyat (₺) - Opsiyonel</label>
+                           <input type="number" value={listingPrice} onChange={(e) => setListingPrice(e.target.value)} placeholder="Örn: 500" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
+                        </div>
+                        <button onClick={submitListing} disabled={isSubmittingListing || !listingTitle.trim() || !listingDescription.trim()} className={`w-full py-3.5 rounded-xl shadow-md transition-colors mt-4 text-sm font-bold ${listingTitle.trim() && listingDescription.trim() ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-slate-300 text-slate-500 cursor-not-allowed"}`}>
+                           {isSubmittingListing ? 'Ekleniyor...' : 'İlanı Yayınla'}
+                        </button>
+                     </div>
                   </div>
                </div>
             )}
