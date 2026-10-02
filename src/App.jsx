@@ -5417,8 +5417,8 @@ const activeFilterCount = [
           NOTIFICATIONS DRAWER
       ======================================== */}
       {notificationsOpen && (
-          <div className="absolute inset-0 z-[2000] flex justify-center items-start p-4 pointer-events-none">
-            <div className="relative w-full max-w-2xl mx-auto mt-10 bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl flex flex-col max-h-[80vh] z-[2000] overflow-hidden pointer-events-auto">
+          <>
+            <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl flex flex-col max-h-[70vh] z-[2000] overflow-hidden pointer-events-auto">
               
               <div className="flex justify-between items-center p-6 border-b border-slate-200/60">
                 <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
@@ -5458,12 +5458,12 @@ const activeFilterCount = [
               </div>
               
             </div>
-          </div>
+          </>
         )}
 
       {messagesOpen && !activeChatUser && (
-          <div className="absolute inset-0 z-[2000] flex justify-center items-start p-4 pointer-events-none">
-            <div className="relative w-full max-w-2xl mx-auto mt-10 bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl flex flex-col max-h-[80vh] z-[2000] overflow-hidden pointer-events-auto">
+          <>
+            <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl flex flex-col max-h-[70vh] z-[2000] overflow-hidden pointer-events-auto">
               
               <div className="flex justify-between items-center p-6 border-b border-slate-200/60">
                 <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
@@ -5504,7 +5504,7 @@ const activeFilterCount = [
               </div>
               
             </div>
-          </div>
+          </>
         )}
 
       {preferenceOpen && (
