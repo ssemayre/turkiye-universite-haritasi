@@ -2867,6 +2867,7 @@ const activeFilterCount = [
   const [dailyMenu, setDailyMenu] = useState(null);
   const [isListingModalOpen, setIsListingModalOpen] = useState(false);
   const [listingCategory, setListingCategory] = useState('İkinci El');
+  const [listingFilter, setListingFilter] = useState('Tümü');
   const [listingTitle, setListingTitle] = useState('');
   const [listingDescription, setListingDescription] = useState('');
   const [listingPrice, setListingPrice] = useState('');
@@ -3541,10 +3542,10 @@ const activeFilterCount = [
                     ✕
                   </button>
                   
-                  <h2 className="text-xl font-bold text-slate-900 drop-shadow-sm text-center leading-tight">
+                  <h2 className="text-xl font-extrabold text-slate-900 text-center drop-shadow-sm">
                     {userProfileData.university_name || 'Kampüs'}
                   </h2>
-                  <span className="text-sm text-slate-500 font-medium mt-1">
+                  <span className="text-sm font-semibold text-slate-700 mt-1">
                     Üniversite Kampüsü
                   </span>
                   
@@ -3695,18 +3696,33 @@ const activeFilterCount = [
                     </div>
                   ) : campusTab === 'listings' ? (
                     <div className="campus-listings flex flex-col pb-4">
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-                         <button onClick={() => setIsListingModalOpen(true)} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>+ İlan Ver</button>
-                      </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px', paddingRight: '16px' }}>
+                           <button onClick={() => setIsListingModalOpen(true)} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>+ İlan Ver</button>
+                        </div>
 
-                      {campusListings.length === 0 ? (
+                        <div className="flex overflow-x-auto gap-2 pb-3 mb-2 px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                          {['Tümü', 'Ev Arkadaşı', 'İkinci El', 'Ders Notu', 'Yol Arkadaşı', 'Kamp & Etkinlik', 'Yarı Zamanlı İş', 'Kayıp Eşya'].map(cat => (
+                            <div 
+                              key={cat} 
+                              onClick={() => setListingFilter(cat)}
+                              className={listingFilter === cat 
+                                ? "whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-bold bg-indigo-600 text-white shadow-md transition-all cursor-pointer"
+                                : "whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-white/40 border border-white/50 text-slate-700 shadow-sm hover:bg-white/60 transition-all cursor-pointer"
+                              }
+                            >
+                              {cat}
+                            </div>
+                          ))}
+                        </div>
+  
+                        {(listingFilter === 'Tümü' ? campusListings : campusListings.filter(l => l.category === listingFilter)).length === 0 ? (
                           <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                             <div style={{ fontSize: '40px', marginBottom: '16px' }}>📢</div>
                             <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Kampüs panosu şu an boş.</h3>
                             <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>İlk ilanı sen ver!</p>
                           </div>
                       ) : (
-                          campusListings.map(listing => (
+                          (listingFilter === 'Tümü' ? campusListings : campusListings.filter(l => l.category === listingFilter)).map(listing => (
                             <div key={listing.id} className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4 mb-3 mx-4 relative">
                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setViewingProfile({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name })}>
@@ -3717,7 +3733,7 @@ const activeFilterCount = [
                                    )}
                                    <span style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{listing.profiles?.full_name || 'İsimsiz'}</span>
                                  </div>
-                                 <span style={{ background: listing.category === 'İkinci El' ? '#dcfce7' : listing.category === 'Ev/Oda' ? '#dbeafe' : '#fef3c7', color: listing.category === 'İkinci El' ? '#166534' : listing.category === 'Ev/Oda' ? '#1e40af' : '#b45309', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold' }}>{listing.category}</span>
+                                 <span className="text-xs font-bold bg-indigo-100/80 text-indigo-700 px-2.5 py-1 rounded-md">{listing.category}</span>
                                </div>
                                <h4 style={{ margin: '0 0 6px 0', color: '#0f172a', fontSize: '16px' }}>{listing.title}</h4>
                                <p style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>{listing.description}</p>
