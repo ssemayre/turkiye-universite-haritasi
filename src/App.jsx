@@ -4720,7 +4720,7 @@ const activeFilterCount = [
                 <div className="csd-section-list" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
                   
                   {/* Sticky Search Bar */}
-                  <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 10, background: '#fff', padding: '12px 16px', borderBottom: '1px solid #e2e8f0' }}>
+                  <div className="shrink-0 sticky top-0 z-10 p-3 mb-2">
                     {activeCampusFilterId && (
                       <div style={{ marginBottom: '8px', padding: '8px 12px', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: '600' }}>Sadece {mapUniversities.find(u => u.id === activeCampusFilterId)?.name || 'seçili yerleşke'} bölümleri gösteriliyor</span>
@@ -4732,12 +4732,12 @@ const activeFilterCount = [
                       placeholder="Bu üniversitede program ara..." 
                       value={programSearchQuery}
                       onChange={(e) => setProgramSearchQuery(e.target.value)}
-                      style={{ width: '100%', padding: '10px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none', background: '#f8fafc', color: '#1e293b' }}
+                      className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm placeholder:text-slate-400 mb-4 transition-all"
                     />
                   </div>
 
                   {/* Scrollable List Area */}
-                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div className="overflow-y-auto max-h-[40vh] p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                     {isFetchingCampusPrograms ? (
                       <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
                         <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -4794,19 +4794,14 @@ const activeFilterCount = [
                         return filtered.map((p, idx) => {
                           const isExpanded = expandedProgramId === idx;
                           return (
-                            <div key={idx} style={{ flexShrink: 0, background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}>
+                            <div key={idx} className="mb-2 bg-white/70 hover:bg-white border border-white/80 rounded-xl shadow-sm transition-all group overflow-hidden">
                               
                               {/* CLOSED VIEW (HEADER) */}
-                              <div 
-                                onClick={() => setExpandedProgramId(isExpanded ? null : idx)}
-                                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isExpanded ? '#f8fafc' : '#fff' }}
-                              >
-                                <span style={{ fontWeight: '700', color: '#0f172a', fontSize: '14px', lineHeight: '1.4', paddingRight: '12px' }}>
+                              <div onClick={() => setExpandedProgramId(isExpanded ? null : idx)} className="flex items-center justify-between p-3.5 cursor-pointer">
+                                <span className="text-sm font-semibold text-slate-800 flex-1 pr-2">
                                   {p.name}
                                 </span>
-                                <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: '#cbd5e1' }} onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}>
-                                  ⭐
-                                </button>
+                                <button className="text-slate-300 hover:text-amber-400 cursor-pointer p-1 transition-colors group-hover:text-amber-200 active:scale-90" onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}>⭐</button>
                               </div>
 
                               {/* EXPANDED VIEW (DETAILS) */}
