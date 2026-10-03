@@ -4549,7 +4549,7 @@ const activeFilterCount = [
             {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
             <div className="flex justify-between items-start shrink-0 border-b border-slate-200/60 p-5 md:p-6">
               <div className="flex-1 pr-4">
-                <h2 className="text-base sm:text-lg font-extrabold text-slate-900 leading-snug tracking-tight">
+                <h2 className="text-base sm:text-lg font-extrabold !text-slate-900 leading-snug tracking-tight" style={{ color: "#0f172a" }}>
                   {selectedSubCampus.name}
                 </h2>
                 {selectedSubCampus.parent_id && displayUniversity && (
@@ -4732,7 +4732,7 @@ const activeFilterCount = [
                       placeholder="Bu üniversitede program ara..." 
                       value={programSearchQuery}
                       onChange={(e) => setProgramSearchQuery(e.target.value)}
-                      className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm placeholder:text-slate-400 mb-4 transition-all"
+                      className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm placeholder:text-slate-400 mb-2 transition-all"
                     />
                   </div>
 
@@ -4792,29 +4792,53 @@ const activeFilterCount = [
                           return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
                         }
                         return filtered.map((p, idx) => {
-                          const isExpanded = expandedProgramId === idx;
-                          return (
-                            <div key={idx} className="mb-2 bg-white/70 hover:bg-white border border-white/80 rounded-xl shadow-sm transition-all group overflow-hidden">
-                              
-                              {/* CLOSED VIEW (HEADER) */}
-                              <div onClick={() => setExpandedProgramId(isExpanded ? null : idx)} className="flex items-center justify-between p-3.5 cursor-pointer">
-                                <span className="text-sm font-semibold text-slate-800 flex-1 pr-2">
-                                  {p.name}
-                                </span>
-                                <button className="text-slate-300 hover:text-amber-400 cursor-pointer p-1 transition-colors group-hover:text-amber-200 active:scale-90" onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}>⭐</button>
-                              </div>
+                            const isExpanded = expandedProgramId === idx;
+                            return (
+                              <div key={idx} className="flex flex-col p-3 mb-2 bg-white/70 hover:bg-white border border-slate-200/60 rounded-xl shadow-sm transition-all cursor-pointer group" onClick={() => setExpandedProgramId(isExpanded ? null : idx)}>
+                                
+                                {/* ÜST SATIR */}
+                                <div className="flex items-start justify-between mb-2">
+                                  <span className="text-sm font-semibold text-slate-800 flex-1 pr-2 leading-tight">
+                                    {p.name}
+                                  </span>
+                                  <button className="text-slate-300 hover:text-amber-400 cursor-pointer p-1 transition-colors group-hover:text-amber-200 active:scale-90" onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}>
+                                    ⭐
+                                  </button>
+                                </div>
 
-                              {/* EXPANDED VIEW (DETAILS) */}
-                              {isExpanded && (
-                                <div style={{ padding: '0 16px 16px 16px', borderTop: '1px solid #f1f5f9' }}>
-                                  <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      <span style={{ fontSize: '12px', fontWeight: '600', padding: '4px 8px', borderRadius: '6px', background: p.degree_level === 'Önlisans' ? '#eff6ff' : '#f0fdf4', color: p.degree_level === 'Önlisans' ? '#3b82f6' : '#16a34a' }}>
-                                        {p.degree_level === 'Önlisans' ? 'TYT • 2 Yıl' : 'Lisans • 4 Yıl'}
-                                      </span>
-                                      <span style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>
-                                        {p.faculty || 'Fakülte belirtilmemiş'}
-                                      </span>
+                                {/* ALT SATIR */}
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                    {p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'TYT • 2 Yıl' : 'Lisans • 4 Yıl'}
+                                  </span>
+                                  {p.score_type && p.score_type !== '-' && (
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                                      {p.score_type}
+                                    </span>
+                                  )}
+                                  {p.faculty && (
+                                    <span className="text-[10px] font-medium text-slate-500 truncate max-w-[150px]">
+                                      {p.faculty}
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* GENİŞLETİLMİŞ GÖRÜNÜM */}
+                                {isExpanded && (
+                                  <div className="mt-3 pt-3 border-t border-slate-200/60 flex flex-col gap-3" onClick={(e) => e.stopPropagation()}>
+                                    <div className="grid grid-cols-2 gap-2 bg-slate-50/50 p-2.5 rounded-lg border border-slate-100">
+                                      <div>
+                                        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Kontenjan</div>
+                                        <div className="text-xs text-slate-700 font-semibold">{p.quota || '-'}</div>
+                                      </div>
+                                      <div>
+                                        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Başarı Sırası</div>
+                                        <div className="text-xs text-slate-700 font-semibold">{p.rank || '-'}</div>
+                                      </div>
+                                      <div>
+                                        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Taban Puan</div>
+                                        <div className="text-xs text-slate-700 font-semibold">{p.base_score || '-'}</div>
+                                      </div>
                                     </div>
                                     <button 
                                       onClick={(e) => {
@@ -4823,7 +4847,6 @@ const activeFilterCount = [
                                         if (p.campus_id) {
                                           target = universities.find(u => String(u.id) === String(p.campus_id));
                                         }
-                                        // Sadece yerleşke bulunamazsa veya koordinatı sıfır/undefined ise ana kampüse düş
                                         if (!target || (!target.lat && !target.latitude)) {
                                           target = universities.find(u => String(u.id) === String(p.university_id));
                                         }
@@ -4837,7 +4860,6 @@ const activeFilterCount = [
                                         if (lat && lng) {
                                           setActiveCampusMarker(target);
                                           setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
-                                          // Sadece popup'ı aç, selected state'ini (sağ paneli) ezme!
                                           if (target && target.id) {
                                             setTimeout(() => {
                                               const marker = markerRefs.current[target.id];
@@ -4846,36 +4868,16 @@ const activeFilterCount = [
                                           }
                                         }
                                       }}
-                                      style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '6px 10px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                      className="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1 mt-1"
                                     >
                                       📍 Haritada Göster
                                     </button>
                                   </div>
-
-                                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
-                                    <div>
-                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Puan Türü</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.score_type || '-'}</div>
-                                    </div>
-                                    <div>
-                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Kontenjan</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.quota || '-'}</div>
-                                    </div>
-                                    <div>
-                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Taban Puan</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.base_score || '-'}</div>
-                                    </div>
-                                    <div>
-                                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Başarı Sırası</div>
-                                      <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '600' }}>{p.rank || '-'}</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        });
-                      })()
+                                )}
+                              </div>
+                            );
+                          });
+                        })()
                     ) : (
                       <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
                         <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
