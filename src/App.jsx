@@ -4717,10 +4717,10 @@ const activeFilterCount = [
 
               {/* ━━ BÖLÜMLER ━━ */}
               {campusDetailTab === 'units' && (
-                <div className="csd-section-list" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+                <div className="flex flex-col flex-1 min-h-0 h-full mt-2">
                   
                   {/* Sticky Search Bar */}
-                  <div className="shrink-0 sticky top-0 z-10 p-3 mb-2">
+                  <div className="shrink-0 sticky top-0 z-10">
                     {activeCampusFilterId && (
                       <div style={{ marginBottom: '8px', padding: '8px 12px', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: '600' }}>Sadece {mapUniversities.find(u => u.id === activeCampusFilterId)?.name || 'seçili yerleşke'} bölümleri gösteriliyor</span>
@@ -4732,12 +4732,12 @@ const activeFilterCount = [
                       placeholder="Bu üniversitede program ara..." 
                       value={programSearchQuery}
                       onChange={(e) => setProgramSearchQuery(e.target.value)}
-                      className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm placeholder:text-slate-400 mb-2 transition-all"
+                      className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm placeholder:text-slate-400 mb-3 shrink-0"
                     />
                   </div>
 
                   {/* Scrollable List Area */}
-                  <div className="overflow-y-auto max-h-[40vh] p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                  <div className="flex-1 overflow-y-auto p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] flex flex-col">
                     {isFetchingCampusPrograms ? (
                       <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
                         <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
