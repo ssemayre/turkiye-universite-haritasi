@@ -4792,91 +4792,101 @@ const activeFilterCount = [
                           return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
                         }
                         return filtered.map((p, idx) => {
-                            const isExpanded = expandedProgramId === idx;
+                            const sirala = p.success_rank_2023 || p.successRank || p.basariSirasi;
+                            const puan = p.base_score || p.minScore || p.minPuan || p.taban_puan;
+                            const kontenjan = p.quota || p.kontenjan;
+
                             return (
-                              <div key={idx} className="flex flex-col p-3 mb-2 bg-white/70 hover:bg-white border border-slate-200/60 rounded-xl shadow-sm transition-all cursor-pointer group" onClick={() => setExpandedProgramId(isExpanded ? null : idx)}>
+                              <div 
+                                key={idx} 
+                                className="flex flex-col p-2.5 mb-2 bg-white/80 hover:bg-white border border-slate-200/60 rounded-xl shadow-sm transition-all cursor-pointer group"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  let target = null;
+                                  if (p.campus_id) {
+                                    target = universities.find(u => String(u.id) === String(p.campus_id));
+                                  }
+                                  if (!target || (!target.lat && !target.latitude)) {
+                                    target = universities.find(u => String(u.id) === String(p.university_id));
+                                  }
+                                  if (!target || (!target.lat && !target.latitude)) {
+                                    target = selectedSubCampus;
+                                  }
+                                  
+                                  const lat = target?.lat || target?.latitude;
+                                  const lng = target?.lng || target?.longitude;
+                                  
+                                  if (lat && lng) {
+                                    setActiveCampusMarker(target);
+                                    setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
+                                    if (target && target.id) {
+                                      setTimeout(() => {
+                                        const marker = markerRefs.current[target.id];
+                                        if (marker) marker.openPopup();
+                                      }, 400); 
+                                    }
+                                  }
+                                }}
+                              >
                                 
-                                {/* ÜST SATIR */}
-                                <div className="flex items-start justify-between mb-2">
+                                {/* ÜST SATIR (Bölüm Adı ve Yıldız) */}
+                                <div className="flex items-start justify-between">
                                   <span className="text-sm font-semibold text-slate-800 flex-1 pr-2 leading-tight">
                                     {p.name}
                                   </span>
-                                  <button className="text-slate-300 hover:text-amber-400 cursor-pointer p-1 transition-colors group-hover:text-amber-200 active:scale-90" onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}>
+                                  <button 
+                                    className="text-slate-300 hover:text-amber-400 cursor-pointer p-1 transition-colors group-hover:text-amber-200 active:scale-90" 
+                                    onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}
+                                  >
                                     ⭐
                                   </button>
                                 </div>
 
-                                {/* ALT SATIR */}
-                                <div className="flex flex-wrap gap-1.5">
-                                  <span className={`px-2 py-0.5 ${p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'bg-indigo-50/80 text-indigo-700 border-indigo-100' : 'bg-emerald-50/80 text-emerald-700 border-emerald-100'} border rounded-md text-[10px] font-extrabold whitespace-nowrap`}>
+                                {/* ETİKETLER ALANI */}
+                                <div className="flex flex-wrap gap-1 mt-1 mb-1.5">
+                                  <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold">
                                     {p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'TYT • 2 Yıl' : 'Lisans • 4 Yıl'}
                                   </span>
                                   {p.score_type && p.score_type !== '-' && (
-                                    <span className="px-2 py-0.5 bg-slate-50 text-slate-600 border border-slate-200 rounded-md text-[10px] font-extrabold whitespace-nowrap">
+                                    <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold">
                                       {p.score_type}
                                     </span>
                                   )}
                                   {p.faculty && (
-                                    <span className="px-2 py-0.5 bg-slate-50 text-slate-500 border border-slate-100 rounded-md text-[10px] font-bold whitespace-nowrap truncate max-w-[140px]">
+                                    <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold truncate max-w-[140px]">
                                       {p.faculty}
                                     </span>
                                   )}
                                 </div>
 
-                                {/* GENİŞLETİLMİŞ GÖRÜNÜM */}
-                                {isExpanded && (
-                                  <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
-                                    
-                                    {/* YATAY VE KOMPAKT İSTATİSTİKLER */}
-                                    <div className="flex items-center justify-between bg-slate-50/60 p-2 rounded-lg border border-slate-100">
-                                      <div className="flex flex-col items-center flex-1">
-                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider mb-0.5">Kontenjan</span>
-                                        <span className="text-[11px] text-slate-700 font-extrabold">{p.quota || '-'}</span>
-                                      </div>
-                                      <div className="w-px h-5 bg-slate-200"></div>
-                                      <div className="flex flex-col items-center flex-1">
-                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider mb-0.5">Sıralama</span>
-                                        <span className="text-[11px] text-slate-700 font-extrabold">{p.success_rank_2023 || p.successRank ? Number(p.success_rank_2023 || p.successRank).toLocaleString('tr-TR') : '-'}</span>
-                                      </div>
-                                    </div>
-
-                                    <button 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        let target = null;
-                                        if (p.campus_id) {
-                                          target = universities.find(u => String(u.id) === String(p.campus_id));
-                                        }
-                                        if (!target || (!target.lat && !target.latitude)) {
-                                          target = universities.find(u => String(u.id) === String(p.university_id));
-                                        }
-                                        if (!target || (!target.lat && !target.latitude)) {
-                                          target = selectedSubCampus;
-                                        }
-                                        
-                                        const lat = target?.lat || target?.latitude;
-                                        const lng = target?.lng || target?.longitude;
-                                        
-                                        if (lat && lng) {
-                                          setActiveCampusMarker(target);
-                                          setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
-                                          if (target && target.id) {
-                                            setTimeout(() => {
-                                              const marker = markerRefs.current[target.id];
-                                              if (marker) marker.openPopup();
-                                            }, 400); 
-                                          }
-                                        }
-                                      }}
-                                      className="w-full bg-blue-50/70 hover:bg-blue-100 text-blue-600 border border-blue-200/60 rounded-lg py-1.5 text-[11px] font-extrabold transition-colors flex items-center justify-center gap-1"
-                                    >
-                                      📍 Haritada Göster
-                                    </button>
+                                {/* BİLGİ SATIRI (Kontenjan, Sıralama, Puan) */}
+                                <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded-lg border border-slate-100/80 mt-0.5">
+                                  
+                                  {/* KONTENJAN */}
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[9px] font-bold text-slate-400">KONT:</span>
+                                    <span className="text-[10px] font-extrabold text-slate-800">{kontenjan || '-'}</span>
                                   </div>
-                                )}
+
+                                  {/* SIRALAMA */}
+                                  <div className="flex items-center gap-1.5 border-l border-slate-200 pl-2">
+                                    <span className="text-[9px] font-bold text-slate-400">SIRA:</span>
+                                    <span className="text-[10px] font-extrabold text-slate-800">
+                                      {sirala ? Number(sirala).toLocaleString('tr-TR') : '-'}
+                                    </span>
+                                  </div>
+
+                                  {/* PUAN */}
+                                  <div className="flex items-center gap-1.5 border-l border-slate-200 pl-2">
+                                    <span className="text-[9px] font-bold text-slate-400">PUAN:</span>
+                                    <span className="text-[10px] font-extrabold text-slate-800">
+                                      {puan ? Number(puan).toLocaleString('tr-TR') : '-'}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             );
-                          });
+});
                         })()
                     ) : (
                       <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
