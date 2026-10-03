@@ -4541,15 +4541,15 @@ const activeFilterCount = [
 
         {selectedSubCampus && (
           <aside
-            className="fixed inset-y-0 right-0 z-[2000] w-full md:w-[400px] bg-white shadow-2xl flex flex-col pt-20 md:pt-[76px] transform transition-transform duration-300 translate-x-0"
+            className="fixed right-4 top-20 bottom-28 w-full max-w-sm sm:max-w-md bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl flex flex-col z-[1500] overflow-hidden"
             onTouchStart={e => e.stopPropagation()}
             onTouchMove={e => e.stopPropagation()}
             onWheel={e => e.stopPropagation()}
           >
             {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
-            <div className="flex justify-between items-start shrink-0 border-b border-slate-200 bg-white p-5 md:p-6">
+            <div className="flex justify-between items-start shrink-0 border-b border-slate-200/60 p-5 md:p-6">
               <div className="flex-1 pr-4">
-                <h2 className="text-2xl font-bold text-slate-800 mb-2 leading-tight">
+                <h2 className="text-lg font-extrabold text-slate-900 leading-snug">
                   {selectedSubCampus.name}
                 </h2>
                 {selectedSubCampus.parent_id && displayUniversity && (
@@ -4559,7 +4559,7 @@ const activeFilterCount = [
                   </div>
                 )}
                 <div className="flex items-center gap-2 flex-wrap mt-1">
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${selectedSubCampus.isMain ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>
+                  <span className={`inline-block px-2.5 py-1 border rounded-full text-xs font-semibold mt-1 ${selectedSubCampus.isMain ? 'bg-amber-50 text-amber-700 border-amber-200/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200/60'}`}>
                     {selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}
                   </span>
                 </div>
@@ -4567,14 +4567,14 @@ const activeFilterCount = [
               
               <button 
                 onClick={() => setSelectedSubCampus(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition shrink-0"
+                className="p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors shrink-0"
               >
                 ✕
               </button>
             </div>
 
             {/* ── TAB BAR ── */}
-            <div className="flex overflow-x-auto shrink-0 border-b border-slate-200 hide-scrollbar bg-slate-50">
+            <div className="flex items-center gap-1 p-2 bg-slate-100/70 rounded-2xl mx-4 my-2 overflow-x-auto hide-scrollbar shrink-0">
               {[
                 { key: 'info',    label: 'Bilgi',            icon: 'ℹ️' },
                 { key: 'units',   label: 'Bölümler',         icon: '📚' },
@@ -4584,17 +4584,16 @@ const activeFilterCount = [
               ].map(tab => (
                 <button
                   key={tab.key}
-                  className={`flex flex-col items-center gap-1 px-4 py-3 min-w-max flex-1 text-sm font-medium border-b-2 transition-colors ${campusDetailTab === tab.key ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
+                  className={`${campusDetailTab === tab.key ? 'bg-white text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium'} rounded-xl py-2 px-3 text-xs flex items-center gap-1.5 transition-all whitespace-nowrap min-w-max`}
                   onClick={() => setCampusDetailTab(tab.key)}
                 >
-                  <span className="text-base">{tab.icon}</span>
-                  <span className="whitespace-nowrap">{tab.label}</span>
+                  <span>{tab.icon}</span> <span>{tab.label}</span>
                 </button>
               ))}
             </div>
 
             {/* ── TAB İÇERİKLERİ ── */}
-            <div className="flex-1 overflow-y-auto p-4 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] flex flex-col gap-4">
 
               {/* ━━ BİLGİ ━━ */}
               {campusDetailTab === 'info' && (
@@ -4602,7 +4601,7 @@ const activeFilterCount = [
                   
                   {/* Açık Adres ve Koordinatlar Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                    <div className="p-4 bg-white/60 border border-white/80 rounded-2xl shadow-sm text-xs">
                       <div className="flex items-center gap-2 mb-2 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>🗺️</span><h4>Açık Adres</h4></div>
                       <p className="text-sm text-slate-600">
                         {selectedSubCampus.address ||
@@ -4611,7 +4610,7 @@ const activeFilterCount = [
                       </p>
                     </div>
                     {selectedSubCampus.latitude && (
-                      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                      <div className="p-4 bg-white/60 border border-white/80 rounded-2xl shadow-sm text-xs">
                         <div className="flex items-center gap-2 mb-2 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>📍</span><h4>Koordinatlar</h4></div>
                         <p className="text-sm text-slate-600 font-mono">
                           {Number(selectedSubCampus.latitude).toFixed(6)}, {Number(selectedSubCampus.longitude).toFixed(6)}
@@ -4629,14 +4628,13 @@ const activeFilterCount = [
                   </div>
 
                   {/* ── SOSYAL MEDYA ── */}
-                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                  <div className="p-4 bg-white/60 border border-white/80 rounded-2xl shadow-sm text-xs">
                     <div className="flex items-center gap-2 mb-3 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>🌐</span><h4>Sosyal Medya & Web</h4></div>
                     <div className="flex gap-2 flex-wrap">
                       <a
                         href={displayUniversity?.instagram_url || `https://www.instagram.com/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
-                        style={{ background: 'linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}
+                        className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-all flex items-center gap-1.5"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                         Instagram
@@ -4644,7 +4642,7 @@ const activeFilterCount = [
                       <a
                         href={displayUniversity?.x_url || `https://x.com/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0f1419] text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
+                        className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-all flex items-center gap-1.5"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         X
@@ -4652,7 +4650,7 @@ const activeFilterCount = [
                       <a
                         href={displayUniversity?.linkedin_url || `https://www.linkedin.com/school/${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '-').toLowerCase()}`}
                         target="_blank" rel="noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0a66c2] text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
+                        className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-all flex items-center gap-1.5"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                         LinkedIn
@@ -4660,7 +4658,7 @@ const activeFilterCount = [
                       <a
                         href={displayUniversity?.website || `https://www.${(displayUniversity?.universityName || displayUniversity?.name || '').replace(/\s+/g, '').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/İ/g,'i').replace(/Ü/g,'u').replace(/Ö/g,'o').replace(/Ş/g,'s').replace(/Ç/g,'c').replace(/Ğ/g,'g').toLowerCase()}.edu.tr`}
                         target="_blank" rel="noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-semibold shadow-md transition-transform hover:scale-105"
+                        className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-all flex items-center gap-1.5"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                         Web Sitesi
@@ -4669,7 +4667,7 @@ const activeFilterCount = [
                   </div>
 
                   {/* ── TARİHÇE / HAKKINDA ── */}
-                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                  <div className="p-4 bg-white/60 border border-white/80 rounded-2xl shadow-sm text-xs">
                     <div className="flex items-center gap-2 mb-2 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>🏛️</span><h4>Tarihçe & Hakkında</h4></div>
                     <div>
                       <p className={`text-sm text-slate-600 leading-relaxed transition-all duration-300 ${expandedAbout ? '' : 'line-clamp-3'}`}>
@@ -4689,7 +4687,7 @@ const activeFilterCount = [
                   </div>
 
                   {/* ── SON HABERLER / DUYURULAR ── */}
-                  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                  <div className="p-4 bg-white/60 border border-white/80 rounded-2xl shadow-sm text-xs">
                     <div className="flex items-center gap-2 mb-3 text-slate-800 font-bold border-b border-slate-100 pb-2"><span>📰</span><h4>Üniversiteden Haberler</h4></div>
                     <div className="flex flex-col gap-3">
                       {isFetchingNews ? (
