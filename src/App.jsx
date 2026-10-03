@@ -4549,7 +4549,7 @@ const activeFilterCount = [
             {/* ── DİNAMİK BAŞLIK VE KAPAT BUTONU ── */}
             <div className="flex justify-between items-start shrink-0 border-b border-slate-200/60 p-5 md:p-6">
               <div className="flex-1 pr-4">
-                <h2 className="text-lg font-extrabold text-slate-900 leading-snug">
+                <h2 className="text-base sm:text-lg font-extrabold text-slate-900 leading-snug tracking-tight">
                   {selectedSubCampus.name}
                 </h2>
                 {selectedSubCampus.parent_id && displayUniversity && (
@@ -4559,9 +4559,9 @@ const activeFilterCount = [
                   </div>
                 )}
                 <div className="flex items-center gap-2 flex-wrap mt-1">
-                  <span className={`inline-block px-2.5 py-1 border rounded-full text-xs font-semibold mt-1 ${selectedSubCampus.isMain ? 'bg-amber-50 text-amber-700 border-amber-200/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200/60'}`}>
-                    {selectedSubCampus.isMain ? 'Ana Kampüs' : 'Alt Yerleşke'}
-                  </span>
+                  <span className={`inline-block px-2.5 py-1 border rounded-full text-xs font-semibold mt-1 ${(selectedSubCampus.type === 'Ana Kampüs' || selectedSubCampus.type === 'Ana KampǬs' || selectedSubCampus.isMain) ? 'bg-amber-50 text-amber-700 border-amber-200/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200/60'}`}>
+                      {(selectedSubCampus.type === 'Ana Kampüs' || selectedSubCampus.type === 'Ana KampǬs' || selectedSubCampus.isMain) ? 'Ana Kampüs' : 'Alt Yerleşke'}
+                    </span>
                 </div>
               </div>
               
