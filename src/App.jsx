@@ -4807,17 +4807,17 @@ const activeFilterCount = [
                                 </div>
 
                                 {/* ALT SATIR */}
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                <div className="flex flex-wrap gap-1.5">
+                                  <span className={`px-2 py-0.5 ${p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'bg-indigo-50/80 text-indigo-700 border-indigo-100' : 'bg-emerald-50/80 text-emerald-700 border-emerald-100'} border rounded-md text-[10px] font-extrabold whitespace-nowrap`}>
                                     {p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'TYT • 2 Yıl' : 'Lisans • 4 Yıl'}
                                   </span>
                                   {p.score_type && p.score_type !== '-' && (
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                                    <span className="px-2 py-0.5 bg-slate-50 text-slate-600 border border-slate-200 rounded-md text-[10px] font-extrabold whitespace-nowrap">
                                       {p.score_type}
                                     </span>
                                   )}
                                   {p.faculty && (
-                                    <span className="text-[10px] font-medium text-slate-500 truncate max-w-[150px]">
+                                    <span className="px-2 py-0.5 bg-slate-50 text-slate-500 border border-slate-100 rounded-md text-[10px] font-bold whitespace-nowrap truncate max-w-[140px]">
                                       {p.faculty}
                                     </span>
                                   )}
@@ -4825,21 +4825,21 @@ const activeFilterCount = [
 
                                 {/* GENİŞLETİLMİŞ GÖRÜNÜM */}
                                 {isExpanded && (
-                                  <div className="mt-3 pt-3 border-t border-slate-200/60 flex flex-col gap-3" onClick={(e) => e.stopPropagation()}>
-                                    <div className="grid grid-cols-2 gap-2 bg-slate-50/50 p-2.5 rounded-lg border border-slate-100">
-                                      <div>
-                                        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Kontenjan</div>
-                                        <div className="text-xs text-slate-700 font-semibold">{p.quota || '-'}</div>
+                                  <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+                                    
+                                    {/* YATAY VE KOMPAKT İSTATİSTİKLER */}
+                                    <div className="flex items-center justify-between bg-slate-50/60 p-2 rounded-lg border border-slate-100">
+                                      <div className="flex flex-col items-center flex-1">
+                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider mb-0.5">Kontenjan</span>
+                                        <span className="text-[11px] text-slate-700 font-extrabold">{p.quota || '-'}</span>
                                       </div>
-                                      <div>
-                                        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Başarı Sırası</div>
-                                        <div className="text-xs text-slate-700 font-semibold">{p.rank || '-'}</div>
-                                      </div>
-                                      <div>
-                                        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Taban Puan</div>
-                                        <div className="text-xs text-slate-700 font-semibold">{p.base_score || '-'}</div>
+                                      <div className="w-px h-5 bg-slate-200"></div>
+                                      <div className="flex flex-col items-center flex-1">
+                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider mb-0.5">Sıralama</span>
+                                        <span className="text-[11px] text-slate-700 font-extrabold">{p.success_rank_2023 || p.successRank ? Number(p.success_rank_2023 || p.successRank).toLocaleString('tr-TR') : '-'}</span>
                                       </div>
                                     </div>
+
                                     <button 
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -4868,7 +4868,7 @@ const activeFilterCount = [
                                           }
                                         }
                                       }}
-                                      className="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-lg py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1 mt-1"
+                                      className="w-full bg-blue-50/70 hover:bg-blue-100 text-blue-600 border border-blue-200/60 rounded-lg py-1.5 text-[11px] font-extrabold transition-colors flex items-center justify-center gap-1"
                                     >
                                       📍 Haritada Göster
                                     </button>
