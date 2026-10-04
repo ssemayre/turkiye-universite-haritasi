@@ -4746,15 +4746,23 @@ const activeFilterCount = [
                     ) : campusPrograms && campusPrograms.length > 0 ? (
                         (() => {
                             const filtered = campusPrograms.filter(p => {
-    // Kampüs eşleşmesi (MYO seçiliyse fakülte ismi ile eşleştir)
-    if (activeCampusFilterId) {
+    // 1 & 2: Kampüs Tipi Ayrımı (MYO vs Ana Kampüs)
+    if (activeCampusFilterId && String(activeCampusFilterId) !== String(selectedSubCampus?.id)) {
+        // Durum 1: Bir MYO Seçilmiş
         const activeMyo = activeRelatedMyos.find(m => String(m.id) === String(activeCampusFilterId));
         if (activeMyo && p.fakulte !== activeMyo.isim) {
             return false;
         }
+    } else {
+        // Durum 2: Ana Kampüs Seçilmiş (veya filtre yok)
+        // Fakülte isminde 'meslek' veya 'myo' geçenleri (yani MYO bölümlerini) gizle
+        const fakulteIsmi = (p.fakulte || '').toLocaleLowerCase('tr-TR');
+        if (fakulteIsmi.includes('meslek') || fakulteIsmi.includes('myo')) {
+            return false;
+        }
     }
     
-    // Sağ Panel İçi Arama
+    // 3. Sağ Panel İçi Arama
     return (p.isim || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
 });
                           if (filtered.length === 0) {
