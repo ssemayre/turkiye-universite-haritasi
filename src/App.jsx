@@ -363,7 +363,7 @@ function App() {
 
     // 2. Şimdi bu GERÇEK ID ile bölümleri çek
     const { data: bolumData, error: bolumError } = await supabase
-      .from('bolumler').select('id, universite_id, isim, fakulte, puan, siralama')
+      .from('bolumler').select('id, universite_id, isim, fakulte, puan, siralama, kontenjan')
       .eq('universite_id', realSupabaseUniId);
     
     if (bolumData) {
@@ -374,7 +374,7 @@ function App() {
 
     // 3. MYO'ları Çek
     const { data: myoData, error: myoError } = await supabase
-      .from('myolar').select('id, universite_id, isim')
+      .from('myolar').select('id, universite_id, isim, lat, lng, ilce')
       .eq('universite_id', realSupabaseUniId);
       
     if (myoData) {
@@ -382,7 +382,10 @@ function App() {
          ...m,
          id: m.id,
          name: m.isim,
-         type: m.tip || m.tipi
+         type: m.tip || m.tipi,
+         latitude: m.lat,
+         longitude: m.lng,
+         district: m.ilce
       })));
     } else if (myoError) {
       console.error('MYOlar çekilirken hata:', myoError);
@@ -4784,7 +4787,7 @@ const activeFilterCount = [
                         return filtered.map((p, idx) => {
                             const sirala = p.siralama || p.sirala;
                             const puan = p.puan;
-                            const kontenjan = null; // Removed from DB schema
+                            const kontenjan = p.kontenjan;
 
                             return (
                               <div 
