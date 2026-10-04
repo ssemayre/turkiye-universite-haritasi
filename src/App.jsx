@@ -353,15 +353,7 @@ function App() {
       .eq('universite_id', correctUniId);
     
     if (bolumData) {
-      setCampusPrograms(bolumData.map(p => ({
-        ...p,
-        name: p.isim,
-        successRank: p.sirala,
-        minScore: p.puan,
-        quota: p.kontenjan,
-        score_type: p.puan_turu,
-        degree_level: p.sure == 2 ? 'Önlisans' : 'Lisans'
-      })));
+      setCampusPrograms(bolumData);
     } else if (bolumError) {
       console.error('Bölümler çekilirken hata:', bolumError);
     }
@@ -4754,51 +4746,24 @@ const activeFilterCount = [
                     ) : campusPrograms && campusPrograms.length > 0 ? (
                         (() => {
                             const filtered = campusPrograms.filter(p => {
-                              // Kampüs eşleşmesi
-                              if (activeCampusFilterId && String(p.campus_id) !== String(activeCampusFilterId)) return false;
-                              
-                              // Eğitim Düzeyi (Lisans/Önlisans)
-                              if (globalFilters.level !== 'all') {
-                                const level = (p.degree_level || p.programName || p.name || "").toLocaleLowerCase('tr-TR');
-                                if (globalFilters.level === 'lisans' && (!level.includes('lisans') || level.includes('önlisans') || level.includes('onlisans'))) return false;
-                                if (globalFilters.level === 'onlisans' && !level.includes('önlisans') && !level.includes('onlisans')) return false;
-                              }
-
-                              // Puan Türü
-                              if (globalFilters.scoreType !== 'all') {
-                                const scoreT = (p.score_type || p.scoreType || "").toUpperCase();
-                                if (scoreT !== globalFilters.scoreType) return false;
-                              }
-
-                              // Burs Durumu
-                              if (globalFilters.type === 'vakif' && globalFilters.scholarship !== 'all') {
-                                const progName = (p.name || "").toLocaleLowerCase('tr-TR');
-                                const burs = globalFilters.scholarship.toLocaleLowerCase('tr-TR');
-                                if (!progName.includes(burs) && !(burs === 'ücretli' && progName.includes('ucretli'))) return false;
-                              }
-
-                              // Başarı Sırası (Min/Max Rank)
-                              const rank = parseInt(p.success_rank_2023 || p.successRank, 10);
-                              if (!isNaN(rank)) {
-                                if (minRank !== "" && rank < parseInt(minRank, 10)) return false;
-                                if (maxRank !== "" && rank > parseInt(maxRank, 10)) return false;
-                              }
-
-                              // Bölüm Arama Keyword (Modal'dan)
-                              if (globalFilters.keyword.trim().length > 0) {
-                                if (!(p.name || '').toLocaleLowerCase('tr-TR').includes(globalFilters.keyword.trim().toLocaleLowerCase('tr-TR'))) return false;
-                              }
-
-                              // Sağ Panel İçi Arama
-                              return (p.name || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
-                            });
+    // Kampüs eşleşmesi (MYO seçiliyse fakülte ismi ile eşleştir)
+    if (activeCampusFilterId) {
+        const activeMyo = activeRelatedMyos.find(m => String(m.id) === String(activeCampusFilterId));
+        if (activeMyo && p.fakulte !== activeMyo.isim) {
+            return false;
+        }
+    }
+    
+    // Sağ Panel İçi Arama
+    return (p.isim || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
+});
                           if (filtered.length === 0) {
                           return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
                         }
                         return filtered.map((p, idx) => {
-                            const sirala = p.success_rank_2023 || p.successRank || p.basariSirasi;
-                            const puan = p.base_score || p.minScore || p.minPuan || p.taban_puan;
-                            const kontenjan = p.quota || p.kontenjan;
+                            const sirala = p.siralama || p.sirala;
+                            const puan = p.puan;
+                            const kontenjan = null; // Removed from DB schema
 
                             return (
                               <div 
@@ -4836,7 +4801,7 @@ const activeFilterCount = [
                                 {/* ÜST SATIR (Bölüm Adı ve Yıldız) */}
                                 <div className="flex items-start justify-between">
                                   <span className="text-sm font-semibold text-slate-800 flex-1 pr-2 leading-tight">
-                                    {p.name}
+                                    {p.isim}
                                   </span>
                                   <button 
                                     className="text-slate-300 hover:text-amber-400 cursor-pointer p-1 transition-colors group-hover:text-amber-200 active:scale-90" 
@@ -4849,16 +4814,16 @@ const activeFilterCount = [
                                 {/* ETİKETLER ALANI */}
                                 <div className="flex flex-wrap gap-1 mt-1 mb-1.5">
                                   <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold">
-                                    {p.degree_level === 'Önlisans' || p.degree_level === 'Önlisans' ? 'TYT • 2 Yıl' : 'Lisans • 4 Yıl'}
+                                    {(p.isim || '').toLocaleLowerCase('tr-TR').includes('önlisans') || (p.fakulte || '').toLocaleLowerCase('tr-TR').includes('meslek') ? 'Önlisans • 2 Yıl' : 'Lisans • 4 Yıl'}
                                   </span>
-                                  {p.score_type && p.score_type !== '-' && (
+                                  {false && (
                                     <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold">
-                                      {p.score_type}
+                                      
                                     </span>
                                   )}
-                                  {p.faculty && (
+                                  {p.fakulte && (
                                     <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold truncate max-w-[140px]">
-                                      {p.faculty}
+                                      {p.fakulte}
                                     </span>
                                   )}
                                 </div>
@@ -4942,7 +4907,7 @@ const activeFilterCount = [
                               }, 400);
                             }}
                           >
-                            <span style={{ fontWeight: '500', color: '#1e293b', fontSize: '14px' }}>{myo.name}</span>
+                            <span style={{ fontWeight: '500', color: '#1e293b', fontSize: '14px' }}>{myo.isim}</span>
                             <span style={{ fontSize: '12px', color: '#3b82f6', background: '#eff6ff', padding: '4px 10px', borderRadius: '12px', whiteSpace: 'nowrap', marginLeft: '8px' }}>Bölümleri Gör</span>
                           </button>
                         ))}
