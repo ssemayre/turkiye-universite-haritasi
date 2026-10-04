@@ -344,12 +344,27 @@ function App() {
     setIsFetchingCampusPrograms(true);
     if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
     
-    let correctUniId = selectedSubCampus.id;
+    // 1. Önce tıklanan üniversitenin GERÇEK Supabase ID'sini bulalım (İsme göre)
+    const uniName = selectedSubCampus.universityName || selectedSubCampus.name;
+    const { data: realUniInfo, error: uniError } = await supabase
+      .from('universiteler')
+      .select('id')
+      .ilike('isim', `%${uniName.replace(/\([^)]*\)/g, '').trim()}%`) // Parantezleri silip isme göre arıyoruz
+      .single();
 
-    // 1. Bolumleri Çek
+    if (uniError || !realUniInfo) {
+       console.error("Supabase'de bu üniversite bulunamadı:", uniName);
+       setIsFetchingCampusPrograms(false);
+       if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
+       return;
+    }
+
+    const realSupabaseUniId = realUniInfo.id;
+
+    // 2. Şimdi bu GERÇEK ID ile bölümleri çek
     const { data: bolumData, error: bolumError } = await supabase
       .from('bolumler').select('id, universite_id, isim, fakulte, puan, siralama')
-      .eq('universite_id', correctUniId);
+      .eq('universite_id', realSupabaseUniId);
     
     if (bolumData) {
       setCampusPrograms(bolumData);
@@ -357,10 +372,10 @@ function App() {
       console.error('Bölümler çekilirken hata:', bolumError);
     }
 
-    // 2. MYO'ları Çek
+    // 3. MYO'ları Çek
     const { data: myoData, error: myoError } = await supabase
       .from('myolar').select('id, universite_id, isim')
-      .eq('universite_id', correctUniId);
+      .eq('universite_id', realSupabaseUniId);
       
     if (myoData) {
       setActiveRelatedMyos(myoData.map(m => ({
