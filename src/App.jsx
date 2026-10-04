@@ -344,14 +344,7 @@ function App() {
     setIsFetchingCampusPrograms(true);
     if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
     
-    let correctUniId = selectedSubCampus.universityId || selectedSubCampus.id;
-    if (universities && universities.length > 0) {
-      const targetName = normalize(selectedSubCampus.originalUniName || selectedSubCampus.universityName || selectedSubCampus.name).split('(')[0].trim();
-      const exactUni = universities.find(u => normalize(u.name).includes(targetName));
-      if (exactUni) {
-        correctUniId = exactUni.id;
-      }
-    }
+    let correctUniId = selectedSubCampus.id;
 
     // 1. Bolumleri Çek
     const { data: bolumData, error: bolumError } = await supabase
