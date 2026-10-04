@@ -348,8 +348,7 @@ function App() {
 
     // 1. Bolumleri Çek
     const { data: bolumData, error: bolumError } = await supabase
-      .from('bolumler')
-      .select('*')
+      .from('bolumler').select('id, universite_id, isim, fakulte, puan, siralama')
       .eq('universite_id', correctUniId);
     
     if (bolumData) {
@@ -360,8 +359,7 @@ function App() {
 
     // 2. MYO'ları Çek
     const { data: myoData, error: myoError } = await supabase
-      .from('myolar')
-      .select('*')
+      .from('myolar').select('id, universite_id, isim')
       .eq('universite_id', correctUniId);
       
     if (myoData) {
