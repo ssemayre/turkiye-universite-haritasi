@@ -342,9 +342,8 @@ function App() {
   const fetchCampusPrograms = async () => {
     if (!selectedSubCampus) return;
     setIsFetchingCampusPrograms(true);
+    if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
     
-    // JSON dosyasındaki ID ile Supabase'deki ID uyuşmayabilir (Örn: Yozgat Bozok JSON'da 1023, Supabase'de 937).
-    // Bu yüzden doğru ID'yi isim eşleştirmesi ile 'universities' statinden buluyoruz.
     let correctUniId = selectedSubCampus.universityId || selectedSubCampus.id;
     if (universities && universities.length > 0) {
       const targetName = normalize(selectedSubCampus.originalUniName || selectedSubCampus.universityName || selectedSubCampus.name).split('(')[0].trim();
@@ -354,17 +353,45 @@ function App() {
       }
     }
 
-    const { data, error } = await supabase
-      .from('programs')
+    // 1. Bolumleri Çek
+    const { data: bolumData, error: bolumError } = await supabase
+      .from('bolumler')
       .select('*')
-      .eq('university_id', correctUniId);
+      .eq('universite_id', correctUniId);
     
-    if (data) {
-      setCampusPrograms(data);
-    } else if (error) {
-      console.error('Bölümler çekilirken hata:', error);
+    if (bolumData) {
+      setCampusPrograms(bolumData.map(p => ({
+        ...p,
+        name: p.isim,
+        successRank: p.sirala,
+        minScore: p.puan,
+        quota: p.kontenjan,
+        score_type: p.puan_turu,
+        degree_level: p.sure == 2 ? 'Önlisans' : 'Lisans'
+      })));
+    } else if (bolumError) {
+      console.error('Bölümler çekilirken hata:', bolumError);
     }
+
+    // 2. MYO'ları Çek
+    const { data: myoData, error: myoError } = await supabase
+      .from('myolar')
+      .select('*')
+      .eq('universite_id', correctUniId);
+      
+    if (myoData) {
+      setActiveRelatedMyos(myoData.map(m => ({
+         ...m,
+         id: m.id,
+         name: m.isim,
+         type: m.tip || m.tipi
+      })));
+    } else if (myoError) {
+      console.error('MYOlar çekilirken hata:', myoError);
+    }
+
     setIsFetchingCampusPrograms(false);
+    if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
   };
 
   // Reviews Fetch
@@ -916,9 +943,9 @@ function App() {
     // If searching department
     if (field === 'department_name' && value.length > 2) {
       const fetchDepts = async () => {
-        const { data } = await supabase.from('programs').select('name').ilike('name', `%${value}%`).limit(15);
+        const { data } = await supabase.from('bolumler').select('isim').ilike('isim', `%${value}%`).limit(15);
         if (data) {
-          setDeptSuggestions([...new Set(data.map(d => d.name))]);
+          setDeptSuggestions([...new Set(data.map(d => d.isim))]);
         }
       };
       fetchDepts();
@@ -2194,24 +2221,8 @@ function App() {
       return candidates;
     }, [search, baseFilteredUniversities, searchProgramsLoaded, generalFilteredPrograms, universityMap]);
 
-  const activeRelatedMyos = useMemo(() => {
-    if (!selectedSubCampus || !campusPrograms) return [];
-    
-    // 1. Extract unique campus_ids from the fetched programs of the selected university
-    const uniqueCampusIds = new Set();
-    campusPrograms.forEach(p => {
-      if (p.campus_id) {
-        uniqueCampusIds.add(String(p.campus_id));
-      }
-    });
-
-    // 2. Filter global universities list to match these unique campus_ids
-    return universities.filter(u => 
-      uniqueCampusIds.has(String(u.id)) && 
-      u.id !== selectedSubCampus.id && 
-      (Number.isFinite(Number(u.lat)) || Number.isFinite(Number(u.latitude)))
-    );
-  }, [selectedSubCampus, universities, campusPrograms]);
+  const [activeRelatedMyos, setActiveRelatedMyos] = useState([]);
+  const [isFetchingMyos, setIsFetchingMyos] = useState(false);
 
   const displayedUniversities = useMemo(() => {
     // Odak Modu: Bir üniversite seçiliyse haritada sadece o ve MYO'ları kalsın
