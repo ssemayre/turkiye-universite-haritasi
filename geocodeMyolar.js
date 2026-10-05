@@ -77,7 +77,7 @@ async function geocodeMyolar() {
                     successCount++;
                 }
             } else {
-                console.log(`⚠️ [${i + 1}/${myolar.length}] Bulunamadı (Google): ${addressQuery}`);
+                console.log(`⚠️ [${i + 1}/${myolar.length}] Başarısız: ${data.status} | Hata: ${data.error_message || 'Bilinmeyen sebep'} | Adres: ${addressQuery}`);
                 notFoundCount++;
             }
         } catch (err) {
