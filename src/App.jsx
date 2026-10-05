@@ -372,19 +372,27 @@ function App() {
       console.error('Bölümler çekilirken hata:', bolumError);
     }
 
-    // 3. MYO'ları Mevcut Listeden Bağla
-    const bagliMyolar = universities.filter(u => String(u.parent_id) === String(realSupabaseUniId) || String(u.parent_id) === String(selectedSubCampus.id));
-    setActiveRelatedMyos(bagliMyolar.map(m => ({
-        ...m,
-        id: m.id,
-        isim: m.name || m.isim,
-        latitude: m.lat || m.latitude,
-        longitude: m.lng || m.longitude,
-        district: m.city || m.district || m.ilce
-    })));
+    // 3. MYO'ları Çek
+      const { data: myoData, error: myoError } = await supabase
+        .from('myolar').select('id, universite_id, isim, lat, lng, ilce')
+        .eq('universite_id', realSupabaseUniId);
+        
+      if (myoData) {
+        setActiveRelatedMyos(myoData.map(m => ({
+           ...m,
+           id: m.id,
+           name: m.isim,
+           type: m.tip || m.tipi || 'Meslek Yüksekokulu',
+           latitude: m.lat,
+           longitude: m.lng,
+           district: m.ilce
+        })));
+      } else if (myoError) {
+        console.error('MYOlar çekilirken hata:', myoError);
+      }
 
-    setIsFetchingCampusPrograms(false);
-    if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
+      setIsFetchingCampusPrograms(false);
+      if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
   };
 
   // Reviews Fetch
