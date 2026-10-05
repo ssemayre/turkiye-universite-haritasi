@@ -107,9 +107,9 @@ async function seedDatabase() {
                             myoList.push({
                                 universite_id: uniId,
                                 isim: unit.name,
-                                lat: unit.latitude || unit.lat || null,
-                                lng: unit.longitude || unit.lng || null,
-                                ilce: unit.district || unit.ilce || null
+                                lat: campus.latitude || campus.lat || unit.latitude || unit.lat || null,
+                                lng: campus.longitude || campus.lng || unit.longitude || unit.lng || null,
+                                ilce: campus.district || campus.ilce || unit.district || unit.ilce || null
                             });
                         }
                     });
