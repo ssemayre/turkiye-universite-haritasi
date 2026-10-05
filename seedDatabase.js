@@ -144,9 +144,9 @@ async function seedDatabase() {
                 program_kodu: b.programCode || null,
                 isim: b.department || b.name,
                 fakulte: b.faculty || null,
-                puan: (b.minScore || b.minPuan || b.base_score || null)?.toString(), 
-                siralama: (b.successRank || b.basariSirasi || b.rank || null)?.toString(),
-                kontenjan: (b.quota || b.kontenjan || null)?.toString()
+                puan: b.minScore?.toString() || null, 
+                siralama: b.successRank?.toString() || null,
+                kontenjan: b.quota?.toString() || null
             };
         }).filter(b => b.universite_id !== null);
 
