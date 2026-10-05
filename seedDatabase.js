@@ -107,7 +107,9 @@ async function seedDatabase() {
                             myoList.push({
                                 universite_id: uniId,
                                 isim: unit.name,
-                                // ilce, lat, lng verisi JSON içinde varsa eklenebilir, yoksa boş kalır
+                                lat: unit.latitude || unit.lat || null,
+                                lng: unit.longitude || unit.lng || null,
+                                ilce: unit.district || unit.ilce || null
                             });
                         }
                     });
