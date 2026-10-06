@@ -489,16 +489,33 @@ function App() {
   };
 
   const submitQuestion = async () => {
-    if (!questionContent.trim()) {
-      alert('Lütfen sorunuzu yazın!');
+    if (!questionContent.trim() && !questionImage) {
+      alert('Lütfen sorunuzu yazın veya bir fotoğraf ekleyin!');
       return;
     }
     setIsSubmittingQuestion(true);
+    
+    let imageUrl = null;
+    if (questionImage) {
+      const fileExt = questionImage.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('post_images')
+        .upload(fileName, questionImage);
+      
+      if (!uploadError) {
+        const { data: publicUrlData } = supabase.storage
+          .from('post_images')
+          .getPublicUrl(fileName);
+        imageUrl = publicUrlData.publicUrl;
+      }
+    }
 
     const { data, error } = await supabase.from('questions').insert({
       university_id: selectedSubCampus.id,
       user_id: user.id,
-      content: questionContent
+      content: questionContent,
+      image_url: imageUrl
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
 
     setIsSubmittingQuestion(false);
@@ -3107,14 +3124,31 @@ const activeFilterCount = [
   };
 
   const submitCampusPost = async () => {
-    if (!newPostContent.trim()) return;
+    if (!newPostContent.trim() && !newPostImage) return;
     setIsSubmittingPost(true);
+    
+    let imageUrl = null;
+    if (newPostImage) {
+      const fileExt = newPostImage.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('post_images')
+        .upload(fileName, newPostImage);
+      
+      if (!uploadError) {
+        const { data: publicUrlData } = supabase.storage
+          .from('post_images')
+          .getPublicUrl(fileName);
+        imageUrl = publicUrlData.publicUrl;
+      }
+    }
     const { data, error } = await supabase.from('posts').insert({
       user_id: user.id,
       university_name: userProfileData.university_name,
       content: newPostContent,
       is_anonymous: isAnonymousPost,
-      category: campusTab === 'confessions' ? 'confessions' : 'feed'
+      category: campusTab === 'confessions' ? 'confessions' : 'feed',
+      image_url: imageUrl
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
     
     setIsSubmittingPost(false);
@@ -3477,7 +3511,8 @@ const activeFilterCount = [
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {profileContent.posts.map(post => (
                           <div key={post.id} className="bg-white/40 border border-white/50 backdrop-blur-md shadow-sm rounded-2xl p-4">
-                            <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#334155' }}>{post.content}</p>
+                            <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#334155', whiteSpace: 'pre-wrap' }}>{post.content}</p>
+                            {post.image_url && <img src={post.image_url} alt="Gönderi" style={{ width: '100%', maxHeight: '250px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px' }} />}
                             <span style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(post.created_at).toLocaleDateString('tr-TR')}</span>
                           </div>
                         ))}
@@ -3627,6 +3662,21 @@ const activeFilterCount = [
                                 💬 Anonim Paylaş
                               </label>
                             )}
+                            
+                            <div className="flex items-center gap-2 mr-auto ml-2">
+                              <label className="cursor-pointer flex items-center justify-center p-1 text-slate-400 hover:text-indigo-600 transition-colors" title="Fotoğraf Ekle">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <input type="file" accept="image/*" className="hidden" onChange={(e) => { if(e.target.files && e.target.files[0]) setNewPostImage(e.target.files[0]); }} />
+                              </label>
+                              {newPostImage && (
+                                <div className="text-xs text-indigo-600 flex items-center gap-1 bg-indigo-50 px-2 py-1 rounded">
+                                  <span className="truncate max-w-[100px]">{newPostImage.name}</span>
+                                  <button onClick={() => setNewPostImage(null)} className="hover:text-indigo-800 ml-1">×</button>
+                                </div>
+                              )}
+                            </div>
                             <button
                               onClick={submitCampusPost}
                               disabled={isSubmittingPost || (!newPostContent.trim() && !newPostImage)}
@@ -3685,7 +3735,12 @@ const activeFilterCount = [
                                   </div>
                                 </div>
                                 <p className="text-sm text-slate-800 text-left leading-relaxed whitespace-pre-wrap break-words">{post.content}</p>
-                                <div className="flex items-center gap-4 mt-1 pt-3 border-t border-white/40">
+                                  {post.image_url && (
+                                    <div className="mt-3 relative w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50/50">
+                                      <img src={post.image_url} alt="Gönderi" className="w-full max-h-96 object-contain" />
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-4 mt-2 pt-3 border-t border-white/40">
                                   <button className="flex items-center gap-1.5 text-slate-500 hover:bg-white/50 transition-colors px-2 py-1 rounded-md text-xs font-medium">
                                     <span className="text-base">🤍</span> {post.likes_count || 0}
                                   </button>
@@ -5099,9 +5154,25 @@ const activeFilterCount = [
                         placeholder="Örn: Yurt kapasitesi nasıl? Ulaşım zor mu?"
                         style={{ width: '100%', height: '80px', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', resize: 'vertical', fontFamily: 'inherit', fontSize: '14px', boxSizing: 'border-box', marginBottom: '15px' }}
                       />
-                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', color: '#64748b', fontSize: '13px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '18px', height: '18px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Fotoğraf
+                            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if(e.target.files && e.target.files[0]) setQuestionImage(e.target.files[0]); }} />
+                          </label>
+                          {questionImage && (
+                            <div style={{ fontSize: '11px', color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '4px', background: '#eef2ff', padding: '2px 6px', borderRadius: '4px' }}>
+                              <span style={{ maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{questionImage.name}</span>
+                              <button onClick={() => setQuestionImage(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: '#4f46e5' }}>×</button>
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
                         <button 
-                          onClick={() => setIsQuestionFormOpen(false)}
+                          onClick={() => { setIsQuestionFormOpen(false); setQuestionImage(null); }}
                           style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', color: '#64748b', cursor: 'pointer', fontWeight: '500' }}
                           disabled={isSubmittingQuestion}
                         >
@@ -5116,6 +5187,7 @@ const activeFilterCount = [
                         </button>
                       </div>
                     </div>
+                      </div>
                   )}
 
                   {realQuestions.length === 0 ? (
@@ -5150,8 +5222,9 @@ const activeFilterCount = [
                             >▼</button>
                           </div>
                           <div className="csd-qa-question-body">
-                            <p className="csd-qa-question-text" style={{ margin: '0 0 10px 0' }}>{qa.content}</p>
-                            <div className="csd-qa-meta" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            <p className="csd-qa-question-text" style={{ margin: '0 0 10px 0', whiteSpace: 'pre-wrap' }}>{qa.content}</p>
+                              {qa.image_url && <img src={qa.image_url} alt="Soru" style={{ width: '100%', maxHeight: '250px', objectFit: 'cover', borderRadius: '8px', marginBottom: '10px', border: '1px solid #e2e8f0' }} />}
+                              <div className="csd-qa-meta" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                                 {qa.profiles?.avatar_url ? (
                                   <img src={qa.profiles.avatar_url} alt="Avatar" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
