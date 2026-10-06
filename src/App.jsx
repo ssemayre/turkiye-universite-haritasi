@@ -831,6 +831,12 @@ function App() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [inbox, setInbox] = useState([]);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+  const [activePostMenu, setActivePostMenu] = useState(null);
+  const [expandedComments, setExpandedComments] = useState({});
+  const [commentInput, setCommentInput] = useState({});
+  const [postLikes, setPostLikes] = useState({});
+  const [postComments, setPostComments] = useState({});
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
@@ -3156,7 +3162,93 @@ const activeFilterCount = [
     }
   };
 
-  const submitCampusPost = async () => {
+  
+  const handleLikePost = async (post) => {
+    if (!user) return;
+    const isLiked = post.is_liked_by_me;
+    
+    if (isLiked) {
+      // Unlike
+      await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_id', user.id);
+      setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: Math.max(0, (p.likes_count || 1) - 1), is_liked_by_me: false } : p));
+    } else {
+      // Like
+      await supabase.from('post_likes').insert({ post_id: post.id, user_id: user.id });
+      setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: (p.likes_count || 0) + 1, is_liked_by_me: true } : p));
+      
+      if (post.user_id !== user.id && !post.is_anonymous) {
+        await supabase.from('notifications').insert({
+          receiver_id: post.user_id,
+          actor_id: user.id,
+          type: 'like',
+          post_id: post.id,
+          content: 'gönderinizi beğendi.'
+        });
+      }
+    }
+  };
+
+  const toggleComments = async (postId) => {
+    if (expandedComments[postId]) {
+      setExpandedComments(prev => ({ ...prev, [postId]: false }));
+    } else {
+      setExpandedComments(prev => ({ ...prev, [postId]: true }));
+      if (!postComments[postId]) {
+        const { data } = await supabase.from('post_comments').select('*, profiles(full_name, avatar_url)').eq('post_id', postId).order('created_at', { ascending: true });
+        if (data) {
+          setPostComments(prev => ({ ...prev, [postId]: data }));
+        }
+      }
+    }
+  };
+
+  const handlePostComment = async (postId, postOwnerId, isAnon) => {
+    const content = commentInput[postId];
+    if (!content || !content.trim() || !user) return;
+
+    const { data, error } = await supabase.from('post_comments').insert({
+      post_id: postId,
+      user_id: user.id,
+      content: content.trim()
+    }).select('*, profiles(full_name, avatar_url)').single();
+
+    if (!error && data) {
+      setPostComments(prev => ({
+        ...prev,
+        [postId]: [...(prev[postId] || []), data]
+      }));
+      setCommentInput(prev => ({ ...prev, [postId]: '' }));
+      setCampusPosts(campusPosts.map(p => p.id === postId ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p));
+      
+      if (postOwnerId !== user.id && !isAnon) {
+        await supabase.from('notifications').insert({
+          receiver_id: postOwnerId,
+          actor_id: user.id,
+          type: 'comment',
+          post_id: postId,
+          content: 'gönderinize yorum yaptı.'
+        });
+      }
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm("Bu gönderiyi silmek istediğinize emin misiniz?")) return;
+    const { error } = await supabase.from('posts').delete().eq('id', postId);
+    if (!error) {
+      setCampusPosts(campusPosts.filter(p => p.id !== postId));
+      setActivePostMenu(null);
+    } else {
+      alert("Silinirken hata oluştu: " + error.message);
+    }
+  };
+
+  const handleSharePost = (postId) => {
+    const link = `${window.location.origin}/post/${postId}`;
+    navigator.clipboard.writeText(link);
+    alert('Bağlantı panoya kopyalandı!');
+  };
+const submitCampusPost = async () => {
     if (!newPostContent.trim() && !newPostImage) return;
     setIsSubmittingPost(true);
     
@@ -6322,10 +6414,15 @@ const activeFilterCount = [
             </span>
           )}
         </button>
-        <button type="button" onClick={openMessages} className={`flex flex-col items-center p-1 transition-all hover:scale-110 ${messagesOpen ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
-          <span className="text-xl mb-0.5">💬</span>
-          <span className="text-[10px] font-bold">Mesajlar</span>
-        </button>
+        <button type="button" onClick={openMessages} className={`relative flex flex-col items-center p-1 transition-all hover:scale-110 ${messagesOpen ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
+            {unreadMessageCount > 0 && (
+              <span className="absolute -top-1 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full z-10 animate-bounce">
+                {unreadMessageCount}
+              </span>
+            )}
+            <span className="text-xl mb-0.5">💬</span>
+            <span className="text-[10px] font-bold">Mesajlar</span>
+          </button>
         <button type="button" onClick={() => toggleFloatingPanel("favorites")} className={`flex flex-col items-center p-1 transition-all hover:scale-110 ${preferenceOpen ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-500'}`}>
           <span className="text-xl mb-0.5">👤</span>
           <span className="text-[10px] font-bold">Profilim</span>
