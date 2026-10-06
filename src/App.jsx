@@ -459,6 +459,7 @@ function App() {
   const [realQuestions, setRealQuestions] = useState([]);
   const [isQuestionFormOpen, setIsQuestionFormOpen] = useState(false);
   const [questionContent, setQuestionContent] = useState('');
+  const [questionImage, setQuestionImage] = useState(null);
   const [isSubmittingQuestion, setIsSubmittingQuestion] = useState(false);
   
   const [replyingToQuestionId, setReplyingToQuestionId] = useState(null);
@@ -2868,6 +2869,7 @@ const activeFilterCount = [
   // --- KAMPÜS FEED YAPISI ---
   const [campusPosts, setCampusPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
+  const [newPostImage, setNewPostImage] = useState(null);
   const [isAnonymousPost, setIsAnonymousPost] = useState(false);
   const [isSubmittingPost, setIsSubmittingPost] = useState(false);
   const [campusTab, setCampusTab] = useState('feed');
@@ -3627,8 +3629,8 @@ const activeFilterCount = [
                             )}
                             <button
                               onClick={submitCampusPost}
-                              disabled={isSubmittingPost || !newPostContent.trim()}
-                              className={`bg-indigo-600 text-white px-5 py-1.5 rounded-full text-sm font-semibold hover:bg-indigo-700 transition-colors ml-auto ${!newPostContent.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              disabled={isSubmittingPost || (!newPostContent.trim() && !newPostImage)}
+                              className={`bg-indigo-600 text-white px-5 py-1.5 rounded-full text-sm font-semibold hover:bg-indigo-700 transition-colors ml-auto ${(!newPostContent.trim() && !newPostImage) ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                               {isSubmittingPost ? 'Paylaşılıyor...' : 'Paylaş'}
                             </button>
