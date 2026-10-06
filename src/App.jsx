@@ -503,12 +503,16 @@ function App() {
         .from('post_images')
         .upload(fileName, questionImage);
       
-      if (!uploadError) {
-        const { data: publicUrlData } = supabase.storage
-          .from('post_images')
-          .getPublicUrl(fileName);
-        imageUrl = publicUrlData.publicUrl;
+      if (uploadError) {
+        alert('Fotoğraf yüklenirken hata oluştu: ' + uploadError.message);
+        setIsSubmittingQuestion(false);
+        return; // Stop insert
       }
+      
+      const { data: publicUrlData } = supabase.storage
+        .from('post_images')
+        .getPublicUrl(fileName);
+      imageUrl = publicUrlData.publicUrl;
     }
 
     const { data, error } = await supabase.from('questions').insert({
@@ -525,6 +529,9 @@ function App() {
     } else {
       setIsQuestionFormOpen(false);
       setQuestionContent('');
+      setQuestionImage(null);
+      const qImgInput = document.getElementById('question-image-input');
+      if (qImgInput) qImgInput.value = '';
 
       // Optimistic UI fallback
       const newQuestion = data;
@@ -3135,13 +3142,18 @@ const activeFilterCount = [
         .from('post_images')
         .upload(fileName, newPostImage);
       
-      if (!uploadError) {
-        const { data: publicUrlData } = supabase.storage
-          .from('post_images')
-          .getPublicUrl(fileName);
-        imageUrl = publicUrlData.publicUrl;
+      if (uploadError) {
+        alert('Fotoğraf yüklenirken hata oluştu: ' + uploadError.message);
+        setIsSubmittingPost(false);
+        return; // Stop insert
       }
+      
+      const { data: publicUrlData } = supabase.storage
+        .from('post_images')
+        .getPublicUrl(fileName);
+      imageUrl = publicUrlData.publicUrl;
     }
+    
     const { data, error } = await supabase.from('posts').insert({
       user_id: user.id,
       university_name: userProfileData.university_name,
@@ -3156,6 +3168,9 @@ const activeFilterCount = [
       alert('Gönderi paylaşılırken hata oluştu: ' + error.message);
     } else {
       setNewPostContent('');
+      setNewPostImage(null);
+      const postImgInput = document.getElementById('post-image-input');
+      if (postImgInput) postImgInput.value = '';
       setIsAnonymousPost(false);
       const newPost = data;
       if (newPost && !newPost.profiles) {
