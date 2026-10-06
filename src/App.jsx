@@ -3668,12 +3668,12 @@ const activeFilterCount = [
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <input type="file" accept="image/*" className="hidden" onChange={(e) => { if(e.target.files && e.target.files[0]) setNewPostImage(e.target.files[0]); }} />
+                                <input id="post-image-input" type="file" accept="image/*" className="hidden" onChange={(e) => { if(e.target.files && e.target.files[0]) setNewPostImage(e.target.files[0]); }} />
                               </label>
                               {newPostImage && (
                                 <div className="text-xs text-indigo-600 flex items-center gap-1 bg-indigo-50 px-2 py-1 rounded">
                                   <span className="truncate max-w-[100px]">{newPostImage.name}</span>
-                                  <button onClick={() => setNewPostImage(null)} className="hover:text-indigo-800 ml-1">×</button>
+                                  <button onClick={() => { setNewPostImage(null); const el = document.getElementById('post-image-input'); if(el) el.value=''; }} className="hover:text-indigo-800 ml-1">×</button>
                                 </div>
                               )}
                             </div>
@@ -5161,18 +5161,18 @@ const activeFilterCount = [
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             Fotoğraf
-                            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if(e.target.files && e.target.files[0]) setQuestionImage(e.target.files[0]); }} />
+                            <input id="question-image-input" type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => { if(e.target.files && e.target.files[0]) setQuestionImage(e.target.files[0]); }} />
                           </label>
                           {questionImage && (
                             <div style={{ fontSize: '11px', color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '4px', background: '#eef2ff', padding: '2px 6px', borderRadius: '4px' }}>
                               <span style={{ maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{questionImage.name}</span>
-                              <button onClick={() => setQuestionImage(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: '#4f46e5' }}>×</button>
+                              <button onClick={() => { setQuestionImage(null); const el = document.getElementById('question-image-input'); if(el) el.value=''; }} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: '#4f46e5' }}>×</button>
                             </div>
                           )}
                         </div>
                         <div style={{ display: 'flex', gap: '10px' }}>
                         <button 
-                          onClick={() => { setIsQuestionFormOpen(false); setQuestionImage(null); }}
+                          onClick={() => { setIsQuestionFormOpen(false); setQuestionImage(null); const el = document.getElementById('question-image-input'); if(el) el.value=''; }}
                           style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', color: '#64748b', cursor: 'pointer', fontWeight: '500' }}
                           disabled={isSubmittingQuestion}
                         >
