@@ -2907,6 +2907,7 @@ const activeFilterCount = [
   const [listingCategory, setListingCategory] = useState('');
   const [listingFilter, setListingFilter] = useState('Tümü');
   const [listingTitle, setListingTitle] = useState('');
+  const [listingImage, setListingImage] = useState(null);
   const [listingDescription, setListingDescription] = useState('');
   const [listingPrice, setListingPrice] = useState('');
   const [isSubmittingListing, setIsSubmittingListing] = useState(false);
@@ -3101,13 +3102,35 @@ const activeFilterCount = [
   const submitListing = async () => {
     if (!listingTitle.trim() || !listingDescription.trim()) return;
     setIsSubmittingListing(true);
+    
+    let imageUrl = null;
+    if (listingImage) {
+      const fileExt = listingImage.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('post_images')
+        .upload(fileName, listingImage);
+      
+      if (uploadError) {
+        alert('Fotoğraf yüklenirken hata oluştu: ' + uploadError.message);
+        setIsSubmittingListing(false);
+        return; // Stop insert
+      }
+      
+      const { data: publicUrlData } = supabase.storage
+        .from('post_images')
+        .getPublicUrl(fileName);
+      imageUrl = publicUrlData.publicUrl;
+    }
+
     const { data, error } = await supabase.from('listings').insert({
       user_id: user.id,
       university_name: userProfileData.university_name,
       category: listingCategory,
       title: listingTitle,
       description: listingDescription,
-      price: listingPrice ? parseFloat(listingPrice) : null
+      price: listingPrice ? parseFloat(listingPrice) : null,
+      image_url: imageUrl
     }).select('*, profiles(full_name, avatar_url)').single();
 
     setIsSubmittingListing(false);
@@ -3127,6 +3150,9 @@ const activeFilterCount = [
       setListingDescription('');
       setListingPrice('');
       setListingCategory('İkinci El');
+      setListingImage(null);
+      const listImgInput = document.getElementById('listing-image-input');
+      if (listImgInput) listImgInput.value = '';
     }
   };
 
@@ -3548,7 +3574,8 @@ const activeFilterCount = [
                               <span style={{ fontSize: '11px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '6px', color: '#475569' }}>{listing.category}</span>
                             </div>
                             <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>{listing.description}</p>
-                            <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200/50">
+                              {listing.image_url && <div className="mt-2 mb-3"><img src={listing.image_url} alt="İlan" className="w-full max-h-48 object-cover rounded-lg border border-slate-200" /></div>}
+                              <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200/50">
   <button onClick={(e) => { e.stopPropagation(); setActiveChatUser({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name }); }} className="bg-indigo-50/60 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-4 py-2 rounded-xl transition-all border border-indigo-100/50 flex items-center gap-1.5 shadow-sm active:scale-95">
     <span>💬</span> Mesaj At
   </button>
@@ -3828,7 +3855,8 @@ const activeFilterCount = [
                                </div>
                                <h4 className="break-words break-all whitespace-normal" style={{ margin: '0 0 6px 0', color: '#0f172a', fontSize: '16px' }}>{listing.title}</h4>
                                <p className="break-words break-all whitespace-normal" style={{ margin: '0 0 12px 0', color: '#64748b', fontSize: '14px', lineHeight: '1.5' }}>{listing.description}</p>
-                               <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200/50">
+                                 {listing.image_url && <div className="mt-3 mb-4"><img src={listing.image_url} alt="İlan" className="w-full max-h-64 object-cover rounded-xl border border-slate-200" /></div>}
+                                 <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200/50">
   <button onClick={(e) => { e.stopPropagation(); setActiveChatUser({ id: listing.user_id, full_name: listing.profiles?.full_name, avatar_url: listing.profiles?.avatar_url, university_name: listing.university_name, department_name: listing.profiles?.department_name }); }} className="bg-indigo-50/60 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-4 py-2 rounded-xl transition-all border border-indigo-100/50 flex items-center gap-1.5 shadow-sm active:scale-95">
     <span>💬</span> Mesaj At
   </button>
@@ -3849,7 +3877,7 @@ const activeFilterCount = [
                <div className="absolute inset-0 z-[2000] flex items-start justify-center p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                   <div className="relative w-full max-w-md mx-auto bg-white/85 backdrop-blur-3xl border border-white/60 rounded-3xl shadow-2xl p-6 z-[2000]">
                      <h3 className="text-xl font-extrabold text-slate-900 mb-6 text-left">İlan Ver</h3>
-                     <button onClick={() => setIsListingModalOpen(false)} className="absolute top-4 right-4 bg-slate-100/50 hover:bg-slate-200/80 rounded-full p-2 transition-colors">
+                     <button onClick={() => { setIsListingModalOpen(false); setListingImage(null); const el = document.getElementById('listing-image-input'); if(el) el.value=''; }} className="absolute top-4 right-4 bg-slate-100/50 hover:bg-slate-200/80 rounded-full p-2 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                      </button>
                      
@@ -3880,6 +3908,24 @@ const activeFilterCount = [
                            <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5">Fiyat (₺) - Opsiyonel</label>
                            <input type="number" min="0" max="999999" onKeyDown={(e) => ["e", "E", "+", "-", ",", "."].includes(e.key) && e.preventDefault()} onPaste={(e) => e.preventDefault()} value={listingPrice} onChange={(e) => { const val = e.target.value; if (val === "" || (Number(val) >= 0 && Number(val) <= 999999)) { setListingPrice(val); } }} placeholder="Örn: 500" className="w-full bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition-all" />
                         </div>
+                          <div>
+                             <label className="block text-left text-sm font-semibold text-slate-700 mb-1.5 mt-2">Fotoğraf Ekle</label>
+                             <div className="flex items-center gap-3">
+                               <label className="cursor-pointer bg-white/50 backdrop-blur-md border border-white/60 rounded-xl px-4 py-3 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-300 transition-colors w-full shadow-sm">
+                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                 </svg>
+                                 <span className="text-sm font-semibold">{listingImage ? 'Değiştir' : 'Görsel Seç'}</span>
+                                 <input id="listing-image-input" type="file" accept="image/*" className="hidden" onChange={(e) => { if(e.target.files && e.target.files[0]) setListingImage(e.target.files[0]); }} />
+                               </label>
+                               {listingImage && (
+                                 <div className="flex items-center bg-indigo-50 px-3 py-3 rounded-xl border border-indigo-100 max-w-[50%] shadow-sm">
+                                   <span className="text-xs text-indigo-700 font-medium truncate mr-2">{listingImage.name}</span>
+                                   <button onClick={() => { setListingImage(null); const el = document.getElementById('listing-image-input'); if(el) el.value=''; }} className="text-indigo-400 hover:text-indigo-700 font-bold ml-auto p-1">×</button>
+                                 </div>
+                               )}
+                             </div>
+                          </div>
                         <button onClick={submitListing} disabled={isSubmittingListing || !listingCategory || !listingTitle.trim() || !listingDescription.trim()} className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3.5 rounded-xl shadow-md transition-colors mt-4 ${(!listingCategory || !listingTitle.trim() || !listingDescription.trim() || isSubmittingListing) ? "opacity-50 cursor-not-allowed" : ""}`}>
                            {isSubmittingListing ? 'Ekleniyor...' : 'İlanı Yayınla'}
                         </button>
@@ -5786,7 +5832,8 @@ const activeFilterCount = [
                            <span className="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md shrink-0">{listing.category}</span>
                          </div>
                          <p className="text-xs text-slate-600 line-clamp-2 break-words">{listing.description}</p>
-                         <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-200/50">
+                           {listing.image_url && <div className="mt-2 mb-2"><img src={listing.image_url} alt="İlan" className="w-full max-h-32 object-cover rounded-lg border border-slate-200" /></div>}
+                           <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-200/50">
                            <span className="text-[10px] text-slate-400 font-medium">{new Date(listing.created_at).toLocaleDateString('tr-TR')}</span>
                            <div className="text-emerald-600 font-extrabold text-xs">
                              {(listing.price !== null && listing.price !== undefined && Number(listing.price) > 0) ? `${Number(listing.price).toLocaleString('tr-TR')} ₺` : 'Ücretsiz'}
