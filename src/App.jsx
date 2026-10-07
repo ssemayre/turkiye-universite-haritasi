@@ -3082,7 +3082,7 @@ const activeFilterCount = [
     if (!userProfileData.university_name) return;
     const { data, error } = await supabase
       .from('posts')
-      .select('*, profiles(full_name, avatar_url, university_name, department_name)')
+      .select('*, profiles(full_name, avatar_url, university_name, department_name), post_likes(count), post_comments(count)')
       .eq('university_name', userProfileData.university_name)
       .order('created_at', { ascending: false });
       
@@ -3093,11 +3093,19 @@ const activeFilterCount = [
         
         const enhancedData = data.map(post => ({
           ...post,
+          likes_count: post.post_likes?.[0]?.count || 0,
+          comments_count: post.post_comments?.[0]?.count || 0,
           is_liked_by_me: myLikedPostIds.has(post.id)
         }));
         setCampusPosts(enhancedData);
       } else {
-        setCampusPosts(data);
+        const enhancedData = data.map(post => ({
+          ...post,
+          likes_count: post.post_likes?.[0]?.count || 0,
+          comments_count: post.post_comments?.[0]?.count || 0,
+          is_liked_by_me: false
+        }));
+        setCampusPosts(enhancedData);
       }
     }
   };
@@ -3180,7 +3188,6 @@ const activeFilterCount = [
   
   const handleLikePost = async (post) => {
     if (!user) return;
-    const originalPosts = [...campusPosts]; // For rollback
     
     // 1. Veritabanından GERÇEK durumu kontrol et
     const { data: existingLike } = await supabase
@@ -3194,23 +3201,25 @@ const activeFilterCount = [
 
     if (isActuallyLiked) {
       // Zaten beğenilmişse -> SİL
-      setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: Math.max(0, (p.likes_count || 1) - 1), is_liked_by_me: false } : p));
+      setCampusPosts(prev => prev.map(p => p.id === post.id ? { ...p, likes_count: Math.max(0, (p.likes_count || 1) - 1), is_liked_by_me: false } : p));
       
       const { error } = await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_id', user.id);
       if (error) {
         console.error("Like delete error:", error);
         alert("Beğeni geri alınırken hata oluştu: " + error.message);
-        setCampusPosts(originalPosts); // Rollback
+        // Rollback
+        setCampusPosts(prev => prev.map(p => p.id === post.id ? { ...p, likes_count: (p.likes_count || 0) + 1, is_liked_by_me: true } : p));
       }
     } else {
       // Beğenilmemişse -> EKLE
-      setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: (p.likes_count || 0) + 1, is_liked_by_me: true } : p));
+      setCampusPosts(prev => prev.map(p => p.id === post.id ? { ...p, likes_count: (p.likes_count || 0) + 1, is_liked_by_me: true } : p));
       
       const { error } = await supabase.from('post_likes').insert({ post_id: post.id, user_id: user.id });
       if (error) {
         console.error("Like insert error:", error);
         alert("Beğenilirken hata oluştu: " + error.message);
-        setCampusPosts(originalPosts); // Rollback
+        // Rollback
+        setCampusPosts(prev => prev.map(p => p.id === post.id ? { ...p, likes_count: Math.max(0, (p.likes_count || 1) - 1), is_liked_by_me: false } : p));
         return;
       }
       
@@ -3219,13 +3228,10 @@ const activeFilterCount = [
           user_id: post.user_id,
           actor_id: user.id,
           type: 'like',
-          post_id: post.id, // Kullanıcının istediği post_id
+          post_id: post.id,
           content: 'gönderinizi beğendi.'
         });
-        if (notifError) {
-          console.error("Notification insert error:", notifError);
-          alert("Bildirim gönderilirken hata oluştu: " + notifError.message);
-        }
+        if (notifError) console.error("Notification insert error:", notifError);
       }
     }
   };
@@ -3266,7 +3272,7 @@ const activeFilterCount = [
         [postId]: [...(prev[postId] || []), data]
       }));
       setCommentInput(prev => ({ ...prev, [postId]: '' }));
-      setCampusPosts(campusPosts.map(p => p.id === postId ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p));
+      setCampusPosts(prev => prev.map(p => p.id === postId ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p));
       
       if (postOwnerId !== user.id && !isAnon) {
         const { error: notifError } = await supabase.from('notifications').insert({
