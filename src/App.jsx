@@ -3213,7 +3213,12 @@ const activeFilterCount = [
       content: content.trim()
     }).select('*, profiles(full_name, avatar_url)').single();
 
-    if (!error && data) {
+    if (error) {
+      alert('Yorum gönderilemedi: ' + error.message);
+      return;
+    }
+
+    if (data) {
       setPostComments(prev => ({
         ...prev,
         [postId]: [...(prev[postId] || []), data]
