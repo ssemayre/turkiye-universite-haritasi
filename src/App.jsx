@@ -235,6 +235,7 @@ function MapController({ selectedUniversity, focusTarget }) {
 
 import { useAuth } from './AuthContext';
 import { supabase } from './supabaseClient';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Trash2, Flag } from 'lucide-react';
 
 function MapResizer({ isPanelOpen }) {
   const map = useMap();
@@ -3874,12 +3875,72 @@ const submitCampusPost = async () => {
                                       <img src={post.image_url} alt="Gönderi" className="w-full max-h-96 object-contain" />
                                     </div>
                                   )}
-                                  <div className="flex items-center gap-4 mt-2 pt-3 border-t border-white/40">
-                                  <button className="flex items-center gap-1.5 text-slate-500 hover:bg-white/50 transition-colors px-2 py-1 rounded-md text-xs font-medium">
-                                    <span className="text-base">🤍</span> {post.likes_count || 0}
-                                  </button>
+<div className="flex justify-between items-center mt-2 pt-3 border-t border-slate-200/50">
+                                    <div className="flex items-center gap-4">
+                                      <button onClick={() => handleLikePost(post)} className={`flex items-center gap-1.5 transition-colors ${post.is_liked_by_me ? 'text-rose-500' : 'text-slate-500 hover:text-rose-500'}`}>
+                                        <Heart size={18} className={post.is_liked_by_me ? 'fill-rose-500' : ''} />
+                                        <span className="text-sm font-medium">{post.likes_count || 0}</span>
+                                      </button>
+                                      <button onClick={() => toggleComments(post.id)} className="flex items-center gap-1.5 text-slate-500 hover:text-indigo-500 transition-colors">
+                                        <MessageCircle size={18} />
+                                        <span className="text-sm font-medium">{post.comments_count || (postComments[post.id]?.length || 0)}</span>
+                                      </button>
+                                      <button onClick={() => handleSharePost(post.id)} className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-500 transition-colors">
+                                        <Share2 size={18} />
+                                      </button>
+                                    </div>
+                                    <div className="relative">
+                                      <button onClick={() => setActivePostMenu(activePostMenu === post.id ? null : post.id)} className="text-slate-400 hover:text-slate-600 p-1">
+                                        <MoreHorizontal size={20} />
+                                      </button>
+                                      {activePostMenu === post.id && (
+                                        <div className="absolute right-0 bottom-full mb-2 w-36 bg-white border border-slate-100 shadow-xl rounded-xl overflow-hidden z-[2000] py-1 animate-in fade-in zoom-in duration-100">
+                                          {post.user_id === user?.id ? (
+                                            <button onClick={() => handleDeletePost(post.id)} className="w-full text-left px-4 py-2 text-sm text-rose-600 font-semibold hover:bg-rose-50 flex items-center gap-2">
+                                              <Trash2 size={16} /> Sil
+                                            </button>
+                                          ) : (
+                                            <button onClick={() => { alert('Gönderi bildirildi.'); setActivePostMenu(null); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 font-semibold hover:bg-slate-50 flex items-center gap-2">
+                                              <Flag size={16} /> Bildir
+                                            </button>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  {expandedComments[post.id] && (
+                                    <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-3">
+                                      {(postComments[post.id] || []).map(comment => (
+                                        <div key={comment.id} className="flex gap-2">
+                                          {comment.profiles?.avatar_url ? (
+                                            <img src={comment.profiles.avatar_url} className="w-6 h-6 rounded-full object-cover shrink-0 mt-0.5" />
+                                          ) : (
+                                            <div className="w-6 h-6 rounded-full bg-slate-200 shrink-0 mt-0.5"></div>
+                                          )}
+                                          <div className="flex flex-col bg-slate-50/50 rounded-xl rounded-tl-sm px-3 py-2 text-sm border border-slate-100">
+                                            <span className="font-semibold text-slate-800">{comment.profiles?.full_name || 'İsimsiz'}</span>
+                                            <span className="text-slate-600 break-words">{comment.content}</span>
+                                          </div>
+                                        </div>
+                                      ))}
+                                      
+                                      <div className="flex gap-2 items-center mt-1">
+                                        <input 
+                                          type="text" 
+                                          value={commentInput[post.id] || ''} 
+                                          onChange={(e) => setCommentInput(prev => ({ ...prev, [post.id]: e.target.value }))}
+                                          onKeyDown={(e) => { if (e.key === 'Enter') handlePostComment(post.id, post.user_id, post.is_anonymous); }}
+                                          placeholder="Yorum yaz..." 
+                                          className="flex-1 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition-all"
+                                        />
+                                        <button onClick={() => handlePostComment(post.id, post.user_id, post.is_anonymous)} disabled={!(commentInput[post.id] || '').trim()} className="bg-indigo-600 text-white rounded-full p-1.5 shrink-0 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
-                              </div>
                           ))
                         )}
                       </div>
