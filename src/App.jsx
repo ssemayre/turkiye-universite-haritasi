@@ -3085,7 +3085,21 @@ const activeFilterCount = [
       .select('*, profiles(full_name, avatar_url, university_name, department_name)')
       .eq('university_name', userProfileData.university_name)
       .order('created_at', { ascending: false });
-    if (data) setCampusPosts(data);
+      
+    if (data) {
+      if (user) {
+        const { data: myLikes } = await supabase.from('post_likes').select('post_id').eq('user_id', user.id);
+        const myLikedPostIds = new Set((myLikes || []).map(l => l.post_id));
+        
+        const enhancedData = data.map(post => ({
+          ...post,
+          is_liked_by_me: myLikedPostIds.has(post.id)
+        }));
+        setCampusPosts(enhancedData);
+      } else {
+        setCampusPosts(data);
+      }
+    }
   };
 
   const fetchCampusClubs = async () => {
@@ -3166,11 +3180,20 @@ const activeFilterCount = [
   
   const handleLikePost = async (post) => {
     if (!user) return;
-    const isLiked = post.is_liked_by_me;
     const originalPosts = [...campusPosts]; // For rollback
     
-    if (isLiked) {
-      // Optimistic UI Un-Like
+    // 1. Veritabanından GERÇEK durumu kontrol et
+    const { data: existingLike } = await supabase
+      .from('post_likes')
+      .select('id')
+      .eq('post_id', post.id)
+      .eq('user_id', user.id)
+      .maybeSingle();
+      
+    const isActuallyLiked = !!existingLike;
+
+    if (isActuallyLiked) {
+      // Zaten beğenilmişse -> SİL
       setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: Math.max(0, (p.likes_count || 1) - 1), is_liked_by_me: false } : p));
       
       const { error } = await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_id', user.id);
@@ -3180,7 +3203,7 @@ const activeFilterCount = [
         setCampusPosts(originalPosts); // Rollback
       }
     } else {
-      // Optimistic UI Like
+      // Beğenilmemişse -> EKLE
       setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: (p.likes_count || 0) + 1, is_liked_by_me: true } : p));
       
       const { error } = await supabase.from('post_likes').insert({ post_id: post.id, user_id: user.id });
@@ -3196,7 +3219,7 @@ const activeFilterCount = [
           user_id: post.user_id,
           actor_id: user.id,
           type: 'like',
-          post_id: post.id,
+          post_id: post.id, // Kullanıcının istediği post_id
           content: 'gönderinizi beğendi.'
         });
         if (notifError) {
