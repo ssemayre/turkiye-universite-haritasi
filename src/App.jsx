@@ -3167,24 +3167,42 @@ const activeFilterCount = [
   const handleLikePost = async (post) => {
     if (!user) return;
     const isLiked = post.is_liked_by_me;
+    const originalPosts = [...campusPosts]; // For rollback
     
     if (isLiked) {
-      // Unlike
-      await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_id', user.id);
+      // Optimistic UI Un-Like
       setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: Math.max(0, (p.likes_count || 1) - 1), is_liked_by_me: false } : p));
+      
+      const { error } = await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_id', user.id);
+      if (error) {
+        console.error("Like delete error:", error);
+        alert("Beğeni geri alınırken hata oluştu: " + error.message);
+        setCampusPosts(originalPosts); // Rollback
+      }
     } else {
-      // Like
-      await supabase.from('post_likes').insert({ post_id: post.id, user_id: user.id });
+      // Optimistic UI Like
       setCampusPosts(campusPosts.map(p => p.id === post.id ? { ...p, likes_count: (p.likes_count || 0) + 1, is_liked_by_me: true } : p));
       
+      const { error } = await supabase.from('post_likes').insert({ post_id: post.id, user_id: user.id });
+      if (error) {
+        console.error("Like insert error:", error);
+        alert("Beğenilirken hata oluştu: " + error.message);
+        setCampusPosts(originalPosts); // Rollback
+        return;
+      }
+      
       if (post.user_id !== user.id && !post.is_anonymous) {
-        await supabase.from('notifications').insert({
-          receiver_id: post.user_id,
+        const { error: notifError } = await supabase.from('notifications').insert({
+          user_id: post.user_id,
           actor_id: user.id,
           type: 'like',
           post_id: post.id,
           content: 'gönderinizi beğendi.'
         });
+        if (notifError) {
+          console.error("Notification insert error:", notifError);
+          alert("Bildirim gönderilirken hata oluştu: " + notifError.message);
+        }
       }
     }
   };
@@ -3214,6 +3232,7 @@ const activeFilterCount = [
     }).select('*, profiles(full_name, avatar_url)').single();
 
     if (error) {
+      console.error("Comment insert error:", error);
       alert('Yorum gönderilemedi: ' + error.message);
       return;
     }
@@ -3227,13 +3246,17 @@ const activeFilterCount = [
       setCampusPosts(campusPosts.map(p => p.id === postId ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p));
       
       if (postOwnerId !== user.id && !isAnon) {
-        await supabase.from('notifications').insert({
-          receiver_id: postOwnerId,
+        const { error: notifError } = await supabase.from('notifications').insert({
+          user_id: postOwnerId,
           actor_id: user.id,
           type: 'comment',
           post_id: postId,
           content: 'gönderinize yorum yaptı.'
         });
+        if (notifError) {
+          console.error("Notification insert error (comment):", notifError);
+          alert("Bildirim gönderilirken hata oluştu: " + notifError.message);
+        }
       }
     }
   };
