@@ -26,7 +26,6 @@ import {
 import "./App.css";
 
 import campusData from "./data/campuses.json";
-import kykData from "./data/kyk-yurtlari.json";
 
 // ==================================================
 // LEAFLET
@@ -252,21 +251,51 @@ function App() {
   const { user, openAuthModal, signOut } = useAuth();
   
   const [universities, setUniversities] = useState([]);
+  const [kykDorms, setKykDorms] = useState([]);
 
   useEffect(() => {
-    const fetchUniversities = async () => {
-      const { data, error } = await supabase.from('universities').select('id, name, lat, lng, type, city, history, website, instagram_url, x_url, linkedin_url, parent_id');
-      if (error) {
-        console.error("Error fetching universities:", error);
-      } else if (data) {
-        setUniversities(data.map(u => ({
-          ...u,
-          latitude: u.lat,
-          longitude: u.lng
+    const fetchCampusesAndDorms = async () => {
+      // 1. Fetch Campuses (mapped to universities state to avoid breaking existing UI)
+      const { data: campusData, error: campusError } = await supabase
+        .from('campuses')
+        .select('id, name, lat, lng, address, institution_id, institutions(name, type, logo_url, website, city)');
+        
+      if (campusError) {
+        console.error("Error fetching campuses:", campusError);
+      } else if (campusData) {
+        setUniversities(campusData.map(c => ({
+          id: c.id,
+          institution_id: c.institution_id,
+          // If it's main campus, just show Uni name, else Uni name - Campus name
+          name: c.name.toLowerCase().includes('merkez') ? c.institutions.name : `${c.institutions.name} - ${c.name}`,
+          originalUniName: c.institutions.name,
+          campusName: c.name,
+          lat: c.lat,
+          lng: c.lng,
+          latitude: c.lat,
+          longitude: c.lng,
+          type: c.institutions.type,
+          city: c.address || c.institutions.city,
+          website: c.institutions.website,
+          logo_url: c.institutions.logo_url,
+          // parent_id used by UI to differentiate main campuses from sub-campuses
+          parent_id: c.name.toLowerCase().includes('merkez') ? null : c.institution_id
         })));
       }
+
+      // 2. Fetch KYK Dorms
+      const { data: dormData, error: dormError } = await supabase
+        .from('dorms')
+        .select('*')
+        .eq('type', 'KYK');
+        
+      if (dormError) {
+        console.error("Error fetching dorms:", dormError);
+      } else if (dormData) {
+        setKykDorms(dormData);
+      }
     };
-    fetchUniversities();
+    fetchCampusesAndDorms();
   }, []);
   
   // ── SOSYAL KATMAN ──────────────────────────────────────────
@@ -341,60 +370,39 @@ function App() {
   }, [selectedSubCampus?.id]);
 
   const fetchCampusPrograms = async () => {
-    if (!selectedSubCampus) return;
-    setIsFetchingCampusPrograms(true);
-    if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
-    
-    // 1. Önce tıklanan üniversitenin GERÇEK Supabase ID'sini bulalım (İsme göre)
-    const uniName = selectedSubCampus.universityName || selectedSubCampus.name;
-    const { data: realUniInfo, error: uniError } = await supabase
-      .from('universiteler')
-      .select('id')
-      .ilike('isim', `%${uniName.replace(/\([^)]*\)/g, '').trim()}%`) // Parantezleri silip isme göre arıyoruz
-      .single();
-
-    if (uniError || !realUniInfo) {
-       console.error("Supabase'de bu üniversite bulunamadı:", uniName);
-       setIsFetchingCampusPrograms(false);
-       if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
-       return;
-    }
-
-    const realSupabaseUniId = realUniInfo.id;
-
-    // 2. Şimdi bu GERÇEK ID ile bölümleri çek
-    const { data: bolumData, error: bolumError } = await supabase
-      .from('bolumler').select('id, universite_id, isim, fakulte, puan, siralama, kontenjan')
-      .eq('universite_id', realSupabaseUniId);
-    
-    if (bolumData) {
-      setCampusPrograms(bolumData);
-    } else if (bolumError) {
-      console.error('Bölümler çekilirken hata:', bolumError);
-    }
-
-    // 3. MYO'ları Çek
-      const { data: myoData, error: myoError } = await supabase
-        .from('myolar').select('id, universite_id, isim, lat, lng, ilce')
-        .eq('universite_id', realSupabaseUniId);
-        
-      if (myoData) {
-        setActiveRelatedMyos(myoData.map(m => ({
-           ...m,
-           id: m.id,
-           name: m.isim,
-           type: m.tip || m.tipi || 'Meslek Yüksekokulu',
-           latitude: m.lat,
-           longitude: m.lng,
-           district: m.ilce
-        })));
-      } else if (myoError) {
-        console.error('MYOlar çekilirken hata:', myoError);
+      if (!selectedSubCampus) return;
+      setIsFetchingCampusPrograms(true);
+      if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
+      
+      // NEW LOGIC: Fetch directly from 'programs' using campus_id or institution_id
+      const { data: progData, error: progError } = await supabase
+        .from('programs')
+        .select('id, name as isim, faculty as fakulte, degree_level, duration')
+        .eq('campus_id', selectedSubCampus.id);
+      
+      if (progData) {
+        setCampusPrograms(progData);
+      } else if (progError) {
+        console.error('Bölümler çekilirken hata:', progError);
       }
-
+  
+      // Extract MYOs from the global universities state instead of fetching from old 'myolar' table
+      const activeMyos = universities.filter(u => 
+        u.institution_id === selectedSubCampus.institution_id && 
+        u.parent_id !== null && 
+        u.id !== selectedSubCampus.id
+      );
+      
+      setActiveRelatedMyos(activeMyos.map(m => ({
+         ...m,
+         isim: m.campusName || m.name,
+         tip: 'Meslek Yüksekokulu',
+         ilce: m.city
+      })));
+  
       setIsFetchingCampusPrograms(false);
       if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
-  };
+    };
 
   // Reviews Fetch
   useEffect(() => {
@@ -3744,12 +3752,12 @@ const submitCampusPost = async () => {
                 showCoverageOnHover={false}
                 zoomToBoundsOnClick={true}
               >
-              {kykData
-                .filter(kyk => kykGenderFilter === "Tümü" || kyk.gender === kykGenderFilter)
+              {kykDorms
+                  .filter(kyk => kykGenderFilter === "Tümü" || kyk.gender === kykGenderFilter)
                 .map(kyk => (
                   <Marker
                     key={`kyk-${kyk.id}`}
-                    position={[kyk.coordinates.lat, kyk.coordinates.lng]}
+                    position={[kyk.lat, kyk.lng]}
                     icon={kyk.gender === "Kız" ? kykKizIcon : kykErkekIcon}
                     eventHandlers={{ click: () => setSelectedKyk(kyk) }}
                   >
