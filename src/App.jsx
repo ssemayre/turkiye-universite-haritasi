@@ -5805,7 +5805,7 @@ const submitCampusPost = async () => {
                 ) : (
                   <div className="flex flex-col">
                     {notifications.map((notif, idx) => (
-                      <div key={idx} onClick={() => { setNotificationsOpen(false); setMessagesOpen(true); }} className={`flex items-start gap-4 p-4 mx-2 my-1 rounded-2xl hover:bg-slate-100/50 cursor-pointer active:scale-[0.98] transition-all ${!notif.is_read ? 'bg-indigo-50/50' : ''}`}>
+                      <div key={idx} onClick={() => handleNotificationClick(notif)} className={`flex items-start gap-4 p-4 mx-2 my-1 rounded-2xl hover:bg-slate-100/50 cursor-pointer active:scale-[0.98] transition-all ${!notif.is_read ? 'bg-indigo-50/50' : ''}`}>
                         {notif.actorProfile?.avatar_url ? (
                           <img src={notif.actorProfile.avatar_url} className="w-10 h-10 rounded-full object-cover shadow-sm shrink-0" />
                         ) : (
