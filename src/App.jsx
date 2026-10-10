@@ -1239,6 +1239,19 @@ function App() {
     setMessagesOpen(false);
     setNotificationsOpen(false);
     setBrowseOpen(true);
+    
+    // Dynamic tab routing based on role
+    const userRole = (userProfileData?.role || userProfileData?.education_status || '').toLowerCase();
+    const isAlumni = ['alumni', 'mezun'].includes(userRole);
+    const isCandidate = ['candidate', 'lise', 'aday'].includes(userRole) || !userProfileData?.university_name;
+    
+    if (isCandidate) {
+      setCampusTab('tutors');
+    } else if (isAlumni) {
+      setCampusTab('career');
+    } else {
+      setCampusTab('feed');
+    }
   };
 
   const openMessages = () => {
@@ -3079,14 +3092,18 @@ const [campusListings, setCampusListings] = useState([]);
   };
 
     const fetchTutors = async () => {
-    if (!userProfileData.university_name) return;
-    const { data, error } = await supabase
-      .from('tutors')
-      .select('*, profiles(full_name, avatar_url, university_name, department_name)')
-      .eq('university_name', userProfileData.university_name)
-      .order('created_at', { ascending: false });
-    if (data) setTutors(data);
-  };
+      let query = supabase
+        .from('tutors')
+        .select('*, profiles(full_name, avatar_url, university_name, department_name)')
+        .order('created_at', { ascending: false });
+        
+      const userRole = (userProfileData?.role || userProfileData?.education_status || '').toLowerCase();
+      const isCandidate = ['candidate', 'lise', 'aday'].includes(userRole) || !userProfileData?.university_name;
+      
+      // Öğrenci ise öncelikli olarak kendi üniversitesini görebilir veya herkesi görebilir. Biz global yapalım, filtreleme var zaten.
+      const { data, error } = await query;
+      if (data) setTutors(data);
+    };
 
   const submitTutorForm = async () => {
     if (!tutorFormData.subject || !tutorFormData.hourly_rate) {
@@ -3886,14 +3903,33 @@ const submitCampusPost = async () => {
                     Üniversite Kampüsü
                   </span>
                   
-                  {user && userProfileData.university_name && (
-                    <div className="flex w-full bg-black/5 backdrop-blur-md p-1 rounded-xl mt-5">
-                      <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'feed' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Akış</button>
-                      <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'confessions' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>İtiraflar</button>
-                      <button onClick={() => setCampusTab('clubs')} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'clubs' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Kulüpler</button>
-                      <button onClick={() => setCampusTab('listings')} className={`flex-1 text-center py-2 text-sm font-medium rounded-xl transition-all ${campusTab === 'listings' ? 'bg-white shadow-md text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Pano</button>
-                    </div>
-                  )}
+                  {user && (userProfileData.university_name || ['candidate', 'lise', 'aday'].includes((userProfileData?.education_status || '').toLowerCase())) && (() => {
+                      const userRole = (userProfileData?.role || userProfileData?.education_status || '').toLowerCase();
+                      const isAlumni = ['alumni', 'mezun'].includes(userRole);
+                      const isCandidate = ['candidate', 'lise', 'aday'].includes(userRole) || !userProfileData?.university_name;
+                      
+                      return (
+                      <div className="flex w-full bg-black/5 backdrop-blur-md p-1 rounded-xl mt-5 overflow-x-auto hide-scrollbar gap-1">
+                        {!isAlumni && !isCandidate && (
+                          <>
+                            <button onClick={() => { setCampusTab('feed'); setIsAnonymousPost(false); }} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'feed' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Akış</button>
+                            <button onClick={() => { setCampusTab('confessions'); setIsAnonymousPost(true); }} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'confessions' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>İtiraflar</button>
+                            <button onClick={() => setCampusTab('clubs')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'clubs' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Kulüpler</button>
+                          </>
+                        )}
+                        
+                        {(!isCandidate) && (
+                          <button onClick={() => setCampusTab('career')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'career' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Kariyer & Mezun</button>
+                        )}
+                        
+                        <button onClick={() => setCampusTab('tutors')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'tutors' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Özel Ders</button>
+                        
+                        {!isCandidate && (
+                          <button onClick={() => setCampusTab('listings')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'listings' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Pano</button>
+                        )}
+                      </div>
+                      );
+                    })()}
                 </div>
 
                 <div className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']" style={{ flex: 1, background: 'transparent' }}>
@@ -3904,14 +3940,13 @@ const submitCampusPost = async () => {
                       <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüsünüzdeki gönderileri görmek ve paylaşım yapmak için lütfen giriş yapın.</p>
                       <button onClick={openAuthModal} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Giriş Yap</button>
                     </div>
-                  ) : !userProfileData.university_name ? (
-                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                      <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎓</div>
-                      <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Üniversitenizi Belirleyin</h3>
-                      <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
-                      <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
-                      
-                    </div>
+                  ) : (!userProfileData.university_name && campusTab !== 'tutors') ? (
+                      <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                        <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎓</div>
+                        <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Üniversitenizi Belirleyin</h3>
+                        <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
+                        <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
+                      </div>
                   ) : (campusTab === 'feed' || campusTab === 'confessions') ? (
                     <>
                       {campusTab === 'feed' && dailyMenu && (
