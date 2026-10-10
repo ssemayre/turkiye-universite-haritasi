@@ -1246,7 +1246,7 @@ function App() {
     const isCandidate = ['candidate', 'lise', 'aday'].includes(userRole) || !userProfileData?.university_name;
     
     if (isCandidate) {
-      setCampusTab('tutors');
+      setCampusTab('candidate_feed');
     } else if (isAlumni) {
       setCampusTab('career');
     } else {
@@ -2915,6 +2915,7 @@ const activeFilterCount = [
 ].filter(Boolean).length;
   // --- KAMPÜS FEED YAPISI ---
   const [campusPosts, setCampusPosts] = useState([]);
+  const [tutorPosts, setTutorPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostImage, setNewPostImage] = useState(null);
   const [isAnonymousPost, setIsAnonymousPost] = useState(false);
@@ -3091,7 +3092,12 @@ const [campusListings, setCampusListings] = useState([]);
     else setDailyMenu(null);
   };
 
-    const fetchTutors = async () => {
+    const fetchTutorPosts = async () => {
+    const { data } = await supabase.from('tutor_posts').select('*, profiles(full_name, avatar_url, university_name, department_name)').order('created_at', { ascending: false });
+    if (data) setTutorPosts(data);
+  };
+  
+  const fetchTutors = async () => {
       let query = supabase
         .from('tutors')
         .select('*, profiles(full_name, avatar_url, university_name, department_name)')
@@ -3149,12 +3155,21 @@ const fetchCampusListings = async () => {
   };
 
   const fetchCampusPosts = async () => {
-    if (!userProfileData.university_name) return;
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, profiles(full_name, avatar_url, university_name, department_name), post_likes(count), post_comments(count)')
-      .eq('university_name', userProfileData.university_name)
-      .order('created_at', { ascending: false });
+      const isCandidate = ['candidate', 'lise', 'aday'].includes((userProfileData?.role || userProfileData?.education_status || '').toLowerCase()) || !userProfileData?.university_name;
+      if (!userProfileData.university_name && !isCandidate) return;
+
+      let query = supabase
+        .from('posts')
+        .select('*, profiles(full_name, avatar_url, university_name, department_name), post_likes(count), post_comments(count)')
+        .order('created_at', { ascending: false });
+
+      if (isCandidate) {
+        query = query.eq('category', 'candidate');
+      } else {
+        query = query.eq('university_name', userProfileData.university_name);
+      }
+      
+      const { data, error } = await query;
       
     if (data) {
       if (user) {
@@ -3190,12 +3205,13 @@ const fetchCampusListings = async () => {
   };
 
   useEffect(() => {
-    if (browseOpen && userProfileData.university_name) {
+    if (browseOpen && (userProfileData.university_name || ['candidate', 'lise', 'aday'].includes((userProfileData?.education_status || '').toLowerCase()))) {
       fetchCampusPosts();
-      fetchCampusClubs();
-      fetchCampusListings();
-      fetchDailyMenu();
-      fetchTutors();
+        fetchCampusClubs();
+        fetchCampusListings();
+        fetchDailyMenu();
+        fetchTutors();
+        fetchTutorPosts();
     }
   }, [browseOpen, userProfileData.university_name]);
 
@@ -3441,7 +3457,7 @@ const submitCampusPost = async () => {
         university_name: userProfileData.university_name,
         content: finalContent,
         is_anonymous: (campusTab === 'confessions' || campusTab === 'career') ? isAnonymousPost : false,
-        category: campusTab === 'confessions' ? 'confessions' : (campusTab === 'career' ? 'career' : 'feed'),
+        category: campusTab === 'confessions' ? 'confessions' : (campusTab === 'career' ? 'career' : (campusTab === 'candidate_feed' ? 'candidate' : 'feed')),
       image_url: imageUrl
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
     
@@ -3897,11 +3913,11 @@ const submitCampusPost = async () => {
                   </button>
                   
                   <h2 className="text-xl font-extrabold text-slate-900 text-center drop-shadow-sm">
-                    {userProfileData.university_name || 'Kampüs'}
-                  </h2>
-                  <span className="text-sm font-semibold text-slate-700 mt-1">
-                    Üniversite Kampüsü
-                  </span>
+                      {['candidate', 'lise', 'aday'].includes((userProfileData?.role || userProfileData?.education_status || '').toLowerCase()) ? 'Aday Panosu' : (userProfileData.university_name || 'Kampüs')}
+                    </h2>
+                    <span className="text-sm font-semibold text-slate-700 mt-1">
+                      {['candidate', 'lise', 'aday'].includes((userProfileData?.role || userProfileData?.education_status || '').toLowerCase()) ? 'YKS & Üniversite Hazırlık' : 'Üniversite Kampüsü'}
+                    </span>
                   
                   {user && (userProfileData.university_name || ['candidate', 'lise', 'aday'].includes((userProfileData?.education_status || '').toLowerCase())) && (() => {
                       const userRole = (userProfileData?.role || userProfileData?.education_status || '').toLowerCase();
@@ -3922,7 +3938,15 @@ const submitCampusPost = async () => {
                           <button onClick={() => setCampusTab('career')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'career' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Kariyer & Mezun</button>
                         )}
                         
+                        {isCandidate && (
+                          <button onClick={() => { setCampusTab('candidate_feed'); setIsAnonymousPost(false); }} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'candidate_feed' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Aday Akışı</button>
+                        )}
+                        
                         <button onClick={() => setCampusTab('tutors')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'tutors' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Özel Ders</button>
+                        
+                        {isCandidate && (
+                          <button onClick={() => setCampusTab('guidance')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'guidance' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Rehberlik & Taktik</button>
+                        )}
                         
                         {!isCandidate && (
                           <button onClick={() => setCampusTab('listings')} className={`shrink-0 px-4 py-2 text-sm font-bold rounded-xl transition-all shadow-sm ${campusTab === 'listings' ? 'bg-white text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Pano</button>
@@ -3947,7 +3971,7 @@ const submitCampusPost = async () => {
                         <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
                         <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
                       </div>
-                  ) : (campusTab === 'feed' || campusTab === 'confessions') ? (
+                  ) : (['feed', 'confessions', 'career', 'candidate_feed'].includes(campusTab)) ? (
                     <>
                       {campusTab === 'feed' && dailyMenu && (
                         <div style={{ background: '#ecfdf5', borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px', border: '1px solid #d1fae5', marginBottom: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
@@ -3968,7 +3992,7 @@ const submitCampusPost = async () => {
                           <textarea
                             value={newPostContent}
                             onChange={(e) => setNewPostContent(e.target.value)}
-                            placeholder={campusTab === 'confessions' ? "İçindekileri dök, tamamen anonimsin..." : "Kampüste neler oluyor?"}
+                            placeholder={campusTab === 'confessions' ? "İçindekileri dök, tamamen anonimsin..." : (campusTab === 'career' ? 'Kariyer ve mülakat deneyimlerini paylaş...' : (campusTab === 'candidate_feed' ? 'YKS çalışmaların nasıl gidiyor?' : 'Kampüste neler oluyor?'))}
                             className="w-full bg-transparent resize-none outline-none text-sm text-slate-800 placeholder:text-slate-500"
                             style={{ minHeight: '60px' }}
                           />
@@ -4022,7 +4046,8 @@ const submitCampusPost = async () => {
                         {campusPosts.filter(post => {
                           const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
                             if (campusTab === 'career') return postCat === 'career' && (careerTagFilter === 'Tümü' || (post.content && post.content.includes(careerTagFilter)));
-                            return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
+                              if (campusTab === 'candidate_feed') return postCat === 'candidate';
+                              return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
                         }).length === 0 ? (
                           <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b' }}>
                             <div style={{ fontSize: '32px', marginBottom: '8px' }}>📝</div>
@@ -4032,7 +4057,8 @@ const submitCampusPost = async () => {
                           campusPosts.filter(post => {
                             const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
                             if (campusTab === 'career') return postCat === 'career' && (careerTagFilter === 'Tümü' || (post.content && post.content.includes(careerTagFilter)));
-                            return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
+                              if (campusTab === 'candidate_feed') return postCat === 'candidate';
+                              return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
                           }).map(post => (
                               <div id={`post-${post.id}`} key={post.id} className="campus-post-card flex flex-col p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm mb-3 mx-4" style={{ transition: 'background-color 1.5s ease' }}>
                                 <div className="flex items-center gap-3 mb-2">
@@ -4179,7 +4205,44 @@ const submitCampusPost = async () => {
                         )}
                       </div>
                     </>
-                  ) : campusTab === 'clubs' ? (
+                  ) : campusTab === 'guidance' ? (
+                      <div className="campus-guidance flex flex-col pb-4 px-2">
+                        {tutorPosts.length === 0 ? (
+                          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+                            <div style={{ fontSize: '40px', marginBottom: '16px' }}>📚</div>
+                            <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Henüz İçerik Yok</h3>
+                            <p style={{ fontSize: '14px' }}>Eğitmenlerimiz yakında hap notlar ve taktikler paylaşacak!</p>
+                          </div>
+                        ) : (
+                          tutorPosts.map(tPost => (
+                            <div key={tPost.id} className="bg-white/70 backdrop-blur-md rounded-2xl p-4 mb-3 border border-indigo-100 shadow-sm mx-2">
+                              <div className="flex items-center gap-3 mb-3">
+                                {tPost.profiles?.avatar_url ? (
+                                  <img src={tPost.profiles.avatar_url} alt="Eğitmen" className="w-10 h-10 rounded-full object-cover" />
+                                ) : (
+                                  <div className="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold">👨‍🏫</div>
+                                )}
+                                <div>
+                                  <div className="font-bold text-sm text-slate-800">{tPost.profiles?.full_name || 'Eğitmen'}</div>
+                                  <div className="text-xs text-slate-500">Rehberlik & Taktik</div>
+                                </div>
+                              </div>
+                              <p className="text-sm text-slate-700 whitespace-pre-wrap">{tPost.content}</p>
+                              {tPost.video_url && (
+                                <div className="mt-3">
+                                  <a href={tPost.video_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors">
+                                    ▶️ Videoyu İzle
+                                  </a>
+                                </div>
+                              )}
+                              {tPost.image_url && (
+                                <img src={tPost.image_url} alt="Hap Not" className="mt-3 rounded-xl w-full object-cover border border-slate-200" style={{ maxHeight: '250px' }} />
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    ) : campusTab === 'clubs' ? (
                     <div className="campus-clubs flex flex-col pb-4">
                       {campusClubs.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
