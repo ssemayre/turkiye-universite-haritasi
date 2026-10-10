@@ -2911,7 +2911,12 @@ const activeFilterCount = [
   const [selectedClub, setSelectedClub] = useState(null);
   const [clubEvents, setClubEvents] = useState([]);
   
-  const [campusListings, setCampusListings] = useState([]);
+    const [tutors, setTutors] = useState([]);
+  const [tutorFormOpen, setTutorFormOpen] = useState(false);
+  const [tutorFormData, setTutorFormData] = useState({ subject: '', hourly_rate: '', format: 'İkisi de' });
+  const [tutorSubjectFilter, setTutorSubjectFilter] = useState('');
+  const [tutorFormatFilter, setTutorFormatFilter] = useState('');
+const [campusListings, setCampusListings] = useState([]);
   const [dailyMenu, setDailyMenu] = useState(null);
   const [isListingModalOpen, setIsListingModalOpen] = useState(false);
   const [listingCategory, setListingCategory] = useState('');
@@ -3071,7 +3076,50 @@ const activeFilterCount = [
     else setDailyMenu(null);
   };
 
-  const fetchCampusListings = async () => {
+    const fetchTutors = async () => {
+    if (!userProfileData.university_name) return;
+    const { data, error } = await supabase
+      .from('tutors')
+      .select('*, profiles(full_name, avatar_url, university_name, department_name)')
+      .eq('university_name', userProfileData.university_name)
+      .order('created_at', { ascending: false });
+    if (data) setTutors(data);
+  };
+
+  const submitTutorForm = async () => {
+    if (!tutorFormData.subject || !tutorFormData.hourly_rate) {
+      alert("Lütfen branş ve ücret alanlarını doldurun.");
+      return;
+    }
+    const { data: existing } = await supabase.from('tutors').select('id').eq('user_id', user.id).maybeSingle();
+    
+    let res;
+    if (existing) {
+      res = await supabase.from('tutors').update({
+        subject: tutorFormData.subject,
+        hourly_rate: tutorFormData.hourly_rate,
+        format: tutorFormData.format
+      }).eq('user_id', user.id);
+    } else {
+      res = await supabase.from('tutors').insert({
+        user_id: user.id,
+        university_name: userProfileData.university_name,
+        subject: tutorFormData.subject,
+        hourly_rate: tutorFormData.hourly_rate,
+        format: tutorFormData.format
+      });
+    }
+    
+    if (res.error) {
+      alert("Hata: " + res.error.message);
+    } else {
+      alert("Eğitmen profiliniz başarıyla güncellendi!");
+      setTutorFormOpen(false);
+      fetchTutors();
+    }
+  };
+
+const fetchCampusListings = async () => {
     if (!userProfileData.university_name) return;
     const { data, error } = await supabase
       .from('listings')
@@ -3128,6 +3176,7 @@ const activeFilterCount = [
       fetchCampusClubs();
       fetchCampusListings();
       fetchDailyMenu();
+      fetchTutors();
     }
   }, [browseOpen, userProfileData.university_name]);
 
@@ -3848,6 +3897,7 @@ const submitCampusPost = async () => {
                       <h3 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>Üniversitenizi Belirleyin</h3>
                       <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '16px' }}>Kampüs akışına katılmak için Profilim sekmesinden okuduğunuz veya mezun olduğunuz üniversiteyi seçmelisiniz.</p>
                       <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Profilimi Düzenle</button>
+                      <button onClick={() => setTutorFormOpen(true)} style={{ background: '#8b5cf6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', marginLeft: '10px' }}>Eğitmen Modu</button>
                     </div>
                   ) : (campusTab === 'feed' || campusTab === 'confessions') ? (
                     <>
