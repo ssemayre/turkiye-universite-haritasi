@@ -911,6 +911,9 @@ function App() {
             bio: data.bio || prev.bio,
             education_status: data.education_status || prev.education_status,
             university_name: data.university_name || prev.university_name,
+              university_id: data.university_id || prev.university_id,
+              university_id: data.university_id || prev.university_id,
+              university_id: data.university_id || prev.university_id,
             department_name: data.department_name || prev.department_name,
             targetRank: data.target_rank || prev.targetRank,
             targetScore: data.target_score || prev.targetScore,
@@ -4010,14 +4013,33 @@ const submitCampusPost = async () => {
         const isQuestion = post.category === 'question' || post.category === 'questions';
         const userRole = (userProfileData.role || userProfileData.education_status || '').toLowerCase();
         const hasValidRole = ['student', 'alumni', 'öğrenci', 'mezun', 'ogrenci'].includes(userRole);
-        const isSameUniversity = userProfileData.university_name === post.university_name;
+        
+        // Strict matching based on ID if available, otherwise fallback to Name
+        const hasUniversity = !!(userProfileData.university_id || userProfileData.university_name);
+        const isSameUniversity = (userProfileData.university_id && post.university_id)
+            ? String(userProfileData.university_id) === String(post.university_id)
+            : userProfileData.university_name === post.university_name;
+            
+        if (isQuestion && !hasUniversity) {
+            return (
+              <div className="flex gap-2 items-center mt-1 w-full flex-col">
+                <div className="w-full text-center py-2 px-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-semibold">
+                  Cevap verebilmek için önce profilinizden üniversitenizi seçmelisiniz.
+                </div>
+                <button onClick={() => { setBrowseOpen(false); setPreferenceOpen(true); }} className="text-xs bg-indigo-600 text-white px-4 py-2 mt-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-sm">
+                  Profilime Git
+                </button>
+              </div>
+            );
+        }
+
         const canCommentOnQuestion = !isQuestion || (hasValidRole && isSameUniversity);
         
         return (
           <div className="flex gap-2 items-center mt-1 w-full">
             {!canCommentOnQuestion ? (
               <div className="w-full text-center py-2 px-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-semibold">
-                Bu soruyu yalnızca ilgili üniversitenin öğrencileri ve mezunları yanıtlayabilir.
+                Bu soruya yalnızca bu üniversitenin öğrencileri ve mezunları cevap verebilir.
               </div>
             ) : (
               <>
