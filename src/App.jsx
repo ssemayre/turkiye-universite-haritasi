@@ -4006,19 +4006,37 @@ const submitCampusPost = async () => {
                                         </div>
                                       ))}
                                       
-                                      <div className="flex gap-2 items-center mt-1">
-                                        <input 
-                                          type="text" 
-                                          value={commentInput[post.id] || ''} 
-                                          onChange={(e) => setCommentInput(prev => ({ ...prev, [post.id]: e.target.value }))}
-                                          onKeyDown={(e) => { if (e.key === 'Enter') handlePostComment(post.id, post.user_id, post.is_anonymous); }}
-                                          placeholder="Yorum yaz..." 
-                                          className="flex-1 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition-all"
-                                        />
-                                        <button onClick={() => handlePostComment(post.id, post.user_id, post.is_anonymous)} disabled={!(commentInput[post.id] || '').trim()} className="bg-indigo-600 text-white rounded-full p-1.5 shrink-0 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                                        </button>
-                                      </div>
+                                      {(() => {
+        const isQuestion = post.category === 'question' || post.category === 'questions';
+        const userRole = (userProfileData.role || userProfileData.education_status || '').toLowerCase();
+        const hasValidRole = ['student', 'alumni', 'öğrenci', 'mezun', 'ogrenci'].includes(userRole);
+        const isSameUniversity = userProfileData.university_name === post.university_name;
+        const canCommentOnQuestion = !isQuestion || (hasValidRole && isSameUniversity);
+        
+        return (
+          <div className="flex gap-2 items-center mt-1 w-full">
+            {!canCommentOnQuestion ? (
+              <div className="w-full text-center py-2 px-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-xs font-semibold">
+                Bu soruyu yalnızca ilgili üniversitenin öğrencileri ve mezunları yanıtlayabilir.
+              </div>
+            ) : (
+              <>
+                <input 
+                  type="text" 
+                  value={commentInput[post.id] || ''} 
+                  onChange={(e) => setCommentInput(prev => ({ ...prev, [post.id]: e.target.value }))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handlePostComment(post.id, post.user_id, post.is_anonymous); }}
+                  placeholder="Yorum yaz..." 
+                  className="flex-1 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition-all"
+                />
+                <button onClick={() => handlePostComment(post.id, post.user_id, post.is_anonymous)} disabled={!(commentInput[post.id] || '').trim()} className="bg-indigo-600 text-white rounded-full p-1.5 shrink-0 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                </button>
+              </>
+            )}
+          </div>
+        );
+    })()}
                                     </div>
                                   )}
                                 </div>
