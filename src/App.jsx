@@ -3999,7 +3999,21 @@ const submitCampusPost = async () => {
                             placeholder={campusTab === 'confessions' ? "İçindekileri dök, tamamen anonimsin..." : (campusTab === 'career' ? 'Kariyer ve mülakat deneyimlerini paylaş...' : (campusTab === 'candidate_feed' ? 'YKS çalışmaların nasıl gidiyor?' : (campusTab === 'alumni_feed' ? 'Mezun ağınla ne paylaşmak istersin?' : 'Kampüste neler oluyor?')))}
                             className="w-full bg-transparent resize-none outline-none text-sm text-slate-800 placeholder:text-slate-500"
                             style={{ minHeight: '60px' }}
-                          />
+                            />
+                            {campusTab === 'career' && (
+                                <div className="flex gap-2 w-full mt-3 overflow-x-auto pb-2 px-1 hide-scrollbar">
+                                  {['#MülakatDeneyimi', '#İlkİş', '#Referans', '#SektörSorusu'].map(tag => (
+                                    <button 
+                                      key={tag}
+                                      onClick={() => setNewPostCareerTag(tag)}
+                                      className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shadow-sm ${newPostCareerTag === tag ? 'bg-indigo-100 border-indigo-300 text-indigo-700' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                                    >
+                                      {tag}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            
                           <div className="flex items-center w-full mt-2 pt-2 border-t border-white/40">
                             {(campusTab === 'confessions' || campusTab === 'career') && (
                                 <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-500 mr-auto font-medium bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
@@ -6217,19 +6231,7 @@ const submitCampusPost = async () => {
                     <div>
                       <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Hakkımda / İlgi Alanlarım</label>
                       <textarea value={userProfileData.bio} onChange={(e) => updateProfileData('bio', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', minHeight: '80px', resize: 'vertical', outline: 'none' }} placeholder="Kendinizi ve ilgi alanlarınızı kısaca anlatın..."></textarea>
-                            {campusTab === 'career' && (
-                              <div className="flex gap-2 w-full mt-3 overflow-x-auto pb-2 px-1 hide-scrollbar">
-                                {['#MülakatDeneyimi', '#İlkİş', '#Referans', '#SektörSorusu'].map(tag => (
-                                  <button 
-                                    key={tag}
-                                    onClick={() => setNewPostCareerTag(tag)}
-                                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shadow-sm ${newPostCareerTag === tag ? 'bg-indigo-100 border-indigo-300 text-indigo-700' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
-                                  >
-                                    {tag}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
+                            
                     </div>
 
                     <div>
