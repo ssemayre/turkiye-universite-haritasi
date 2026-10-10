@@ -377,8 +377,8 @@ function App() {
       // NEW LOGIC: Fetch directly from 'programs' using campus_id or institution_id
       const { data: progData, error: progError } = await supabase
         .from('programs')
-        .select('id, name as isim, faculty as fakulte, degree_level, duration')
-        .eq('campus_id', selectedSubCampus.id);
+          .select('id, name as isim, faculty as fakulte, degree_level, duration, campus_id')
+          .eq('institution_id', selectedSubCampus.institution_id);
       
       if (progData) {
         setCampusPrograms(progData);
@@ -5358,25 +5358,17 @@ const submitCampusPost = async () => {
                     ) : campusPrograms && campusPrograms.length > 0 ? (
                         (() => {
                             const filtered = campusPrograms.filter(p => {
-    // 1 & 2: Kampüs Tipi Ayrımı (MYO vs Ana Kampüs)
-    if (activeCampusFilterId && String(activeCampusFilterId) !== String(selectedSubCampus?.id)) {
-        // Durum 1: Bir MYO Seçilmiş
-        const activeMyo = activeRelatedMyos.find(m => String(m.id) === String(activeCampusFilterId));
-        if (activeMyo && p.fakulte !== activeMyo.isim) {
-            return false;
-        }
-    } else {
-        // Durum 2: Ana Kampüs Seçilmiş (veya filtre yok)
-        // Fakülte isminde 'meslek' veya 'myo' geçenleri (yani MYO bölümlerini) gizle
-        const fakulteIsmi = (p.fakulte || '').toLocaleLowerCase('tr-TR');
-        if (fakulteIsmi.includes('meslek') || fakulteIsmi.includes('myo')) {
-            return false;
-        }
-    }
-    
-    // 3. Sağ Panel İçi Arama
-    return (p.isim || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
-});
+                                  // Yeni İlişkisel Şema: Her programın campus_id'si var.
+                                  // Eğer yan panelden bir alt kampüs (MYO) seçildiyse onun ID'sini, yoksa ana kampüsün ID'sini al
+                                  const targetCampusId = activeCampusFilterId || selectedSubCampus?.id;
+                                  
+                                  if (p.campus_id !== targetCampusId) {
+                                      return false;
+                                  }
+                                  
+                                  // Sağ Panel İçi Arama
+                                  return (p.isim || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
+                              });
                           if (filtered.length === 0) {
                           return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
                         }
