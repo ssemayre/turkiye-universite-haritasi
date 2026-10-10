@@ -2911,7 +2911,9 @@ const activeFilterCount = [
   const [selectedClub, setSelectedClub] = useState(null);
   const [clubEvents, setClubEvents] = useState([]);
   
-    const [tutors, setTutors] = useState([]);
+      const [newPostCareerTag, setNewPostCareerTag] = useState('');
+  const [careerTagFilter, setCareerTagFilter] = useState('Tümü');
+const [tutors, setTutors] = useState([]);
   const [tutorFormOpen, setTutorFormOpen] = useState(false);
   const [tutorFormData, setTutorFormData] = useState({ subject: '', hourly_rate: '', format: 'İkisi de' });
   const [tutorSubjectFilter, setTutorSubjectFilter] = useState('');
@@ -3406,12 +3408,23 @@ const submitCampusPost = async () => {
       imageUrl = publicUrlData.publicUrl;
     }
     
-    const { data, error } = await supabase.from('posts').insert({
-      user_id: user.id,
-      university_name: userProfileData.university_name,
-      content: newPostContent,
-      is_anonymous: isAnonymousPost,
-      category: campusTab === 'confessions' ? 'confessions' : 'feed',
+    
+      if (campusTab === 'career' && !newPostCareerTag && !isAnonymousPost) {
+        // We just require it for career tab
+      }
+      if (campusTab === 'career' && !newPostCareerTag) {
+        alert("Lütfen kariyer gönderiniz için zorunlu bir etiket seçin.");
+        setIsSubmittingPost(false);
+        return;
+      }
+      const finalContent = (campusTab === 'career' && newPostCareerTag) ? `${newPostCareerTag}\n\n${newPostContent}` : newPostContent;
+      
+      const { data, error } = await supabase.from('posts').insert({
+        user_id: user.id,
+        university_name: userProfileData.university_name,
+        content: finalContent,
+        is_anonymous: (campusTab === 'confessions' || campusTab === 'career') ? isAnonymousPost : false,
+        category: campusTab === 'confessions' ? 'confessions' : (campusTab === 'career' ? 'career' : 'feed'),
       image_url: imageUrl
     }).select('*, profiles(full_name, avatar_url, university_name, department_name)').single();
     
@@ -3925,12 +3938,12 @@ const submitCampusPost = async () => {
                             style={{ minHeight: '60px' }}
                           />
                           <div className="flex items-center w-full mt-2 pt-2 border-t border-white/40">
-                            {campusTab === 'confessions' && (
-                              <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-500 mr-auto">
-                                <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} />
-                                💬 Anonim Paylaş
-                              </label>
-                            )}
+                            {(campusTab === 'confessions' || campusTab === 'career') && (
+                                <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-500 mr-auto font-medium bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                                  <input type="checkbox" checked={isAnonymousPost} onChange={e => setIsAnonymousPost(e.target.checked)} className="accent-slate-700 w-4 h-4" />
+                                  {campusTab === 'career' ? '🎓 Anonim Mezun Olarak Paylaş' : '👤 Anonim Paylaş'}
+                                </label>
+                              )}
                             
                             <div className="flex items-center gap-2 mr-auto ml-2">
                               <label className="cursor-pointer flex items-center justify-center p-1 text-slate-400 hover:text-indigo-600 transition-colors" title="Fotoğraf Ekle">
@@ -3958,9 +3971,23 @@ const submitCampusPost = async () => {
                       </div>
 
                       <div className="campus-feed flex flex-col pb-4">
+                        {campusTab === 'career' && (
+                          <div className="flex gap-2 mx-4 mb-4 overflow-x-auto hide-scrollbar pb-2 pt-1">
+                            {['Tümü', '#MülakatDeneyimi', '#İlkİş', '#Referans', '#SektörSorusu'].map(tag => (
+                              <button
+                                key={tag}
+                                onClick={() => setCareerTagFilter(tag)}
+                                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all border shadow-sm ${careerTagFilter === tag ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         {campusPosts.filter(post => {
                           const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
-                          return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
+                            if (campusTab === 'career') return postCat === 'career' && (careerTagFilter === 'Tümü' || (post.content && post.content.includes(careerTagFilter)));
+                            return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
                         }).length === 0 ? (
                           <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b' }}>
                             <div style={{ fontSize: '32px', marginBottom: '8px' }}>📝</div>
@@ -3969,13 +3996,14 @@ const submitCampusPost = async () => {
                         ) : (
                           campusPosts.filter(post => {
                             const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
+                            if (campusTab === 'career') return postCat === 'career' && (careerTagFilter === 'Tümü' || (post.content && post.content.includes(careerTagFilter)));
                             return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
                           }).map(post => (
                               <div id={`post-${post.id}`} key={post.id} className="campus-post-card flex flex-col p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm mb-3 mx-4" style={{ transition: 'background-color 1.5s ease' }}>
                                 <div className="flex items-center gap-3 mb-2">
                                   <div className={`shrink-0 ${post.is_anonymous ? 'cursor-default' : 'cursor-pointer'}`} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
                                     {post.is_anonymous ? (
-                                      <span className="bg-slate-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl">👻</span>
+                                      <span className="bg-slate-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl">{post.category === 'career' ? '🎓' : '👤'}</span>
                                     ) : post.profiles?.avatar_url ? (
                                       <img src={post.profiles.avatar_url} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
                                     ) : (
@@ -3985,7 +4013,7 @@ const submitCampusPost = async () => {
                                   
                                   <div className="flex flex-col items-start text-left">
                                     <span className={`text-sm font-bold text-slate-900 ${post.is_anonymous ? 'cursor-default' : 'cursor-pointer'}`} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
-                                      {post.is_anonymous ? 'Anonim' : (post.profiles?.full_name || 'İsimsiz')}
+                                      {post.is_anonymous ? (post.category === 'career' ? 'Anonim Mezun' : 'Anonim') : (post.profiles?.full_name || 'İsimsiz')}
                                     </span>
                                     <span className="text-xs text-slate-500">
                                       {!post.is_anonymous && (
@@ -6081,6 +6109,19 @@ const submitCampusPost = async () => {
                     <div>
                       <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', color: '#475569', marginBottom: '6px' }}>Hakkımda / İlgi Alanlarım</label>
                       <textarea value={userProfileData.bio} onChange={(e) => updateProfileData('bio', e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '14px', minHeight: '80px', resize: 'vertical', outline: 'none' }} placeholder="Kendinizi ve ilgi alanlarınızı kısaca anlatın..."></textarea>
+                            {campusTab === 'career' && (
+                              <div className="flex gap-2 w-full mt-3 overflow-x-auto pb-2 px-1 hide-scrollbar">
+                                {['#MülakatDeneyimi', '#İlkİş', '#Referans', '#SektörSorusu'].map(tag => (
+                                  <button 
+                                    key={tag}
+                                    onClick={() => setNewPostCareerTag(tag)}
+                                    className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shadow-sm ${newPostCareerTag === tag ? 'bg-indigo-100 border-indigo-300 text-indigo-700' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                                  >
+                                    {tag}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                     </div>
 
                     <div>
