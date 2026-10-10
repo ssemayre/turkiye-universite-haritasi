@@ -3236,7 +3236,31 @@ const activeFilterCount = [
     }
   };
 
-  const toggleComments = async (postId) => {
+  
+  const handleNotificationClick = (notif) => {
+    setNotificationsOpen(false);
+    
+    if (notif.post_id) {
+      setMessagesOpen(false);
+      setPreferenceOpen(false);
+      setBrowseOpen(true);
+      
+      setTimeout(() => {
+        const el = document.getElementById(`post-${notif.post_id}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const originalBg = el.style.backgroundColor;
+          el.style.backgroundColor = 'rgba(238, 242, 255, 0.8)'; // indigo-50
+          setTimeout(() => {
+            el.style.backgroundColor = originalBg;
+          }, 1500);
+        }
+      }, 300);
+    } else {
+      setMessagesOpen(true);
+    }
+  };
+const toggleComments = async (postId) => {
     if (expandedComments[postId]) {
       setExpandedComments(prev => ({ ...prev, [postId]: false }));
     } else {
@@ -3894,7 +3918,7 @@ const submitCampusPost = async () => {
                             const postCat = post.category || (post.is_anonymous ? 'confessions' : 'feed');
                             return campusTab === 'confessions' ? postCat === 'confessions' : postCat === 'feed';
                           }).map(post => (
-                              <div key={post.id} className="campus-post-card flex flex-col p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm mb-3 mx-4">
+                              <div id={`post-${post.id}`} key={post.id} className="campus-post-card flex flex-col p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white/50 shadow-sm mb-3 mx-4" style={{ transition: 'background-color 1.5s ease' }}>
                                 <div className="flex items-center gap-3 mb-2">
                                   <div className={`shrink-0 ${post.is_anonymous ? 'cursor-default' : 'cursor-pointer'}`} onClick={() => !post.is_anonymous && setViewingProfile({ id: post.user_id, full_name: post.profiles?.full_name, avatar_url: post.profiles?.avatar_url, university_name: post.university_name, department_name: post.profiles?.department_name })}>
                                     {post.is_anonymous ? (
