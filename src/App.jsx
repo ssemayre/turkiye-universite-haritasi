@@ -382,22 +382,36 @@ function App() {
       setIsFetchingCampusPrograms(true);
       if (typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
       
+      const isMain = Boolean(
+        (selectedSubCampus.campusName || selectedSubCampus.name || '')
+          .toLocaleLowerCase('tr-TR')
+          .includes('merkez')
+      );
+
+      const instId = selectedSubCampus.institution_id || selectedSubCampus.parent_id;
+      const campusId = selectedSubCampus.id;
+
+      // PostgREST alias formatı (isim:name, fakulte:faculty)
       let query = supabase
         .from('programs')
-        .select('id, name as isim, faculty as fakulte, degree_level, duration, campus_id');
+        .select('id, isim:name, fakulte:faculty, degree_level, duration, campus_id');
 
-      if (isMainCampus) {
+      if (isMain) {
         // Kural 3: Ana Üniversite ise -> institution_id eşleşen ve (campus_id NULL veya bu merkez kampüsün ID'si)
         if (activeCampusFilterId) {
           query = query.eq('campus_id', activeCampusFilterId);
         } else {
-          query = query
-            .eq('institution_id', selectedSubCampus.institution_id)
-            .or(`campus_id.is.null,campus_id.eq.${selectedSubCampus.id}`);
+          if (instId) {
+            query = query
+              .eq('institution_id', instId)
+              .or(`campus_id.is.null,campus_id.eq.${campusId}`);
+          } else {
+            query = query.or(`campus_id.is.null,campus_id.eq.${campusId}`);
+          }
         }
       } else {
         // Kural 3: MYO ise -> SADECE campus_id'si tıklanan iğnenin ID'sine tam eşleşenler
-        query = query.eq('campus_id', selectedSubCampus.id);
+        query = query.eq('campus_id', campusId);
       }
 
       const { data: progData, error: progError } = await query;
@@ -409,10 +423,10 @@ function App() {
       }
   
       // Kural 2: Eğer Ana Üniversite görünümündeysek, o kuruma bağlı alt kampüsleri listele
-      if (isMainCampus) {
+      if (isMain && instId) {
         const activeMyos = universities.filter(u => 
-          u.institution_id === selectedSubCampus.institution_id && 
-          u.id !== selectedSubCampus.id
+          (u.institution_id === instId || u.parent_id === instId) && 
+          u.id !== campusId
         );
         
         setActiveRelatedMyos(activeMyos.map(m => ({
