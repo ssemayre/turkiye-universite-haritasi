@@ -312,6 +312,9 @@ function App() {
       .toLocaleLowerCase('tr-TR')
       .includes('merkez')
   );
+  const [activeCampusFilterId, setActiveCampusFilterId] = useState(null);
+  const [activeRelatedMyos, setActiveRelatedMyos] = useState([]);
+  const [isFetchingMyos, setIsFetchingMyos] = useState(false);
 
   // --- BÖLÜMLER (PROGRAMS) YENİ YAPI ---
   const [campusPrograms, setCampusPrograms] = useState([]);
@@ -1413,7 +1416,6 @@ function App() {
   // ==================================================
 
   const markerRefs = useRef({});
-  const [activeCampusFilterId, setActiveCampusFilterId] = useState(null);
   const [clusterPopupData, setClusterPopupData] = useState(null);
   const [activeCampusMarker, setActiveCampusMarker] = useState(null);
 
@@ -2301,8 +2303,6 @@ function App() {
       return candidates;
     }, [search, baseFilteredUniversities, searchProgramsLoaded, generalFilteredPrograms, universityMap]);
 
-  const [activeRelatedMyos, setActiveRelatedMyos] = useState([]);
-  const [isFetchingMyos, setIsFetchingMyos] = useState(false);
 
   const displayedUniversities = useMemo(() => {
     // Odak Modu: Bir üniversite seçiliyse haritada sadece o ve MYO'ları kalsın
