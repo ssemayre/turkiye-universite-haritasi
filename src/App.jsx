@@ -307,6 +307,11 @@ function App() {
   const [reviewVotes, setReviewVotes] = useState({});
   const [qaVotes, setQaVotes] = useState({});
   const [selectedSubCampus, setSelectedSubCampus] = useState(null);
+  const isMainCampus = Boolean(
+    (selectedSubCampus?.campusName || selectedSubCampus?.name || '')
+      .toLocaleLowerCase('tr-TR')
+      .includes('merkez')
+  );
 
   // --- BÖLÜMLER (PROGRAMS) YENİ YAPI ---
   const [campusPrograms, setCampusPrograms] = useState([]);
@@ -367,18 +372,32 @@ function App() {
     if (selectedSubCampus) {
       fetchCampusPrograms();
     }
-  }, [selectedSubCampus?.id]);
+  }, [selectedSubCampus?.id, activeCampusFilterId]);
 
   const fetchCampusPrograms = async () => {
       if (!selectedSubCampus) return;
       setIsFetchingCampusPrograms(true);
-      if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
+      if (typeof setIsFetchingMyos === 'function') setIsFetchingMyos(true);
       
-      // NEW LOGIC: Fetch directly from 'programs' using campus_id or institution_id
-      const { data: progData, error: progError } = await supabase
+      let query = supabase
         .from('programs')
-          .select('id, name as isim, faculty as fakulte, degree_level, duration, campus_id')
-          .eq('institution_id', selectedSubCampus.institution_id);
+        .select('id, name as isim, faculty as fakulte, degree_level, duration, campus_id');
+
+      if (isMainCampus) {
+        // Kural 3: Ana Üniversite ise -> institution_id eşleşen ve (campus_id NULL veya bu merkez kampüsün ID'si)
+        if (activeCampusFilterId) {
+          query = query.eq('campus_id', activeCampusFilterId);
+        } else {
+          query = query
+            .eq('institution_id', selectedSubCampus.institution_id)
+            .or(`campus_id.is.null,campus_id.eq.${selectedSubCampus.id}`);
+        }
+      } else {
+        // Kural 3: MYO ise -> SADECE campus_id'si tıklanan iğnenin ID'sine tam eşleşenler
+        query = query.eq('campus_id', selectedSubCampus.id);
+      }
+
+      const { data: progData, error: progError } = await query;
       
       if (progData) {
         setCampusPrograms(progData);
@@ -386,22 +405,26 @@ function App() {
         console.error('Bölümler çekilirken hata:', progError);
       }
   
-      // Extract MYOs from the global universities state instead of fetching from old 'myolar' table
-      const activeMyos = universities.filter(u => 
-        u.institution_id === selectedSubCampus.institution_id && 
-        u.parent_id !== null && 
-        u.id !== selectedSubCampus.id
-      );
-      
-      setActiveRelatedMyos(activeMyos.map(m => ({
-         ...m,
-         isim: m.campusName || m.name,
-         tip: 'Meslek Yüksekokulu',
-         ilce: m.city
-      })));
+      // Kural 2: Eğer Ana Üniversite görünümündeysek, o kuruma bağlı alt kampüsleri listele
+      if (isMainCampus) {
+        const activeMyos = universities.filter(u => 
+          u.institution_id === selectedSubCampus.institution_id && 
+          u.id !== selectedSubCampus.id
+        );
+        
+        setActiveRelatedMyos(activeMyos.map(m => ({
+           ...m,
+           isim: m.campusName || m.name,
+           tip: 'Meslek Yüksekokulu',
+           ilce: m.city
+        })));
+      } else {
+        // MYO görünümündeysek alt kampüs listesini boşalt
+        setActiveRelatedMyos([]);
+      }
   
       setIsFetchingCampusPrograms(false);
-      if(typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
+      if (typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
     };
 
   // Reviews Fetch
@@ -5158,23 +5181,30 @@ const submitCampusPost = async () => {
             <div className="flex justify-between items-start shrink-0 border-b border-slate-200/60 p-5 md:p-6">
               <div className="flex-1 pr-4">
                 <h2 className="text-base sm:text-lg font-extrabold !text-slate-900 leading-snug tracking-tight" style={{ color: "#0f172a" }}>
-                  {selectedSubCampus.name}
+                  {isMainCampus 
+                    ? (selectedSubCampus.originalUniName || selectedSubCampus.name) 
+                    : (selectedSubCampus.campusName || selectedSubCampus.name)}
                 </h2>
-                {selectedSubCampus.parent_id && displayUniversity && (
-                  <div className="text-sm text-slate-500 mb-2 flex items-center gap-1.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    Bağlı olduğu kurum: <strong className="text-slate-700">{displayUniversity.name}</strong>
+                {!isMainCampus && (
+                  <div className="text-sm text-slate-500 mb-1 flex items-center gap-1.5">
+                    <span>🏛️</span>
+                    Bağlı olduğu kurum: <strong className="text-slate-700">{selectedSubCampus.originalUniName || 'Ana Üniversite'}</strong>
                   </div>
                 )}
                 <div className="flex items-center gap-2 flex-wrap mt-1">
-                  <span className={`inline-block px-2.5 py-1 border rounded-full text-xs font-semibold mt-1 ${(selectedSubCampus.type === 'Ana Kampüs' || selectedSubCampus.type === 'Ana KampǬs' || selectedSubCampus.isMain) ? 'bg-amber-50 text-amber-700 border-amber-200/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200/60'}`}>
-                      {(selectedSubCampus.type === 'Ana Kampüs' || selectedSubCampus.type === 'Ana KampǬs' || selectedSubCampus.isMain) ? 'Ana Kampüs' : 'Alt Yerleşke'}
+                  <span className={`inline-block px-2.5 py-1 border rounded-full text-xs font-semibold ${isMainCampus ? 'bg-amber-50 text-amber-700 border-amber-200/60' : 'bg-emerald-50 text-emerald-700 border-emerald-200/60'}`}>
+                    {isMainCampus ? 'Ana Üniversite' : 'Alt Yerleşke (MYO)'}
+                  </span>
+                  {selectedSubCampus.city && (
+                    <span className="inline-block px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
+                      📍 {selectedSubCampus.city}
                     </span>
+                  )}
                 </div>
               </div>
               
               <button 
-                onClick={() => setSelectedSubCampus(null)}
+                onClick={() => { setSelectedSubCampus(null); setActiveCampusFilterId(null); }}
                 className="p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors shrink-0"
               >
                 ✕
@@ -5186,7 +5216,7 @@ const submitCampusPost = async () => {
               {[
                 { key: 'info',    label: 'Bilgi',            icon: 'ℹ️' },
                 { key: 'units',   label: 'Bölümler',         icon: '📚' },
-                { key: 'campuses',label: 'Yerleşkeler',      icon: '🏢' },
+                ...(isMainCampus ? [{ key: 'campuses', label: 'Yerleşkeler', icon: '🏢' }] : []),
                 { key: 'reviews', label: 'Değerlendirmeler', icon: '⭐' },
                 { key: 'qa',      label: 'Soru & Cevap',     icon: '💬' },
               ].map(tab => (
@@ -5358,15 +5388,7 @@ const submitCampusPost = async () => {
                     ) : campusPrograms && campusPrograms.length > 0 ? (
                         (() => {
                             const filtered = campusPrograms.filter(p => {
-                                  // Yeni İlişkisel Şema: Her programın campus_id'si var.
-                                  // Eğer yan panelden bir alt kampüs (MYO) seçildiyse onun ID'sini, yoksa ana kampüsün ID'sini al
-                                  const targetCampusId = activeCampusFilterId || selectedSubCampus?.id;
-                                  
-                                  if (p.campus_id !== targetCampusId) {
-                                      return false;
-                                  }
-                                  
-                                  // Sağ Panel İçi Arama
+                                  // Sağ Panel İçi Arama (Kural 3'e göre Supabase sorgusu zaten doğru kayıtları getirdi)
                                   return (p.isim || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
                               });
                           if (filtered.length === 0) {
@@ -5482,8 +5504,8 @@ const submitCampusPost = async () => {
                 </div>
               )}
 
-              {/* ━━ YERLEŞKELER ━━ */}
-              {campusDetailTab === 'campuses' && (
+              {/* ━━ YERLEŞKELER (Sadece Ana Üniversite ise) ━━ */}
+              {isMainCampus && campusDetailTab === 'campuses' && (
                 <div className="csd-section-list">
                   <div className="csd-card">
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Alt Yerleşkeler / MYO'lar</h3>
