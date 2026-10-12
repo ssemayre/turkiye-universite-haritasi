@@ -3810,19 +3810,33 @@ const submitCampusPost = async () => {
                 zoomToBoundsOnClick={true}
               >
               {kykDorms
-                  .filter(kyk => kykGenderFilter === "Tümü" || kyk.gender === kykGenderFilter)
-                .map(kyk => (
-                  <Marker
-                    key={`kyk-${kyk.id}`}
-                    position={[kyk.lat, kyk.lng]}
-                    icon={kyk.gender === "Kız" ? kykKizIcon : kykErkekIcon}
-                    eventHandlers={{ click: () => setSelectedKyk(kyk) }}
-                  >
-                    <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
-                      <span className="kyk-tooltip">{kyk.name} ({kyk.gender})</span>
-                    </Tooltip>
-                  </Marker>
-              ))}
+                .filter(kyk => {
+                  if (kykGenderFilter !== "Tümü" && kyk.gender !== kykGenderFilter) return false;
+                  const lat = Number(kyk.lat ?? kyk.latitude ?? kyk.coordinates?.lat);
+                  const lng = Number(kyk.lng ?? kyk.longitude ?? kyk.coordinates?.lng);
+                  return !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
+                })
+                .map(kyk => {
+                  const lat = Number(kyk.lat ?? kyk.latitude ?? kyk.coordinates?.lat);
+                  const lng = Number(kyk.lng ?? kyk.longitude ?? kyk.coordinates?.lng);
+                  return (
+                    <Marker
+                      key={`kyk-${kyk.id}`}
+                      position={[lat, lng]}
+                      icon={kyk.gender === "Kız" ? kykKizIcon : kykErkekIcon}
+                      eventHandlers={{
+                        click: () => {
+                          setSelectedKyk(kyk);
+                          setMapFocus({ latitude: lat, longitude: lng, zoom: 15 });
+                        }
+                      }}
+                    >
+                      <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
+                        <span className="kyk-tooltip">{kyk.name} ({kyk.gender})</span>
+                      </Tooltip>
+                    </Marker>
+                  );
+                })}
             </MarkerClusterGroup>
           )}
 
@@ -5137,35 +5151,58 @@ const submitCampusPost = async () => {
   
   <div className="kyk-info-box">
     {/* Distance card */}
-    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '15px' }}>
+    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '15px', padding: '14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
         <span style={{ fontSize: '18px' }}>🎓</span>
         <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>En Yakın Kampüs</h4>
       </div>
       <div style={{ color: '#0f172a', fontSize: '15px', fontWeight: '600' }}>
         {(() => {
+          const kykLat = Number(selectedKyk?.lat ?? selectedKyk?.latitude ?? selectedKyk?.coordinates?.lat);
+          const kykLng = Number(selectedKyk?.lng ?? selectedKyk?.longitude ?? selectedKyk?.coordinates?.lng);
+          const hasCoords = !isNaN(kykLat) && !isNaN(kykLng) && kykLat !== 0 && kykLng !== 0;
+
+          if (!hasCoords) {
+            return <span style={{ color: '#64748b', fontSize: '14px' }}>Koordinat bilgisi bulunamadı</span>;
+          }
+
           let minD = Infinity;
           let minName = null;
-          Object.values(campusData).forEach(uniData => {
-            if (uniData && uniData.campuses) {
-              uniData.campuses.forEach(c => {
-                if (c.latitude && c.longitude) {
-                  let lat = Number(c.latitude);
-                  let lng = Number(c.longitude);
-                  if (!isNaN(lat) && !isNaN(lng) && selectedKyk && selectedKyk.coordinates && selectedKyk.coordinates.lat) {
-                    let d = getDistanceFromLatLonInKm(Number(selectedKyk.coordinates.lat), Number(selectedKyk.coordinates.lng), lat, lng);
+
+          // Canlı Supabase kampüsleri üzerinden en yakın kampüsü bul
+          if (Array.isArray(universities) && universities.length > 0) {
+            universities.forEach(u => {
+              const uLat = Number(u.lat ?? u.latitude);
+              const uLng = Number(u.lng ?? u.longitude);
+              if (!isNaN(uLat) && !isNaN(uLng) && uLat !== 0 && uLng !== 0) {
+                const d = getDistanceFromLatLonInKm(kykLat, kykLng, uLat, uLng);
+                if (d < minD) {
+                  minD = d;
+                  minName = u.name || `${u.originalUniName || ''} - ${u.campusName || ''}`;
+                }
+              }
+            });
+          } else if (typeof campusData === 'object' && campusData !== null) {
+            Object.values(campusData).forEach(uniData => {
+              if (uniData && uniData.campuses) {
+                uniData.campuses.forEach(c => {
+                  const cLat = Number(c.latitude || c.lat);
+                  const cLng = Number(c.longitude || c.lng);
+                  if (!isNaN(cLat) && !isNaN(cLng) && cLat !== 0 && cLng !== 0) {
+                    const d = getDistanceFromLatLonInKm(kykLat, kykLng, cLat, cLng);
                     if (d < minD) {
                       minD = d;
                       minName = c.name + (uniData.universityName ? " (" + uniData.universityName + ")" : "");
                     }
                   }
-                }
-              });
-            }
-          });
+                });
+              }
+            });
+          }
+
           if (minD !== Infinity && minName) {
             let walkTime = Math.round((minD / 5) * 60);
-            let walkStr = walkTime < 60 ? walkTime + " dk" : Math.round(walkTime/60) + " saat";
+            let walkStr = walkTime < 60 ? walkTime + " dk" : Math.round(walkTime / 60) + " saat";
             return (
               <div>
                 <div style={{ marginBottom: '6px' }}>{minName}</div>
@@ -5177,28 +5214,39 @@ const submitCampusPost = async () => {
               </div>
             );
           }
-          return "Kampüs bulunamadı";
+          return <span style={{ color: '#64748b', fontSize: '14px' }}>Yakın kampüs bulunamadı</span>;
         })()}
       </div>
     </div>
 
     {/* Address card */}
-    {(selectedKyk.address || (selectedKyk.district && selectedKyk.city)) ? (
-      <div style={{ background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+    {(selectedKyk.address || selectedKyk.city) ? (
+      <div style={{ background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px', padding: '14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
           <span style={{ fontSize: '18px' }}>🗺️</span>
           <h4 style={{ margin: 0, color: '#475569', fontSize: "16px", textTransform: 'uppercase', fontWeight: '700' }}>Açık Adres</h4>
         </div>
         <div style={{ color: '#334155', fontSize: "16px", lineHeight: '1.5' }}>
-          {selectedKyk.address ? selectedKyk.address : selectedKyk.district + ", " + selectedKyk.city}
+          {selectedKyk.address || (selectedKyk.district ? `${selectedKyk.district}, ${selectedKyk.city}` : selectedKyk.city)}
         </div>
       </div>
     ) : null}
     
-    <a href={"https://www.google.com/maps/dir/?api=1&destination=" + selectedKyk.coordinates.lat + "," + selectedKyk.coordinates.lng} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px', background: '#2563eb', color: '#fff', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', fontSize: '15px', transition: 'background 0.2s', boxSizing: 'border-box' }}>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
-      Haritalarda Yol Tarifi
-    </a>
+    {(() => {
+      const kykLat = Number(selectedKyk?.lat ?? selectedKyk?.latitude ?? selectedKyk?.coordinates?.lat);
+      const kykLng = Number(selectedKyk?.lng ?? selectedKyk?.longitude ?? selectedKyk?.coordinates?.lng);
+      const hasCoords = !isNaN(kykLat) && !isNaN(kykLng) && kykLat !== 0 && kykLng !== 0;
+      const mapsUrl = hasCoords 
+        ? `https://www.google.com/maps/dir/?api=1&destination=${kykLat},${kykLng}`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${selectedKyk?.name || ''} KYK Yurdu ${selectedKyk?.city || ''}`)}`;
+
+      return (
+        <a href={mapsUrl} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px', background: '#2563eb', color: '#fff', borderRadius: '12px', textDecoration: 'none', fontWeight: '600', fontSize: '15px', transition: 'background 0.2s', boxSizing: 'border-box' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+          Haritalarda Yol Tarifi
+        </a>
+      );
+    })()}
   </div>
 </aside>
         )}
