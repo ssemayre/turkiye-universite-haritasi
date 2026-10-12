@@ -5439,55 +5439,207 @@ const submitCampusPost = async () => {
               {campusDetailTab === 'units' && (
                 <div className="flex flex-col flex-1 min-h-0 h-full mt-2">
                   
-                  {/* Sticky Search Bar */}
+                  {/* Sticky Search Bar & Filter Pill */}
                   <div className="shrink-0 sticky top-0 z-10">
                     {activeCampusFilterId && (
                       <div style={{ marginBottom: '8px', padding: '8px 12px', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: '600' }}>Sadece {mapUniversities.find(u => u.id === activeCampusFilterId)?.name || 'seçili yerleşke'} bölümleri gösteriliyor</span>
-                        <button onClick={() => setActiveCampusFilterId(null)} style={{ background: 'none', border: 'none', color: '#1e40af', cursor: 'pointer', fontSize: '18px', padding: 0, lineHeight: 1 }}>&times;</button>
+                        <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: '600' }}>
+                          Sadece {universities.find(u => u.id === activeCampusFilterId)?.name || 'seçili yerleşke'} bölümleri gösteriliyor
+                        </span>
+                        <button 
+                          onClick={() => setActiveCampusFilterId(null)} 
+                          style={{ background: 'none', border: 'none', color: '#1e40af', cursor: 'pointer', fontSize: '18px', padding: 0, lineHeight: 1 }}
+                          title="Filtreyi Kaldır"
+                        >
+                          &times;
+                        </button>
                       </div>
                     )}
                     <input 
                       type="text" 
-                      placeholder="Bu üniversitede program ara..." 
+                      placeholder="Bu üniversitede program veya fakülte ara..." 
                       value={programSearchQuery}
                       onChange={(e) => setProgramSearchQuery(e.target.value)}
                       className="w-full bg-white/50 backdrop-blur-sm border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm placeholder:text-slate-400 mb-3 shrink-0"
                     />
                   </div>
 
-                  {/* Scrollable List Area */}
+                  {/* Scrollable Programs List */}
+                  <div className="flex-1 overflow-y-auto p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] flex flex-col">
+                    {isFetchingCampusPrograms ? (
+                      <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        <h4 style={{ margin: '0 0 8px 0', color: '#3b82f6', fontSize: '15px' }}>Yükleniyor...</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Bölüm ve program verileri sorgulanıyor.</p>
+                      </div>
+                    ) : campusPrograms && campusPrograms.length > 0 ? (
+                      (() => {
+                        const filtered = campusPrograms.filter(p => {
+                          const query = (programSearchQuery || '').toLocaleLowerCase('tr-TR').trim();
+                          if (!query) return true;
+                          return (p.isim || '').toLocaleLowerCase('tr-TR').includes(query) ||
+                                 (p.fakulte || '').toLocaleLowerCase('tr-TR').includes(query);
+                        });
+
+                        if (filtered.length === 0) {
+                          return (
+                            <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '30px 20px' }}>
+                              Aradığınız kriterlere uygun program bulunamadı.
+                            </p>
+                          );
+                        }
+
+                        return filtered.map((p, idx) => {
+                          const sirala = p.rank || p.siralama || p.sirala;
+                          const puan = p.base_score || p.puan;
+                          const kontenjan = p.quota || p.kontenjan;
+                          const scoreType = p.score_type || p.puan_turu;
+
+                          return (
+                            <div 
+                              key={p.id || idx} 
+                              className="flex flex-col p-2.5 mb-2 bg-white/80 hover:bg-white border border-slate-200/60 rounded-xl shadow-sm transition-all group"
+                            >
+                              {/* ÜST SATIR (Bölüm Adı) */}
+                              <div className="flex items-start justify-between">
+                                <span className="text-sm font-semibold text-slate-800 flex-1 pr-2 leading-tight">
+                                  {p.isim}
+                                </span>
+                              </div>
+
+                              {/* ETİKETLER ALANI */}
+                              <div className="flex flex-wrap gap-1 mt-1 mb-1.5">
+                                <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold">
+                                  {p.degree_level 
+                                    ? `${p.degree_level}${p.duration ? ` • ${p.duration} Yıl` : ''}` 
+                                    : ((p.isim || '').toLocaleLowerCase('tr-TR').includes('önlisans') || (p.fakulte || '').toLocaleLowerCase('tr-TR').includes('meslek') ? 'Önlisans • 2 Yıl' : 'Lisans • 4 Yıl')}
+                                </span>
+                                {scoreType && (
+                                  <span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 rounded text-[9px] font-bold">
+                                    {scoreType}
+                                  </span>
+                                )}
+                                {p.tuition_type && (
+                                  <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded text-[9px] font-bold">
+                                    {p.tuition_type}
+                                  </span>
+                                )}
+                                {p.fakulte && (
+                                  <span className="px-1.5 py-0.5 bg-slate-50 text-slate-600 border border-slate-200 rounded text-[9px] font-medium truncate max-w-[200px]" title={p.fakulte}>
+                                    {p.fakulte}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* BİLGİ SATIRI (Kontenjan, Sıralama, Puan) */}
+                              <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded-lg border border-slate-100/80 mt-0.5">
+                                {/* KONTENJAN */}
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[9px] font-bold text-slate-400">KONT:</span>
+                                  <span className="text-[10px] font-extrabold text-slate-800">{kontenjan || '-'}</span>
+                                </div>
+
+                                {/* SIRALAMA */}
+                                <div className="flex items-center gap-1.5 border-l border-slate-200 pl-2">
+                                  <span className="text-[9px] font-bold text-slate-400">SIRA:</span>
+                                  <span className="text-[10px] font-extrabold text-slate-800">
+                                    {sirala ? Number(sirala).toLocaleString('tr-TR') : '-'}
+                                  </span>
+                                </div>
+
+                                {/* PUAN */}
+                                <div className="flex items-center gap-1.5 border-l border-slate-200 pl-2">
+                                  <span className="text-[9px] font-bold text-slate-400">PUAN:</span>
+                                  <span className="text-[10px] font-extrabold text-slate-800">
+                                    {puan ? Number(puan).toLocaleString('tr-TR') : '-'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        });
+                      })()
+                    ) : (
+                      <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
+                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Bölüm Bulunamadı</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
+                          Bu kampüse ait kayıtlı bölüm veya program verisi bulunamadı.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ━━ YERLEŞKELER (Sadece Ana Üniversite ise) ━━ */}
+              {isMainCampus && campusDetailTab === 'campuses' && (
+                <div className="flex flex-col flex-1 min-h-0 h-full mt-2">
+                  <div className="mb-3 px-1">
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>
+                      Bağlı Alt Yerleşkeler / MYO'lar
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '12px', color: '#64748b' }}>
+                      Üniversiteye bağlı fakülte, yüksekokul ve meslek yüksekokulu yerleşkeleri
+                    </p>
+                  </div>
+
                   <div className="flex-1 overflow-y-auto p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] flex flex-col">
                     {activeRelatedMyos.length === 0 ? (
                       <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px', display: 'inline-block' }}>
                           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                           <polyline points="9 22 9 12 15 12 15 22"></polyline>
                         </svg>
-                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>MYO Bulunamadı</h4>
-                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Bu üniversiteye ait kayıtlı Meslek Yüksekokulu bulunmuyor.</p>
+                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Alt Yerleşke Bulunamadı</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Bu kuruma bağlı başka alt yerleşke veya MYO kaydı bulunmuyor.</p>
                       </div>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {activeRelatedMyos.map(myo => (
-                          <button
+                          <div
                             key={myo.id}
-                            style={{ textAlign: 'left', padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                            onClick={() => {
-                              setActiveCampusMarker(myo);
-                              setMapFocus({ latitude: Number(myo.lat || myo.latitude), longitude: Number(myo.lng || myo.longitude), zoom: 15 });
-                              setActiveCampusFilterId(myo.id);
-                              setCampusDetailTab('units');
-                              // Ayrıca seçilen MYO pininin popup'ını aç
-                              setTimeout(() => {
-                                const marker = markerRefs.current[myo.id];
-                                if (marker) marker.openPopup();
-                              }, 400);
-                            }}
+                            style={{ padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s' }}
                           >
-                            <span style={{ fontWeight: '500', color: '#1e293b', fontSize: '14px' }}>{myo.isim}</span>
-                            <span style={{ fontSize: '12px', color: '#3b82f6', background: '#eff6ff', padding: '4px 10px', borderRadius: '12px', whiteSpace: 'nowrap', marginLeft: '8px' }}>Bölümleri Gör</span>
-                          </button>
+                            <div style={{ flex: 1, minWidth: 0, paddingRight: '12px' }}>
+                              <span style={{ fontWeight: '600', color: '#1e293b', fontSize: '14px', display: 'block', lineHeight: 1.3 }}>
+                                {myo.isim || myo.name}
+                              </span>
+                              {myo.city && (
+                                <span style={{ fontSize: '12px', color: '#64748b', marginTop: '3px', display: 'inline-block' }}>
+                                  📍 {myo.city}
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => {
+                                setActiveCampusMarker(myo);
+                                const myoLat = Number(myo.lat || myo.latitude);
+                                const myoLng = Number(myo.lng || myo.longitude);
+                                if (!isNaN(myoLat) && !isNaN(myoLng) && myoLat !== 0 && myoLng !== 0) {
+                                  setMapFocus({ latitude: myoLat, longitude: myoLng, zoom: 15 });
+                                }
+                                setActiveCampusFilterId(myo.id);
+                                setCampusDetailTab('units');
+                                setTimeout(() => {
+                                  const marker = markerRefs.current[myo.id];
+                                  if (marker) marker.openPopup();
+                                }, 400);
+                              }}
+                              style={{ 
+                                fontSize: '12px', 
+                                color: '#2563eb', 
+                                background: '#eff6ff', 
+                                border: '1px solid #bfdbfe',
+                                padding: '6px 12px', 
+                                borderRadius: '10px', 
+                                cursor: 'pointer', 
+                                fontWeight: '600', 
+                                whiteSpace: 'nowrap' 
+                              }}
+                            >
+                              Bölümleri Gör →
+                            </button>
+                          </div>
                         ))}
                       </div>
                     )}
