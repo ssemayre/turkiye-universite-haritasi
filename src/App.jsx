@@ -255,15 +255,31 @@ function App() {
 
   useEffect(() => {
     const fetchCampusesAndDorms = async () => {
-      // 1. Fetch Campuses (mapped to universities state to avoid breaking existing UI)
-      const { data: campusData, error: campusError } = await supabase
-        .from('campuses')
-        .select('id, name, lat, lng, address, institution_id, institutions(name, type, logo_url, website, city)');
-        
-      if (campusError) {
-        console.error("Error fetching campuses:", campusError);
-      } else if (campusData) {
-        setUniversities(campusData.map(c => ({
+      // 1. Fetch Campuses with pagination (PostgREST max 1000 limitini aşmak için)
+      let allCampuses = [];
+      let from = 0;
+      const step = 1000;
+      while (true) {
+        const { data: pageData, error: pageError } = await supabase
+          .from('campuses')
+          .select('id, name, lat, lng, address, institution_id, institutions(name, type, logo_url, website, city)')
+          .range(from, from + step - 1);
+          
+        if (pageError) {
+          console.error("Error fetching campuses:", pageError);
+          break;
+        }
+        if (pageData && pageData.length > 0) {
+          allCampuses = allCampuses.concat(pageData);
+          if (pageData.length < step) break;
+          from += step;
+        } else {
+          break;
+        }
+      }
+
+      if (allCampuses.length > 0) {
+        setUniversities(allCampuses.map(c => ({
           id: c.id,
           institution_id: c.institution_id,
           // If it's main campus, just show Uni name, else Uni name - Campus name
@@ -313,7 +329,23 @@ function App() {
       .includes('merkez')
   );
   const [activeCampusFilterId, setActiveCampusFilterId] = useState(null);
-  const [activeRelatedMyos, setActiveRelatedMyos] = useState([]);
+  const activeRelatedMyos = useMemo(() => {
+    if (!selectedSubCampus) return [];
+    const instId = selectedSubCampus.institution_id || selectedSubCampus.parent_id;
+    if (!instId) return [];
+
+    return universities
+      .filter(u => 
+        (u.institution_id === instId || u.parent_id === instId) && 
+        u.id !== selectedSubCampus.id
+      )
+      .map(m => ({
+        ...m,
+        isim: m.campusName || m.name,
+        tip: 'Meslek Yüksekokulu',
+        ilce: m.city
+      }));
+  }, [selectedSubCampus, universities]);
   const [isFetchingMyos, setIsFetchingMyos] = useState(false);
 
   // --- BÖLÜMLER (PROGRAMS) YENİ YAPI ---
@@ -391,55 +423,43 @@ function App() {
       const instId = selectedSubCampus.institution_id || selectedSubCampus.parent_id;
       const campusId = selectedSubCampus.id;
 
-      // PostgREST alias formatı (isim:name, fakulte:faculty)
-      let query = supabase
-        .from('programs')
-        .select('id, isim:name, fakulte:faculty, degree_level, duration, campus_id');
-
-      if (isMain) {
-        // Kural 3: Ana Üniversite ise -> institution_id eşleşen ve (campus_id NULL veya bu merkez kampüsün ID'si)
-        if (activeCampusFilterId) {
-          query = query.eq('campus_id', activeCampusFilterId);
-        } else {
-          if (instId) {
-            query = query
-              .eq('institution_id', instId)
-              .or(`campus_id.is.null,campus_id.eq.${campusId}`);
+      const buildQuery = (selectCols) => {
+        let q = supabase.from('programs').select(selectCols);
+        if (isMain) {
+          if (activeCampusFilterId) {
+            q = q.eq('campus_id', activeCampusFilterId);
           } else {
-            query = query.or(`campus_id.is.null,campus_id.eq.${campusId}`);
+            if (instId) {
+              q = q.eq('institution_id', instId).or(`campus_id.is.null,campus_id.eq.${campusId}`);
+            } else {
+              q = q.or(`campus_id.is.null,campus_id.eq.${campusId}`);
+            }
           }
+        } else {
+          q = q.eq('campus_id', campusId);
         }
-      } else {
-        // Kural 3: MYO ise -> SADECE campus_id'si tıklanan iğnenin ID'sine tam eşleşenler
-        query = query.eq('campus_id', campusId);
+        return q;
+      };
+
+      // Detay sütunları (quota, base_score, rank, score_type, tuition_type)
+      const detailedCols = 'id, isim:name, fakulte:faculty, degree_level, duration, campus_id, quota, base_score, rank, score_type, tuition_type';
+      const baseCols = 'id, isim:name, fakulte:faculty, degree_level, duration, campus_id';
+
+      let { data: progData, error: progError } = await buildQuery(detailedCols);
+
+      // Eğer kullanıcı Supabase'e henüz yeni sütunları eklemediyse temel sütunlara zarifçe geri dön
+      if (progError && (progError.message?.includes('does not exist') || progError.code === '42703')) {
+        const fallbackRes = await buildQuery(baseCols);
+        progData = fallbackRes.data;
+        progError = fallbackRes.error;
       }
 
-      const { data: progData, error: progError } = await query;
-      
       if (progData) {
         setCampusPrograms(progData);
       } else if (progError) {
         console.error('Bölümler çekilirken hata:', progError);
       }
-  
-      // Kural 2: Eğer Ana Üniversite görünümündeysek, o kuruma bağlı alt kampüsleri listele
-      if (isMain && instId) {
-        const activeMyos = universities.filter(u => 
-          (u.institution_id === instId || u.parent_id === instId) && 
-          u.id !== campusId
-        );
-        
-        setActiveRelatedMyos(activeMyos.map(m => ({
-           ...m,
-           isim: m.campusName || m.name,
-           tip: 'Meslek Yüksekokulu',
-           ilce: m.city
-        })));
-      } else {
-        // MYO görünümündeysek alt kampüs listesini boşalt
-        setActiveRelatedMyos([]);
-      }
-  
+
       setIsFetchingCampusPrograms(false);
       if (typeof setIsFetchingMyos === 'function') setIsFetchingMyos(false);
     };
@@ -5390,145 +5410,7 @@ const submitCampusPost = async () => {
 
                   {/* Scrollable List Area */}
                   <div className="flex-1 overflow-y-auto p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] flex flex-col">
-                    {isFetchingCampusPrograms ? (
-                      <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                        <div className="spinner" style={{ margin: '0 auto 16px', width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Veriler Çekiliyor</h4>
-                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
-                          Bölüm and program verileri yükleniyor...
-                        </p>
-                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                      </div>
-                    ) : campusPrograms && campusPrograms.length > 0 ? (
-                        (() => {
-                            const filtered = campusPrograms.filter(p => {
-                                  // Sağ Panel İçi Arama (Kural 3'e göre Supabase sorgusu zaten doğru kayıtları getirdi)
-                                  return (p.isim || '').toLocaleLowerCase('tr-TR').includes(programSearchQuery.toLocaleLowerCase('tr-TR'));
-                              });
-                          if (filtered.length === 0) {
-                          return <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', padding: '20px' }}>Aradığınız kriterlere uygun program bulunamadı.</p>;
-                        }
-                        return filtered.map((p, idx) => {
-                            const sirala = p.siralama || p.sirala;
-                            const puan = p.puan;
-                            const kontenjan = p.kontenjan;
-
-                            return (
-                              <div 
-                                key={idx} 
-                                className="flex flex-col p-2.5 mb-2 bg-white/80 hover:bg-white border border-slate-200/60 rounded-xl shadow-sm transition-all cursor-pointer group"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  let target = null;
-                                  if (p.campus_id) {
-                                    target = universities.find(u => String(u.id) === String(p.campus_id));
-                                  }
-                                  if (!target || (!target.lat && !target.latitude)) {
-                                    target = universities.find(u => String(u.id) === String(p.university_id));
-                                  }
-                                  if (!target || (!target.lat && !target.latitude)) {
-                                    target = selectedSubCampus;
-                                  }
-                                  
-                                  const lat = target?.lat || target?.latitude;
-                                  const lng = target?.lng || target?.longitude;
-                                  
-                                  if (lat && lng) {
-                                    setActiveCampusMarker(target);
-                                    setMapFocus({ latitude: Number(lat), longitude: Number(lng), zoom: 16 });
-                                    if (target && target.id) {
-                                      setTimeout(() => {
-                                        const marker = markerRefs.current[target.id];
-                                        if (marker) marker.openPopup();
-                                      }, 400); 
-                                    }
-                                  }
-                                }}
-                              >
-                                
-                                {/* ÜST SATIR (Bölüm Adı ve Yıldız) */}
-                                <div className="flex items-start justify-between">
-                                  <span className="text-sm font-semibold text-slate-800 flex-1 pr-2 leading-tight">
-                                    {p.isim}
-                                  </span>
-                                  <button 
-                                    className="text-slate-300 hover:text-amber-400 cursor-pointer p-1 transition-colors group-hover:text-amber-200 active:scale-90" 
-                                    onClick={(e) => { e.stopPropagation(); /* Favorite Logic */ }}
-                                  >
-                                    ⭐
-                                  </button>
-                                </div>
-
-                                {/* ETİKETLER ALANI */}
-                                <div className="flex flex-wrap gap-1 mt-1 mb-1.5">
-                                  <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold">
-                                    {(p.isim || '').toLocaleLowerCase('tr-TR').includes('önlisans') || (p.fakulte || '').toLocaleLowerCase('tr-TR').includes('meslek') ? 'Önlisans • 2 Yıl' : 'Lisans • 4 Yıl'}
-                                  </span>
-                                  {false && (
-                                    <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold">
-                                      
-                                    </span>
-                                  )}
-                                  {p.fakulte && (
-                                    <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded text-[9px] font-bold truncate max-w-[140px]">
-                                      {p.fakulte}
-                                    </span>
-                                  )}
-                                </div>
-
-                                {/* BİLGİ SATIRI (Kontenjan, Sıralama, Puan) */}
-                                <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded-lg border border-slate-100/80 mt-0.5">
-                                  
-                                  {/* KONTENJAN */}
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-[9px] font-bold text-slate-400">KONT:</span>
-                                    <span className="text-[10px] font-extrabold text-slate-800">{kontenjan || '-'}</span>
-                                  </div>
-
-                                  {/* SIRALAMA */}
-                                  <div className="flex items-center gap-1.5 border-l border-slate-200 pl-2">
-                                    <span className="text-[9px] font-bold text-slate-400">SIRA:</span>
-                                    <span className="text-[10px] font-extrabold text-slate-800">
-                                      {sirala ? Number(sirala).toLocaleString('tr-TR') : '-'}
-                                    </span>
-                                  </div>
-
-                                  {/* PUAN */}
-                                  <div className="flex items-center gap-1.5 border-l border-slate-200 pl-2">
-                                    <span className="text-[9px] font-bold text-slate-400">PUAN:</span>
-                                    <span className="text-[10px] font-extrabold text-slate-800">
-                                      {puan ? Number(puan).toLocaleString('tr-TR') : '-'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-});
-                        })()
-                    ) : (
-                      <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>📭</div>
-                        <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px' }}>Bölüm Bulunamadı</h4>
-                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>
-                          Bu üniversiteye ait bölüm veya program verisi bulunamadı.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* ━━ YERLEŞKELER (Sadece Ana Üniversite ise) ━━ */}
-              {isMainCampus && campusDetailTab === 'campuses' && (
-                <div className="csd-section-list">
-                  <div className="csd-card">
-                    <h3 style={{ margin: '0 0 10px 0', fontSize: '15px' }}>Bağlı Alt Yerleşkeler / MYO'lar</h3>
-                    {isFetchingCampusPrograms ? (
-                      <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                        <h4 style={{ margin: '0 0 8px 0', color: '#3b82f6', fontSize: '15px' }}>Yükleniyor...</h4>
-                        <p style={{ margin: 0, color: '#64748b', fontSize: '13px', lineHeight: '1.5' }}>Yerleşke bilgileri sorgulanıyor.</p>
-                      </div>
-                    ) : activeRelatedMyos.length === 0 ? (
+                    {activeRelatedMyos.length === 0 ? (
                       <div className="csd-empty" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '12px' }}>
                           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
